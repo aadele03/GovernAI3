@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovernAI — Program Setup Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#D97757;--orange-dk:#C15F3C;--charcoal:#141413;--cream:#FAF9F5;--white:#FFFFFF;--gray-soft:#B0AEA5;--gray-line:#E8E6DC;--gray-mid:#7A7870;--blue:#6A9BCC;--green:#788C5D;--sw:220px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:"DM Sans",sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+.shell{display:flex;min-height:100vh;}
+.snav{width:var(--sw);flex-shrink:0;background:var(--charcoal);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;overflow-y:auto;z-index:10;}
+.snav::-webkit-scrollbar{width:3px;}.snav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);}
+.snav-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.snav-row{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+.snav-icon{width:26px;height:26px;background:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.snav-icon svg{width:14px;height:14px;}
+.snav-name{font-family:"DM Serif Display",serif;font-size:15px;color:var(--cream);}
+.snav-name span{color:var(--orange);}
+.snav-sub{font-size:8.5px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;padding-left:33px;}
+.snav-sec{padding:12px 0 4px;}
+.snav-sec-lbl{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:5px 18px 3px;}
+.nl{display:flex;align-items:center;gap:7px;padding:5px 18px;font-size:11.5px;color:rgba(250,249,245,.4);cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.nl:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.nl.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.nl.done{color:rgba(120,140,93,.75);}
+.ndot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0;}
+.nl.done .ndot{opacity:1;background:var(--green);}
+.snav-prog{padding:16px 18px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);}
+.spg-lbl{font-size:10px;color:var(--gray-soft);margin-bottom:6px;display:flex;justify-content:space-between;}
+.spg-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.spg-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease;}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;}
+.topbar{height:50px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;padding:0 36px;position:sticky;top:0;z-index:9;}
+.tbl{font-size:11px;color:var(--gray-soft);}
+.tbl strong{color:var(--charcoal);}
+.tbb{display:flex;gap:7px;}
+.tb-btn{height:30px;padding:0 13px;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;transition:all .12s;border:1px solid var(--gray-line);display:flex;align-items:center;gap:5px;}
+.tb-prev{background:var(--white);color:var(--gray-mid);}.tb-prev:hover{background:var(--cream);}
+.tb-next{background:var(--orange);color:white;border-color:var(--orange);}.tb-next:hover{background:var(--orange-dk);}
+.tb-btn svg{width:11px;height:11px;}
+.content{flex:1;overflow-y:auto;}
+.panel{display:none;}.panel.active{display:block;}
+.hero{background:var(--charcoal);padding:36px 44px;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-60px;right:-40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.14) 0%,transparent 65%);pointer-events:none;}
+.eye{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.eye::before{content:"";width:14px;height:2px;background:var(--orange);}
+.ph-title{font-family:"DM Serif Display",serif;font-size:28px;color:var(--cream);line-height:1.2;margin-bottom:7px;position:relative;z-index:1;}
+.ph-sub{font-size:12.5px;color:rgba(250,249,245,.55);line-height:1.65;max-width:480px;position:relative;z-index:1;}
+.ph-meta{display:flex;gap:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);margin-top:18px;}
+.ph-ml{font-size:8.5px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;}
+.ph-mv{font-size:11.5px;color:rgba(250,249,245,.6);font-weight:500;}
+.pbody{padding:32px 44px;}
+.callout{border-radius:9px;padding:13px 15px;margin:16px 0;display:flex;gap:9px;}
+.ci{font-size:14px;flex-shrink:0;margin-top:1px;}
+.ct{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;}
+.cd{font-size:12.5px;line-height:1.65;}
+.tip{background:rgba(120,140,93,.07);border:1px solid rgba(120,140,93,.2);}.tip .ct{color:#3B6D11;}
+.warn{background:rgba(217,119,87,.07);border:1px solid rgba(217,119,87,.2);}.warn .ct{color:var(--orange-dk);}
+.info{background:rgba(106,155,204,.07);border:1px solid rgba(106,155,204,.2);}.info .ct{color:#0C447C;}
+.key{background:var(--charcoal);border:none;}.key .ct{color:var(--orange);}.key .cd{color:rgba(250,249,245,.7);}
+.coach{background:var(--charcoal);border-radius:9px;padding:12px 14px;margin:14px 0;border:1px solid rgba(255,255,255,.07);display:flex;gap:9px;}
+.coach-icon{width:26px;height:26px;flex-shrink:0;background:rgba(217,119,87,.18);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.cstep{font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:2px;}
+.ctxt{font-size:12px;color:rgba(250,249,245,.72);line-height:1.6;}
+.sim{border:1px solid var(--gray-line);border-radius:12px;overflow:hidden;background:var(--white);box-shadow:0 4px 20px rgba(0,0,0,.07);margin:18px 0;}
+.sim-bar{height:34px;background:#F0F0EE;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 11px;gap:6px;}
+.sd{width:9px;height:9px;border-radius:50%;}.sd-r{background:#FF5F57;}.sd-y{background:#FEBC2E;}.sd-g{background:#28C840;}
+.surl{flex:1;height:20px;background:var(--white);border:1px solid var(--gray-line);border-radius:4px;margin:0 9px;font-family:"DM Mono",monospace;font-size:9.5px;color:var(--gray-mid);display:flex;align-items:center;padding:0 7px;}
+.app{display:flex;min-height:340px;}
+.asb{width:178px;flex-shrink:0;background:var(--charcoal);display:flex;flex-direction:column;padding:12px 0;}
+.alogo{padding:0 13px 11px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:7px;}
+.alr{display:flex;align-items:center;gap:5px;margin-bottom:1px;}
+.ali{width:19px;height:19px;background:var(--orange);border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.ali svg{width:10px;height:10px;}
+.aln{font-family:"DM Serif Display",serif;font-size:11.5px;color:var(--cream);}.aln span{color:var(--orange);}
+.als{font-size:7px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;padding-left:24px;}
+.anl{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:4px 13px;}
+.ani{display:flex;align-items:center;gap:5px;padding:4px 13px;font-size:9.5px;color:rgba(250,249,245,.38);cursor:pointer;border-left:2px solid transparent;transition:all .1s;}
+.ani:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.ani.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.ani svg{width:9px;height:9px;flex-shrink:0;}
+.ab{margin-left:auto;font-size:7.5px;font-weight:600;background:rgba(217,119,87,.2);color:var(--orange);padding:1px 4px;border-radius:6px;}
+.am{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.atb{height:34px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 14px;font-size:10.5px;font-weight:500;color:var(--charcoal);}
+.div{height:1px;background:var(--gray-line);margin:26px 0;}
+.done-card{text-align:center;padding:32px 20px;}
+.done-icon{width:52px;height:52px;border-radius:50%;background:rgba(120,140,93,.12);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;}
+.done-icon svg{width:22px;height:22px;color:var(--green);}
+.done-title{font-family:"DM Serif Display",serif;font-size:21px;color:var(--charcoal);margin-bottom:5px;}
+.done-sub{font-size:12.5px;color:var(--gray-mid);line-height:1.65;max-width:380px;margin:0 auto;}
+/* Playbook-specific */
+.pb-layout{display:flex;flex:1;overflow:hidden;}
+.pb-rail{width:200px;flex-shrink:0;background:var(--white);border-right:1px solid var(--gray-line);overflow-y:auto;}
+.pb-main{flex:1;overflow-y:auto;background:var(--cream);}
+.phase-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--gray-line);cursor:pointer;transition:all .12s;background:var(--white);}
+.phase-item:hover{background:var(--cream);}
+.phase-item.active{background:rgba(217,119,87,.06);border-left:2px solid var(--orange);}
+.pni{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.pni-idle{background:rgba(20,20,19,.08);color:var(--gray-mid);}
+.pni-active{background:var(--orange);color:white;}
+.pni-done{background:var(--green);color:white;}
+.pn-name{font-size:10.5px;font-weight:500;color:var(--charcoal);}
+.pn-pct{font-size:9px;color:var(--gray-soft);margin-top:1px;}
+.pn-chev{margin-left:auto;font-size:10px;color:var(--gray-soft);}
+.phase-header{padding:14px 16px 10px;border-bottom:1px solid var(--gray-line);background:var(--white);}
+.ph-name{font-family:"DM Serif Display",serif;font-size:16px;color:var(--charcoal);margin-bottom:4px;}
+.ph-nist{font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(217,119,87,.1);color:var(--orange-dk);display:inline-block;margin-bottom:4px;}
+.ph-desc{font-size:11px;color:var(--gray-mid);line-height:1.6;}
+.task-card{margin:8px;border:1px solid var(--gray-line);border-radius:9px;overflow:hidden;background:var(--white);}
+.task-card.done{border-color:rgba(120,140,93,.3);}
+.task-header{display:flex;align-items:center;gap:9px;padding:10px 12px;cursor:pointer;}
+.task-chk{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--gray-line);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;cursor:pointer;}
+.task-chk.checked{background:var(--green);border-color:var(--green);}
+.task-title{font-size:11px;font-weight:500;color:var(--charcoal);flex:1;line-height:1.4;}
+.task-title.done-text{color:var(--green);}
+.task-tag{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(106,155,204,.1);color:#0C447C;flex-shrink:0;}
+.task-body{padding:0 12px 12px;border-top:1px solid var(--gray-line);display:none;}
+.task-body.open{display:block;}
+.task-desc{font-size:11px;color:var(--gray-mid);line-height:1.6;padding:10px 0 10px;}
+.task-owner-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.task-owner-lbl{font-size:10px;font-weight:600;color:var(--charcoal);}
+.task-owner-sel{height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-family:"DM Sans",sans-serif;font-size:10.5px;color:var(--charcoal);background:var(--cream);flex:1;cursor:pointer;}
+.task-ev-zone{border:1.5px dashed var(--gray-line);border-radius:7px;padding:10px;text-align:center;font-size:10px;color:var(--gray-soft);cursor:pointer;transition:all .13s;margin-bottom:10px;}
+.task-ev-zone:hover{border-color:var(--orange);color:var(--orange);background:rgba(217,119,87,.04);}
+.task-attest-btn{height:28px;padding:0 14px;background:var(--orange);color:white;border:none;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:background .12s;width:100%;}
+.task-attest-btn:hover{background:var(--orange-dk);}
+.task-attest-btn.attested{background:var(--green);}
+.prog-bar-wrap{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--cream);border-bottom:1px solid var(--gray-line);}
+.prog-bar-track{flex:1;height:4px;background:var(--gray-line);border-radius:2px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease;}
+.prog-bar-lbl{font-size:9px;color:var(--gray-soft);}
+.btn-pulse{animation:bpulse 1.4s ease-in-out infinite;}
+@keyframes bpulse{0%,100%{box-shadow:0 0 0 0 rgba(217,119,87,.5)}50%{box-shadow:0 0 0 5px rgba(217,119,87,0)}}
+.attest-flash{animation:aFlash .5s ease both;}
+@keyframes aFlash{0%{transform:scale(1.05)}100%{transform:scale(1)}}
+/* Phase progress chips */
+.phase-chips{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0;}
+.phase-chip{padding:4px 10px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid var(--gray-line);color:var(--gray-mid);background:var(--white);}
+.phase-chip.done{background:#EAF3DE;border-color:rgba(120,140,93,.3);color:#27500A;}
+.phase-chip.active{background:rgba(217,119,87,.1);border-color:rgba(217,119,87,.3);color:var(--orange-dk);}
+/* Summary cards */
+.sum-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;}
+.sum-card{border:1px solid var(--gray-line);border-radius:9px;padding:12px 14px;background:var(--white);}
+.sum-num{font-family:"DM Serif Display",serif;font-size:22px;margin-bottom:2px;}
+.sum-lbl{font-size:10px;color:var(--gray-soft);}
+</style>
+</head>
+<body>
+<div class="shell">
+<!-- NAV -->
+<nav class="snav">
+  <div class="snav-logo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard">
+    <div class="snav-row"><div class="snav-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/><path d="M9 12l2 2 4-4" stroke="#D97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="snav-name">Govern<span>AI</span></span></div>
+    <div class="snav-sub">Program Setup Guide</div>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-lbl">Steps</div>
+    <div class="nl active" onclick="goPanel(0)"><span class="ndot"></span>Introduction</div>
+    <div class="nl" onclick="goPanel(1)"><span class="ndot"></span>Open the Playbook</div>
+    <div class="nl" onclick="goPanel(2)"><span class="ndot"></span>The GOVERN phase</div>
+    <div class="nl" onclick="goPanel(3)"><span class="ndot"></span>Complete a task</div>
+    <div class="nl" onclick="goPanel(4)"><span class="ndot"></span>Assign owners</div>
+    <div class="nl" onclick="goPanel(5)"><span class="ndot"></span>Upload evidence</div>
+    <div class="nl" onclick="goPanel(6)"><span class="ndot"></span>MAP &amp; MEASURE phases</div>
+    <div class="nl" onclick="goPanel(7)"><span class="ndot"></span>Track maturity</div>
+  </div>
+  <div class="snav-prog">
+    <div class="spg-lbl"><span>Progress</span><span id="plbl">1 / 8</span></div>
+    <div class="spg-bar"><div class="spg-fill" id="pfill" style="width:12.5%"></div></div>
+  </div>
+</nav>
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tbl" id="tbl"><strong>Step 1 of 8</strong> &mdash; Introduction</div>
+    <div class="tbb">
+      <button class="tb-btn tb-prev" id="btnprev" onclick="prv()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back
+      </button>
+      <button class="tb-btn tb-next" id="btnnext" onclick="nxt()">Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="content">
+
+<!-- P0: INTRO -->
+<div class="panel active" id="panel-0">
+  <div class="hero">
+    <div class="eye">Interactive Guide</div>
+    <h1 class="ph-title">Governance Playbook &mdash; Program Setup</h1>
+    <p class="ph-sub">Learn how to build your AI governance program foundation using the Playbook. Complete tasks, assign owners, upload evidence, and track your program maturity across all six NIST AI RMF phases.</p>
+    <div class="ph-meta">
+      <div><div class="ph-ml">Module</div><div class="ph-mv">Governance Playbook</div></div>
+      <div><div class="ph-ml">NIST AI RMF</div><div class="ph-mv">GOVERN &rarr; MAP &rarr; MEASURE &rarr; MANAGE</div></div>
+      <div><div class="ph-ml">Total tasks</div><div class="ph-mv">35 across 6 phases</div></div>
+    </div>
+  </div>
+  <div class="pbody">
+    <div class="callout key"><div class="ci">&#127919;</div><div><div class="ct">What the Playbook does</div><div class="cd">The Governance Playbook is your program&rsquo;s project plan. It breaks the full NIST AI RMF into 35 concrete tasks across six phases. It tracks completion, stores evidence, and feeds the Program Maturity score on the Dashboard. Complete the Playbook and you have a documented, auditable AI governance program.</div></div></div>
+    <div class="callout info"><div class="ci">&#8203;&#8203;&#128161;</div><div><div class="ct">Start here &mdash; before any other module</div><div class="cd">The GOVERN phase establishes the foundations everything else depends on: your AI risk appetite, governance committee, roles, use policy, incident response procedures, and training requirements. Without these, all downstream governance activity lacks a documented mandate.</div></div></div>
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-num" style="color:var(--blue)">6</div><div class="sum-lbl">Phases</div></div>
+      <div class="sum-card"><div class="sum-num" style="color:var(--orange)">35</div><div class="sum-lbl">Total tasks</div></div>
+      <div class="sum-card"><div class="sum-num" style="color:var(--green)">20%</div><div class="sum-lbl">Maturity weight</div></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--gray-mid)">Playbook completion contributes 20% to your overall Program Maturity score. Click <strong>Next</strong> to begin.</p>
+  </div>
+</div>
+
+<!-- P1: OPEN PLAYBOOK -->
+<div class="panel" id="panel-1">
+  <div class="hero">
+    <div class="eye">Step 1</div>
+    <h1 class="ph-title">Open the Governance Playbook</h1>
+    <p class="ph-sub">Click Governance Playbook in the sidebar. The module loads with six phase tabs on the left and tasks on the right.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it</div><div class="ctxt">Click <strong>Governance Playbook</strong> in the simulator sidebar. Watch the module load with the six phases in the left rail and the GOVERN phase tasks on the right. The progress percentage next to each phase shows how many tasks are complete.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html</div></div>
+      <div class="app">
+        <div class="asb">
+          <div class="alogo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+          <div class="anl">Overview</div>
+          <div class="ani" onclick="p1nav(this,'dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>GRC Dashboard</div>
+          <div class="anl">Modules</div>
+          <div class="ani btn-pulse" id="p1-pb-nav" onclick="p1nav(this,'playbook')" style="border-left:2px solid rgba(217,119,87,.4);color:rgba(250,249,245,.55)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg>Governance Playbook</div>
+          <div class="ani" onclick="p1nav(this,'inventory')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>AI Inventory <span class="ab">7</span></div>
+          <div class="ani" onclick="p1nav(this,'risk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="ab">7</span></div>
+          <div class="ani" onclick="p1nav(this,'treat')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management <span class="ab">14</span></div>
+        </div>
+        <div class="am">
+          <div class="atb" id="p1-topbar">GRC Dashboard</div>
+          <div id="p1-pb-view" style="display:none;flex:1">
+            <div class="pb-layout">
+              <div class="pb-rail">
+                <div class="prog-bar-wrap"><div class="prog-bar-track"><div class="prog-bar-fill" id="p1-prog" style="width:0%"></div></div><div class="prog-bar-lbl" id="p1-pct">0% complete</div></div>
+                <div class="phase-item active" onclick="p1selectPhase(0)"><div class="pni pni-active">1</div><div><div class="pn-name">GOVERN</div><div class="pn-pct">0 / 6</div></div></div>
+                <div class="phase-item" onclick="p1selectPhase(1)"><div class="pni pni-idle">2</div><div><div class="pn-name">MAP 1</div><div class="pn-pct">0 / 6</div></div></div>
+                <div class="phase-item" onclick="p1selectPhase(2)"><div class="pni pni-idle">3</div><div><div class="pn-name">MAP 2</div><div class="pn-pct">0 / 6</div></div></div>
+                <div class="phase-item" onclick="p1selectPhase(3)"><div class="pni pni-idle">4</div><div><div class="pn-name">MEASURE</div><div class="pn-pct">0 / 6</div></div></div>
+                <div class="phase-item" onclick="p1selectPhase(4)"><div class="pni pni-idle">5</div><div><div class="pn-name">MANAGE 1</div><div class="pn-pct">0 / 5</div></div></div>
+                <div class="phase-item" onclick="p1selectPhase(5)"><div class="pni pni-idle">6</div><div><div class="pn-name">MANAGE 2</div><div class="pn-pct">0 / 6</div></div></div>
+              </div>
+              <div class="pb-main" id="p1-pb-main">
+                <div class="phase-header">
+                  <div class="ph-nist" id="p1-ph-nist">GOVERN</div>
+                  <div class="ph-name" id="p1-ph-name">Establish AI Governance Foundations</div>
+                  <div class="ph-desc" id="p1-ph-desc">Define your organization&#39;s AI risk appetite, governance structures, accountability roles, and the policies that will govern responsible AI use across the enterprise.</div>
+                </div>
+                <div id="p1-tasks">
+                  <div class="task-card" style="margin:8px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Define AI risk appetite and tolerance statement</div><div class="task-tag">NIST AI RMF</div></div></div>
+                  <div class="task-card" style="margin:8px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Establish an AI governance committee or body</div><div class="task-tag">NIST AI RMF</div></div></div>
+                  <div class="task-card" style="margin:8px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Assign AI governance roles and accountabilities</div><div class="task-tag">NIST AI RMF</div></div></div>
+                  <div class="task-card" style="margin:8px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Develop and publish an AI Use Policy</div><div class="task-tag">NIST AI RMF</div></div></div>
+                  <div class="task-card" style="margin:8px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Establish AI incident response and escalation procedures</div><div class="task-tag">NIST AI RMF</div></div></div>
+                  <div class="task-card" style="margin:8px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Define AI training and awareness requirements</div><div class="task-tag">NIST AI RMF</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--gray-soft);font-size:11px" id="p1-msg">&#8592; Click Governance Playbook in the sidebar</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip"><div class="ci">&#128161;</div><div><div class="ct">Reading the phase rail</div><div class="cd">Each phase shows a progress counter (done / total tasks). A number in the circle means the phase is not started. A filled orange circle means it is active. A green checkmark means all tasks in the phase are complete. Click any phase to load its tasks &mdash; you can work phases in any order.</div></div></div>
+  </div>
+</div>
+
+<!-- P2: GOVERN PHASE -->
+<div class="panel" id="panel-2">
+  <div class="hero">
+    <div class="eye">Step 2</div>
+    <h1 class="ph-title">The GOVERN phase &mdash; start here</h1>
+    <p class="ph-sub">Six tasks that establish your program&rsquo;s legal and governance foundations. Complete these before any other phase.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; click each task to expand it</div><div class="ctxt">Click on any task row below to expand it and read the full description. The task body shows what needs to be done, an owner selector, a file upload zone for evidence, and an <strong>Attest completion</strong> button.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Governance Playbook &mdash; GOVERN</div></div>
+      <div style="background:var(--cream);min-height:400px">
+        <div class="phase-header" style="background:var(--white)">
+          <div class="ph-nist">GOVERN</div>
+          <div class="ph-name">Establish AI Governance Foundations</div>
+          <div class="ph-desc">Define your organization&#39;s AI risk appetite, governance structures, accountability roles, and policies.</div>
+        </div>
+        <div id="p2-tasks">
+          <div class="task-card" id="tc-g1"><div class="task-header" onclick="p2toggle('g1')"><div class="task-chk" id="chk-g1"></div><div class="task-title" id="ttl-g1">Define AI risk appetite and tolerance statement</div><div class="task-tag">NIST AI RMF</div></div><div class="task-body" id="tbody-g1"><div class="task-desc">Document your organization&#39;s formal position on AI risk &mdash; what categories of AI use are acceptable, which require enhanced controls, and which are prohibited. This statement anchors all downstream governance decisions and is the first document a regulator will ask to see.</div><div class="task-owner-row"><div class="task-owner-lbl">Owner:</div><select class="task-owner-sel" id="owner-g1"><option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option>Chief Compliance Officer</option><option>General Counsel</option><option>Head of Compliance</option></select></div><div class="task-ev-zone" onclick="p2fakeUpload('g1')">&#128206; Drop evidence file here or click to upload &mdash; PDF, Word, Excel accepted</div><button class="task-attest-btn" id="attest-g1" onclick="p2attest('g1')">Attest completion</button></div></div>
+          <div class="task-card" id="tc-g2"><div class="task-header" onclick="p2toggle('g2')"><div class="task-chk" id="chk-g2"></div><div class="task-title" id="ttl-g2">Establish an AI governance committee or body</div><div class="task-tag">NIST AI RMF</div></div><div class="task-body" id="tbody-g2"><div class="task-desc">Designate a cross-functional AI governance body with clear terms of reference. Include representation from risk, legal, compliance, technology, and relevant business lines. Document membership, meeting cadence, and decision rights.</div><div class="task-owner-row"><div class="task-owner-lbl">Owner:</div><select class="task-owner-sel"><option>&mdash; Unassigned &mdash;</option><option selected>Chief Risk Officer</option><option>Chief Compliance Officer</option><option>General Counsel</option></select></div><div class="task-ev-zone">&#128206; Drop evidence file here or click to upload</div><button class="task-attest-btn" onclick="p2attest('g2')">Attest completion</button></div></div>
+          <div class="task-card" id="tc-g3"><div class="task-header" onclick="p2toggle('g3')"><div class="task-chk" id="chk-g3"></div><div class="task-title" id="ttl-g3">Assign AI governance roles and accountabilities</div><div class="task-tag">NIST AI RMF</div></div><div class="task-body" id="tbody-g3"><div class="task-desc">Define and formally assign AI Owner, AI Risk Officer, and AI Ethics Officer roles. Each AI system in the inventory must have a named accountable owner at the appropriate seniority level.</div><div class="task-owner-row"><div class="task-owner-lbl">Owner:</div><select class="task-owner-sel"><option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option>Chief Compliance Officer</option><option selected>General Counsel</option></select></div><div class="task-ev-zone">&#128206; Drop evidence file here or click to upload</div><button class="task-attest-btn" onclick="p2attest('g3')">Attest completion</button></div></div>
+          <div class="task-card" id="tc-g4"><div class="task-header" onclick="p2toggle('g4')"><div class="task-chk" id="chk-g4"></div><div class="task-title" id="ttl-g4">Develop and publish an AI Use Policy</div><div class="task-tag">NIST AI RMF</div></div><div class="task-body" id="tbody-g4"><div class="task-desc">Draft a policy governing how AI tools may be procured, deployed, and monitored. Address prohibited use cases, minimum control standards, and employee obligations. Obtain board or senior leadership approval.</div><div class="task-owner-row"><div class="task-owner-lbl">Owner:</div><select class="task-owner-sel"><option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option selected>Chief Compliance Officer</option></select></div><div class="task-ev-zone">&#128206; Drop evidence file here or click to upload</div><button class="task-attest-btn" onclick="p2attest('g4')">Attest completion</button></div></div>
+          <div class="task-card" id="tc-g5"><div class="task-header" onclick="p2toggle('g5')"><div class="task-chk" id="chk-g5"></div><div class="task-title" id="ttl-g5">Establish AI incident response and escalation procedures</div><div class="task-tag">NIST AI RMF</div></div><div class="task-body" id="tbody-g5"><div class="task-desc">Document procedures for identifying, reporting, escalating, and responding to AI-related incidents &mdash; including model failures, bias events, data breaches, and regulatory notifications. Align with your existing incident management framework.</div><div class="task-owner-row"><div class="task-owner-lbl">Owner:</div><select class="task-owner-sel"><option>&mdash; Unassigned &mdash;</option><option selected>CISO</option><option>Chief Risk Officer</option></select></div><div class="task-ev-zone">&#128206; Drop evidence file here or click to upload</div><button class="task-attest-btn" onclick="p2attest('g5')">Attest completion</button></div></div>
+          <div class="task-card" id="tc-g6"><div class="task-header" onclick="p2toggle('g6')"><div class="task-chk" id="chk-g6"></div><div class="task-title" id="ttl-g6">Define AI training and awareness requirements</div><div class="task-tag">NIST AI RMF</div></div><div class="task-body" id="tbody-g6"><div class="task-desc">Identify which staff require AI governance training, at what frequency, and to what depth. Establish minimum competency requirements for staff who procure, deploy, or oversee AI systems.</div><div class="task-owner-row"><div class="task-owner-lbl">Owner:</div><select class="task-owner-sel"><option>&mdash; Unassigned &mdash;</option><option selected>Chief Compliance Officer</option><option>Chief Risk Officer</option></select></div><div class="task-ev-zone">&#128206; Drop evidence file here or click to upload</div><button class="task-attest-btn" onclick="p2attest('g6')">Attest completion</button></div></div>
+        </div>
+        <div id="p2-complete-msg" style="display:none;padding:14px;text-align:center;background:rgba(120,140,93,.08);border:1px solid rgba(120,140,93,.2);border-radius:8px;margin:8px;font-size:11.5px;color:#27500A;font-weight:500">&#10003; GOVERN phase complete &mdash; all 6 tasks attested!</div>
+      </div>
+    </div>
+    <div class="callout warn"><div class="ci">&#9888;&#65039;</div><div><div class="ct">Don&rsquo;t skip the GOVERN phase</div><div class="cd">Regulators conducting AI governance examinations will ask specifically for your AI Risk Appetite Statement, Governance Committee Charter, and AI Use Policy. These are the three documents produced by GOVERN tasks g1, g2, and g4. Without them, your program has no documented mandate.</div></div></div>
+  </div>
+</div>
+
+<!-- P3: COMPLETE A TASK -->
+<div class="panel" id="panel-3">
+  <div class="hero">
+    <div class="eye">Step 3</div>
+    <h1 class="ph-title">Complete a task &mdash; step by step</h1>
+    <p class="ph-sub">Every task follows the same four-part flow: read the description, assign an owner, upload evidence, then attest completion.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; complete the AI Risk Appetite task</div><div class="ctxt">In the interactive task below: 1) Select <strong>Chief Risk Officer</strong> as the owner, 2) click the evidence zone to upload a document, 3) click <strong>Attest completion</strong>. Watch the task mark itself green and the progress counter update.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Playbook &mdash; Task: Define AI risk appetite</div></div>
+      <div style="padding:14px;background:var(--cream)">
+        <div class="task-card" id="p3-tc" style="margin:0">
+          <div class="task-header">
+            <div class="task-chk" id="p3-chk"></div>
+            <div><div class="task-title" id="p3-ttl">Define AI risk appetite and tolerance statement</div><div style="font-size:9px;color:var(--gray-soft);margin-top:2px">g1 &middot; NIST AI RMF &middot; GOVERN phase</div></div>
+            <div class="task-tag">NIST AI RMF</div>
+          </div>
+          <div class="task-body open" id="p3-body">
+            <div class="task-desc">Document your organization&#39;s formal position on AI risk &mdash; what categories of AI use are acceptable, which require enhanced controls, and which are prohibited. This statement anchors all downstream governance decisions and is the first document a regulator will ask to see.</div>
+            <div style="margin-bottom:10px">
+              <div style="font-size:10.5px;font-weight:600;color:var(--charcoal);margin-bottom:5px">Step 1 &mdash; Assign an owner <span style="color:var(--orange)">&#8592; do this first</span></div>
+              <div class="task-owner-row">
+                <div class="task-owner-lbl">Owner:</div>
+                <select class="task-owner-sel" id="p3-owner" onchange="p3check()">
+                  <option>&mdash; Unassigned &mdash;</option>
+                  <option>Chief Risk Officer</option>
+                  <option>CISO</option>
+                  <option>Chief Privacy Officer</option>
+                  <option>Chief Compliance Officer</option>
+                  <option>General Counsel</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="font-size:10.5px;font-weight:600;color:var(--charcoal);margin-bottom:5px">Step 2 &mdash; Upload evidence document</div>
+              <div class="task-ev-zone" id="p3-evzone" onclick="p3upload()">&#128206; Click to upload evidence &mdash; AI Risk Appetite Statement, Board approval memo, or policy document</div>
+              <div id="p3-ev-file" style="display:none;padding:6px 10px;background:rgba(120,140,93,.08);border:1px solid rgba(120,140,93,.2);border-radius:6px;font-size:10px;color:#27500A">&#128504; AI_Risk_Appetite_Statement_2025.pdf &mdash; 142 KB &mdash; uploaded just now</div>
+            </div>
+            <div>
+              <div style="font-size:10.5px;font-weight:600;color:var(--charcoal);margin-bottom:5px">Step 3 &mdash; Attest completion</div>
+              <button class="task-attest-btn" id="p3-attest" onclick="p3attest()" disabled style="opacity:.5">Attest completion</button>
+              <div id="p3-attested-msg" style="display:none;margin-top:8px;font-size:11px;color:var(--green);text-align:center;font-weight:500">&#10003; Task attested &mdash; marked complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div class="callout tip"><div class="ci">&#128161;</div><div><div class="ct">What counts as evidence?</div><div class="cd">Upload the actual governance document this task requires &mdash; not a summary or note. For the risk appetite task, upload the signed AI Risk Appetite Statement itself. For the governance committee task, upload the committee charter. Files under 2MB are stored within the application. For larger files, add a note in the task description field referencing where the document is stored.</div></div></div>
+    <div class="callout info"><div class="ci">&#8203;&#8203;&#9881;&#65039;</div><div><div class="ct">Auto-completion from other modules</div><div class="cd">Several Playbook tasks complete automatically when you take actions in other modules. Saving a formal Risk Assessment auto-completes the MAP 2 risk identification task and MEASURE assessment task. Saving a Vendor Due Diligence assessment completes the MAP 2 vendor review task. You don&rsquo;t need to manually check these off &mdash; they update in real time.</div></div></div>
+  </div>
+</div>
+
+<!-- P4: ASSIGN OWNERS -->
+<div class="panel" id="panel-4">
+  <div class="hero">
+    <div class="eye">Step 4</div>
+    <h1 class="ph-title">Assign owners to tasks</h1>
+    <p class="ph-sub">Every task must have a named accountable owner &mdash; not a team or committee. This creates the documented accountability trail regulators require.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; assign owners to the GOVERN tasks</div><div class="ctxt">Use the dropdowns below to assign an owner to each GOVERN task. The correct owner for each task is suggested in parentheses. Notice that different tasks have different accountability roles &mdash; the AI Use Policy belongs to Compliance, incident response belongs to the CISO, and risk appetite belongs to the CRO.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Playbook &mdash; Owner assignment</div></div>
+      <div style="padding:12px;background:var(--cream)">
+        <div style="font-size:10px;color:var(--gray-soft);margin-bottom:10px;font-style:italic">Assign an owner to each task. Each task must have a named individual, not a team.</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:10.5px;font-weight:500;color:var(--charcoal);flex:1">Define AI risk appetite and tolerance statement</div>
+            <select style="height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-size:10px;background:var(--cream);min-width:160px" onchange="p4check()">
+              <option>&mdash; Unassigned &mdash;</option><option selected>Chief Risk Officer</option><option>Chief Compliance Officer</option><option>General Counsel</option>
+            </select>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:10.5px;font-weight:500;color:var(--charcoal);flex:1">Establish an AI governance committee</div>
+            <select style="height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-size:10px;background:var(--cream);min-width:160px" onchange="p4check()">
+              <option>&mdash; Unassigned &mdash;</option><option selected>Chief Risk Officer</option><option>Chief Compliance Officer</option><option>General Counsel</option>
+            </select>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:10.5px;font-weight:500;color:var(--charcoal);flex:1">Assign AI governance roles and accountabilities</div>
+            <select style="height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-size:10px;background:var(--cream);min-width:160px" onchange="p4check()">
+              <option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option selected>General Counsel</option><option>Chief Compliance Officer</option>
+            </select>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:10.5px;font-weight:500;color:var(--charcoal);flex:1">Develop and publish an AI Use Policy</div>
+            <select style="height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-size:10px;background:var(--cream);min-width:160px" onchange="p4check()">
+              <option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option selected>Chief Compliance Officer</option><option>General Counsel</option>
+            </select>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:10.5px;font-weight:500;color:var(--charcoal);flex:1">Establish AI incident response procedures</div>
+            <select style="height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-size:10px;background:var(--cream);min-width:160px" onchange="p4check()">
+              <option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option selected>CISO</option><option>Chief Compliance Officer</option>
+            </select>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:10.5px;font-weight:500;color:var(--charcoal);flex:1">Define AI training and awareness requirements</div>
+            <select style="height:26px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-size:10px;background:var(--cream);min-width:160px" onchange="p4check()">
+              <option>&mdash; Unassigned &mdash;</option><option>Chief Risk Officer</option><option selected>Chief Compliance Officer</option><option>Head of Compliance</option>
+            </select>
+          </div>
+        </div>
+        <div id="p4-ok" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(120,140,93,.08);border:1px solid rgba(120,140,93,.2);border-radius:6px;font-size:11px;color:#27500A">&#10003; All tasks have named owners assigned</div>
+      </div>
+    </div>
+    <div class="callout warn"><div class="ci">&#9888;&#65039;</div><div><div class="ct">Owner must be a named individual, not a team</div><div class="cd">Assigning &ldquo;Risk Team&rdquo; or &ldquo;Compliance Department&rdquo; as owner creates ambiguity that regulators and auditors will flag. Each task must have a single named individual at the appropriate seniority level who is personally accountable for the activity being evidenced.</div></div></div>
+  </div>
+</div>
+
+<!-- P5: UPLOAD EVIDENCE -->
+<div class="panel" id="panel-5">
+  <div class="hero">
+    <div class="eye">Step 5</div>
+    <h1 class="ph-title">Upload evidence documents</h1>
+    <p class="ph-sub">Attach the actual governance documents to each task. These become your audit trail &mdash; the physical proof that each task was completed.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; upload evidence to a task</div><div class="ctxt">Click the evidence drop zone below to simulate uploading a document. Then try each of the four task types to see the different kinds of evidence each requires.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Playbook &mdash; Evidence upload</div></div>
+      <div style="padding:14px;background:var(--cream)">
+        <div style="font-size:10px;font-weight:600;color:var(--gray-soft);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Click a task to upload evidence</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+          <button style="height:28px;padding:0 12px;border:1px solid var(--gray-line);border-radius:7px;font-size:10.5px;background:var(--white);cursor:pointer" onclick="p5select('g1','AI Risk Appetite Statement','AI_Risk_Appetite_Statement_2025.pdf')" id="p5-btn-g1">Risk Appetite</button>
+          <button style="height:28px;padding:0 12px;border:1px solid var(--gray-line);border-radius:7px;font-size:10.5px;background:var(--white);cursor:pointer" onclick="p5select('g2','Governance Committee Charter','AI_Governance_Committee_Charter_v2.docx')" id="p5-btn-g2">Committee Charter</button>
+          <button style="height:28px;padding:0 12px;border:1px solid var(--gray-line);border-radius:7px;font-size:10.5px;background:var(--white);cursor:pointer" onclick="p5select('g4','AI Use Policy','AI_Use_Policy_Board_Approved_2025.pdf')" id="p5-btn-g4">AI Use Policy</button>
+          <button style="height:28px;padding:0 12px;border:1px solid var(--gray-line);border-radius:7px;font-size:10.5px;background:var(--white);cursor:pointer" onclick="p5select('g5','Incident Response Procedure','AI_Incident_Response_Runbook_v3.docx')" id="p5-btn-g5">Incident Response</button>
+        </div>
+        <div id="p5-task-view" style="background:var(--white);border:1px solid var(--gray-line);border-radius:9px;overflow:hidden">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--gray-line);background:var(--cream)"><div style="font-size:11px;font-weight:500;color:var(--charcoal)" id="p5-task-name">Select a task above to see its evidence zone</div></div>
+          <div style="padding:12px">
+            <div id="p5-zone" class="task-ev-zone" onclick="p5upload()" style="display:none">&#128206; Drop evidence file here or click to upload</div>
+            <div id="p5-file" style="display:none;padding:7px 10px;background:rgba(120,140,93,.08);border:1px solid rgba(120,140,93,.2);border-radius:6px;font-size:10px;color:#27500A;display:none">&#128504; <span id="p5-fname"></span> &mdash; uploaded just now</div>
+            <div id="p5-tip" style="font-size:11px;color:var(--gray-mid);line-height:1.6;margin-top:8px;display:none" id="p5-tip"></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:10px;color:var(--gray-soft)">Files under 2MB are stored within the application. For larger files, note the storage location in the task notes field.</div>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div style="border:1px solid var(--gray-line);border-radius:10px;overflow:hidden;margin-bottom:16px">
+      <div style="background:var(--charcoal);padding:9px 14px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,249,245,.5)">Evidence document guide &mdash; GOVERN phase</div>
+      <div style="font-size:11.5px">
+        <div style="padding:9px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:14px"><div style="font-weight:600;color:var(--charcoal);width:130px;flex-shrink:0">Risk appetite (g1)</div><div style="color:var(--gray-mid)">Board-approved AI Risk Appetite Statement with named risk tolerance levels and prohibited use categories. PDF format preferred.</div></div>
+        <div style="padding:9px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:14px"><div style="font-weight:600;color:var(--charcoal);width:130px;flex-shrink:0">Committee (g2)</div><div style="color:var(--gray-mid)">Governance committee charter with membership list, terms of reference, meeting cadence, and decision rights. Can be a board resolution or standing committee terms.</div></div>
+        <div style="padding:9px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:14px"><div style="font-weight:600;color:var(--charcoal);width:130px;flex-shrink:0">Roles (g3)</div><div style="color:var(--gray-mid)">Org chart or RACI showing AI Owner, AI Risk Officer, and AI Ethics Officer assignments for each registered system.</div></div>
+        <div style="padding:9px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:14px"><div style="font-weight:600;color:var(--charcoal);width:130px;flex-shrink:0">Use policy (g4)</div><div style="color:var(--gray-mid)">Published AI Use Policy with board or senior leadership approval memo attached. The policy must address prohibited uses, minimum controls, and employee obligations.</div></div>
+        <div style="padding:9px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:14px"><div style="font-weight:600;color:var(--charcoal);width:130px;flex-shrink:0">Incident response (g5)</div><div style="color:var(--gray-mid)">AI incident response runbook with defined escalation paths, notification timelines, and roles. Aligned to your existing IT incident management framework.</div></div>
+        <div style="padding:9px 14px;display:flex;gap:14px"><div style="font-weight:600;color:var(--charcoal);width:130px;flex-shrink:0">Training (g6)</div><div style="color:var(--gray-mid)">Training policy or requirements document identifying affected staff, frequency, and minimum competency standards. Can be part of the broader AI Use Policy.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P6: MAP & MEASURE -->
+<div class="panel" id="panel-6">
+  <div class="hero">
+    <div class="eye">Step 6</div>
+    <h1 class="ph-title">MAP and MEASURE phases</h1>
+    <p class="ph-sub">After GOVERN, complete MAP 1 (inventory context), MAP 2 (risk analysis), and MEASURE (testing and metrics). Many tasks auto-complete from other modules.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; click each phase to see its tasks</div><div class="ctxt">Click on a phase in the rail below to see its tasks. Notice that MAP 2 task m2a (complete risk assessments) and MEASURE task ms1 are marked <strong>Auto</strong> &mdash; they complete automatically when you save formal Risk Assessments. Vendor task m2d completes when you save VDD assessments.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Governance Playbook</div></div>
+      <div style="min-height:380px">
+        <div class="pb-layout" style="min-height:380px">
+          <div class="pb-rail">
+            <div class="prog-bar-wrap"><div class="prog-bar-track"><div class="prog-bar-fill" id="p6-prog" style="width:17%"></div></div><div class="prog-bar-lbl" id="p6-pct">6/35 complete</div></div>
+            <div class="phase-item" style="border-left:2px solid var(--green)" onclick="p6phase(0,'GOVERN','Establish AI Governance Foundations','GOVERN',6,6)"><div class="pni pni-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:11px;height:11px"><path d="M20 6L9 17l-5-5"/></svg></div><div><div class="pn-name">GOVERN</div><div class="pn-pct" style="color:var(--green)">6 / 6 &#10003;</div></div></div>
+            <div class="phase-item active" id="p6-ph-map1" onclick="p6phase(1,'MAP 1','Categorize Context &amp; Use Cases','MAP 1.1&ndash;1.7',0,6)"><div class="pni pni-active">2</div><div><div class="pn-name">MAP 1</div><div class="pn-pct">0 / 6</div></div></div>
+            <div class="phase-item" id="p6-ph-map2" onclick="p6phase(2,'MAP 2','Identify &amp; Analyze AI Risks','MAP 2.1&ndash;5.2',0,6)"><div class="pni pni-idle">3</div><div><div class="pn-name">MAP 2</div><div class="pn-pct">0 / 6</div></div></div>
+            <div class="phase-item" id="p6-ph-meas" onclick="p6phase(3,'MEASURE','Measure, Test &amp; Analyze AI Performance','MEASURE 1.1&ndash;4.2',0,6)"><div class="pni pni-idle">4</div><div><div class="pn-name">MEASURE</div><div class="pn-pct">0 / 6</div></div></div>
+            <div class="phase-item" id="p6-ph-mg1" onclick="p6phase(4,'MANAGE 1','Assign Controls &amp; Treat Risks','MANAGE 1.1&ndash;2.4',0,5)"><div class="pni pni-idle">5</div><div><div class="pn-name">MANAGE 1</div><div class="pn-pct">0 / 5</div></div></div>
+            <div class="phase-item" id="p6-ph-mg2" onclick="p6phase(5,'MANAGE 2','Monitor, Review &amp; Operationalize','MANAGE 3.1&ndash;4.2',0,6)"><div class="pni pni-idle">6</div><div><div class="pn-name">MANAGE 2</div><div class="pn-pct">0 / 6</div></div></div>
+          </div>
+          <div class="pb-main">
+            <div class="phase-header">
+              <div class="ph-nist" id="p6-ph-nist">MAP 1.1&ndash;1.7</div>
+              <div class="ph-name" id="p6-ph-name">Categorize Context &amp; Use Cases</div>
+              <div class="ph-desc" id="p6-ph-desc">Identify the organizational context, intended use cases, and affected stakeholder groups for each AI system in your inventory.</div>
+            </div>
+            <div id="p6-task-list">
+              <div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Identify all AI systems in use or under evaluation</div><div class="task-tag">NIST AI RMF</div></div></div>
+              <div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Document intended purpose and business context for each system</div><div class="task-tag">NIST AI RMF</div></div></div>
+              <div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Identify affected populations and potential harms</div><div class="task-tag">NIST AI RMF</div></div></div>
+              <div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Assess human-AI interaction and oversight level</div><div class="task-tag">NIST AI RMF</div></div></div>
+              <div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Classify AI systems by risk category</div><div class="task-tag">NIST AI RMF</div></div></div>
+              <div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk"></div><div class="task-title">Document AI supply chain and third-party dependencies</div><div class="task-tag">NIST AI RMF</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout info"><div class="ci">&#9881;&#65039;</div><div><div class="ct">Which MAP 2 and MEASURE tasks auto-complete?</div><div class="cd"><strong>m2a</strong> (complete risk assessments) and <strong>ms1</strong> (define performance metrics) auto-complete when you save a formal Risk Assessment. <strong>m2d</strong> (vendor due diligence) auto-completes when you save a VDD assessment. <strong>mg1a</strong> and <strong>mg1b</strong> (assign controls) auto-complete when you add findings to Risk Management. You only need to manually attest the tasks that require specific policy documents.</div></div></div>
+  </div>
+</div>
+
+<!-- P7: TRACK MATURITY -->
+<div class="panel" id="panel-7">
+  <div class="hero">
+    <div class="eye">Step 7</div>
+    <h1 class="ph-title">Track your program maturity</h1>
+    <p class="ph-sub">Playbook completion feeds directly into the Program Maturity score on the Dashboard &mdash; contributing 20% of the total score.</p>
+  </div>
+  <div class="pbody">
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; GRC Dashboard &mdash; Program Maturity</div></div>
+      <div style="padding:16px;background:var(--cream)">
+        <div style="background:var(--charcoal);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:20px;margin-bottom:12px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:-30px;right:-30px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.15) 0%,transparent 65%);pointer-events:none"></div>
+          <div style="position:relative;width:70px;height:70px;flex-shrink:0">
+            <svg viewBox="0 0 96 96" style="width:70px;height:70px">
+              <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="7"/>
+              <circle cx="48" cy="48" r="38" fill="none" stroke="var(--orange)" stroke-width="7" stroke-dasharray="238.8" stroke-dashoffset="119.4" stroke-linecap="round" transform="rotate(-90 48 48)"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--cream)">50%</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--cream);margin-bottom:4px">Program Maturity</div>
+            <div style="font-size:10px;color:rgba(250,249,245,.5)">Maturing program &mdash; vendor coverage and playbook completion needed</div>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:9px;padding:12px 14px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:10px">Maturity breakdown</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px"><div style="font-size:10.5px;color:var(--charcoal);width:160px;flex-shrink:0">AI Systems Assessed</div><div style="flex:1;height:6px;background:var(--gray-line);border-radius:3px;overflow:hidden"><div style="height:100%;width:86%;background:var(--blue);border-radius:3px"></div></div><div style="font-size:10px;font-weight:600;color:var(--blue);min-width:32px;text-align:right">86%</div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="font-size:10.5px;color:var(--charcoal);width:160px;flex-shrink:0">Critical Findings Resolved</div><div style="flex:1;height:6px;background:var(--gray-line);border-radius:3px;overflow:hidden"><div style="height:100%;width:33%;background:#C0634A;border-radius:3px"></div></div><div style="font-size:10px;font-weight:600;color:#C0634A;min-width:32px;text-align:right">33%</div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="font-size:10.5px;color:var(--charcoal);width:160px;flex-shrink:0">Vendor Coverage</div><div style="flex:1;height:6px;background:var(--gray-line);border-radius:3px;overflow:hidden"><div style="height:100%;width:60%;background:var(--green);border-radius:3px"></div></div><div style="font-size:10px;font-weight:600;color:var(--green);min-width:32px;text-align:right">60%</div></div>
+            <div style="display:flex;align-items:center;gap:10px;background:rgba(217,119,87,.06);border:1px solid rgba(217,119,87,.15);border-radius:6px;padding:5px 7px"><div style="font-size:10.5px;color:var(--charcoal);width:160px;flex-shrink:0;font-weight:500">Playbook Completion &#8592;</div><div style="flex:1;height:6px;background:var(--gray-line);border-radius:3px;overflow:hidden"><div style="height:100%;width:17%;background:var(--orange);border-radius:3px;transition:width .5s ease" id="p7-pb-bar"></div></div><div style="font-size:10px;font-weight:600;color:var(--orange);min-width:32px;text-align:right" id="p7-pb-pct">17%</div></div>
+          </div>
+        </div>
+        <button style="width:100%;margin-top:10px;height:30px;background:none;border:1px solid var(--gray-line);border-radius:7px;font-size:10.5px;cursor:pointer;color:var(--gray-mid)" onclick="p7simulate()">Simulate completing all GOVERN tasks &rarr; see maturity update</button>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div class="done-card">
+      <div class="done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="done-title">Program Setup guide complete!</div>
+      <div class="done-sub">You know how to navigate the Playbook, complete tasks with owners and evidence, and track your program maturity. Start with the GOVERN phase in the real application and work through each task in order.</div>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>
+</div>
+
+<script>
+var cur=0;
+var panels=document.querySelectorAll('.panel');
+var navLinks=document.querySelectorAll('.nl');
+var LABELS=['Introduction','Open the Playbook','The GOVERN phase','Complete a task','Assign owners','Upload evidence','MAP and MEASURE phases','Track maturity'];
+function goPanel(n){
+  panels[cur].classList.remove('active');navLinks[cur].classList.remove('active');
+  if(cur<n)navLinks[cur].classList.add('done');
+  cur=n;panels[cur].classList.add('active');navLinks[cur].classList.add('active');
+  document.getElementById('tbl').innerHTML='<strong>Step '+(cur+1)+' of '+panels.length+'</strong> &mdash; '+LABELS[cur];
+  document.getElementById('btnprev').disabled=cur===0;
+  var nb=document.getElementById('btnnext');
+  nb.innerHTML=cur===panels.length-1?'Finish':'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:11px;height:11px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  document.getElementById('plbl').textContent=(cur+1)+' / '+panels.length;
+  document.getElementById('pfill').style.width=((cur+1)/panels.length*100)+'%';
+  window.scrollTo(0,0);
+}
+function nxt(){if(cur<panels.length-1){goPanel(cur+1);}else{window.location.href='governai_training_center.html';}}
+function prv(){if(cur>0)goPanel(cur-1);}
+
+// P1 nav
+function p1nav(el,mod){
+  document.querySelectorAll('.ani').forEach(function(i){i.classList.remove('active');});
+  el.classList.add('active');el.style.animation='none';
+  var titles={dashboard:'GRC Dashboard',playbook:'Governance Playbook',inventory:'AI Inventory',risk:'Risk Assessment',treat:'Risk Management'};
+  document.getElementById('p1-topbar').textContent=titles[mod]||mod;
+  var v=document.getElementById('p1-pb-view');
+  var m=document.getElementById('p1-msg');
+  if(mod==='playbook'){v.style.display='flex';m.style.display='none';}
+  else{v.style.display='none';m.style.display='flex';m.textContent='← Click Governance Playbook in the sidebar';}
+}
+function p1selectPhase(idx){
+  var phases=[
+    ['GOVERN','Establish AI Governance Foundations','GOVERN'],
+    ['MAP 1.1–1.7','Categorize Context & Use Cases','MAP 1'],
+    ['MAP 2.1–5.2','Identify & Analyze AI Risks','MAP 2'],
+    ['MEASURE 1.1–4.2','Measure, Test & Analyze','MEASURE'],
+    ['MANAGE 1.1–2.4','Assign Controls & Treat Risks','MANAGE 1'],
+    ['MANAGE 3.1–4.2','Monitor, Review & Operationalize','MANAGE 2'],
+  ];
+  document.querySelectorAll('.phase-item').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.phase-item')[idx].classList.add('active');
+  document.getElementById('p1-ph-nist').textContent=phases[idx][0];
+  document.getElementById('p1-ph-name').textContent=phases[idx][1];
+}
+
+// P2 task expand/attest
+var p2done={};
+function p2toggle(tid){
+  var body=document.getElementById('tbody-'+tid);
+  if(body)body.classList.toggle('open');
+}
+function p2fakeUpload(tid){
+  alert('In the real app this opens a file picker. For this simulation, consider the evidence uploaded.');
+}
+function p2attest(tid){
+  p2done[tid]=true;
+  var chk=document.getElementById('chk-'+tid);
+  if(chk){chk.classList.add('checked');chk.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" style="width:10px;height:10px"><path d="M20 6L9 17l-5-5"/></svg>';}
+  var ttl=document.getElementById('ttl-'+tid);
+  if(ttl)ttl.classList.add('done-text');
+  var tc=document.getElementById('tc-'+tid);
+  if(tc)tc.classList.add('done');
+  var btn=document.getElementById('attest-'+tid);
+  if(btn){btn.classList.add('attested');btn.textContent='✓ Attested';}
+  var count=Object.keys(p2done).length;
+  document.getElementById('p1-prog')&&(document.getElementById('p1-prog').style.width=(count/35*100)+'%');
+  if(count>=6){
+    var msg=document.getElementById('p2-complete-msg');
+    if(msg)msg.style.display='block';
+  }
+}
+
+// P3
+var p3ev=false;
+function p3check(){
+  var owner=document.getElementById('p3-owner').value;
+  var btn=document.getElementById('p3-attest');
+  if(owner!=='— Unassigned —'&&p3ev){
+    btn.disabled=false;btn.style.opacity='1';
+  }
+}
+function p3upload(){
+  p3ev=true;
+  document.getElementById('p3-evzone').style.display='none';
+  document.getElementById('p3-ev-file').style.display='block';
+  p3check();
+}
+function p3attest(){
+  var chk=document.getElementById('p3-chk');
+  chk.classList.add('checked');
+  chk.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" style="width:10px;height:10px"><path d="M20 6L9 17l-5-5"/></svg>';
+  document.getElementById('p3-ttl').classList.add('done-text');
+  document.getElementById('p3-tc').classList.add('done');
+  document.getElementById('p3-attest').classList.add('attested');
+  document.getElementById('p3-attest').textContent='✓ Task attested';
+  document.getElementById('p3-attested-msg').style.display='block';
+}
+
+// P4
+function p4check(){
+  var sels=document.querySelectorAll('#panel-4 select');
+  var allSet=true;
+  sels.forEach(function(s){if(s.value==='— Unassigned —')allSet=false;});
+  document.getElementById('p4-ok').style.display=allSet?'block':'none';
+}
+
+// P5
+var p5EvidenceMap={
+  'g1':{name:'AI Risk Appetite Statement',file:'AI_Risk_Appetite_Statement_2025.pdf',tip:'The AI Risk Appetite Statement should be board-approved and include named tolerance levels: acceptable uses, uses requiring enhanced controls, and prohibited uses. Attach the signed version here.'},
+  'g2':{name:'Governance Committee Charter',file:'AI_Governance_Committee_Charter_v2.docx',tip:'The committee charter should include member names, terms of reference, meeting frequency, quorum requirements, and decision rights. It should be formally approved by the board or CEO.'},
+  'g4':{name:'AI Use Policy',file:'AI_Use_Policy_Board_Approved_2025.pdf',tip:'The AI Use Policy must address prohibited use cases, minimum control standards, procurement requirements, and employee obligations. Attach with the board or senior leadership approval memo.'},
+  'g5':{name:'Incident Response Procedure',file:'AI_Incident_Response_Runbook_v3.docx',tip:'The AI incident response runbook should define what constitutes an AI incident, escalation paths, notification timelines, and roles. It should be aligned to your existing IT incident management framework.'}
+};
+var p5current=null;
+var p5uploaded=false;
+function p5select(tid,name,file){
+  p5current=tid;
+  p5uploaded=false;
+  var ev=p5EvidenceMap[tid];
+  document.getElementById('p5-task-name').textContent=ev.name;
+  document.getElementById('p5-zone').style.display='block';
+  document.getElementById('p5-file').style.display='none';
+  document.getElementById('p5-tip').style.display='block';
+  document.getElementById('p5-tip').textContent=ev.tip;
+  document.querySelectorAll('#panel-5 button').forEach(function(b){b.style.background='var(--white)';b.style.borderColor='var(--gray-line)';});
+  var btn=document.getElementById('p5-btn-'+tid);
+  if(btn){btn.style.background='rgba(217,119,87,.08)';btn.style.borderColor='rgba(217,119,87,.3)';}
+}
+function p5upload(){
+  if(!p5current)return;
+  var ev=p5EvidenceMap[p5current];
+  document.getElementById('p5-zone').style.display='none';
+  document.getElementById('p5-file').style.display='block';
+  document.getElementById('p5-fname').textContent=ev.file+' — uploaded just now';
+  p5uploaded=true;
+}
+
+// P6 phase selector
+function p6phase(idx,nist,name,desc,done,total){
+  document.querySelectorAll('#panel-6 .phase-item').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('#panel-6 .phase-item')[idx].classList.add('active');
+  document.getElementById('p6-ph-nist').textContent=nist;
+  document.getElementById('p6-ph-name').textContent=name;
+  document.getElementById('p6-ph-desc').textContent=desc;
+  var tasks={
+    0:[],
+    1:['Identify all AI systems in use or under evaluation','Document intended purpose and business context for each system','Identify affected populations and potential harms','Assess human-AI interaction and oversight level','Classify AI systems by risk category','Document AI supply chain and third-party dependencies'],
+    2:['Complete structured risk assessments for all High and Medium-risk systems — AUTO when RA saved','Evaluate bias and fairness risks','Assess AI system explainability and transparency','Review AI vendor risk and third-party dependencies — AUTO when VDD saved','Document all risk findings in the treatment register — AUTO when findings added','Validate risk assessment outputs with governance committee'],
+    3:['Define performance metrics for each AI system — AUTO when RA saved','Define fairness metrics and acceptable thresholds','Conduct or obtain bias testing results','Test AI system reliability and failure modes','Establish monitoring thresholds and alert triggers','Document measurement methodology and tooling'],
+    4:['Select treatment pathways for all Critical and High findings — AUTO when findings assigned','Define and assign controls for each finding — AUTO when findings assigned','Assess control effectiveness for existing controls','Establish a vendor remediation program for VDD gaps','Document formal risk acceptance for residual risks'],
+    5:['Establish AI system review and re-assessment cadences','Integrate AI risk reporting into enterprise risk framework','Establish continuous monitoring for production AI systems','Conduct AI governance program review','Prepare AI governance documentation for regulatory examination','Publish AI governance program status report']
+  };
+  var list=tasks[idx]||[];
+  document.getElementById('p6-task-list').innerHTML=list.map(function(t){
+    var isAuto=t.includes('AUTO');
+    return '<div class="task-card" style="margin:7px"><div class="task-header"><div class="task-chk '+(isAuto?'checked':'')+'">'+(isAuto?'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" style="width:10px;height:10px"><path d="M20 6L9 17l-5-5"/></svg>':'')+'</div><div class="task-title">'+(isAuto?'<span style="color:var(--green)">'+t+'</span>':t)+'</div><div class="task-tag">'+(isAuto?'Auto':'NIST AI RMF')+'</div></div></div>';
+  }).join('');
+}
+
+// P7 simulate
+function p7simulate(){
+  document.getElementById('p7-pb-bar').style.width='34%';
+  document.getElementById('p7-pb-pct').textContent='34%';
+}
+
+goPanel(0);
+</script>
+</body>
+</html>

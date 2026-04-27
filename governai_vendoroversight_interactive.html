@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovernAI — Vendor Oversight Interactive Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#D97757;--orange-dk:#C15F3C;--charcoal:#141413;--cream:#FAF9F5;--white:#FFFFFF;--gray-soft:#B0AEA5;--gray-line:#E8E6DC;--gray-mid:#7A7870;--blue:#6A9BCC;--green:#788C5D;--sw:220px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:"DM Sans",sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+.shell{display:flex;min-height:100vh;}
+.snav{width:var(--sw);flex-shrink:0;background:var(--charcoal);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;overflow-y:auto;z-index:10;}
+.snav-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.snav-row{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+.snav-icon{width:26px;height:26px;background:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.snav-icon svg{width:14px;height:14px;}
+.snav-name{font-family:"DM Serif Display",serif;font-size:15px;color:var(--cream);}
+.snav-name span{color:var(--orange);}
+.snav-sub{font-size:8.5px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;padding-left:33px;}
+.snav-sec{padding:12px 0 4px;}
+.snav-sec-lbl{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:5px 18px 3px;}
+.nl{display:flex;align-items:center;gap:7px;padding:5px 18px;font-size:11.5px;color:rgba(250,249,245,.4);cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.nl:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.nl.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.nl.done{color:rgba(120,140,93,.75);}
+.ndot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0;}
+.nl.done .ndot{opacity:1;background:var(--green);}
+.snav-prog{padding:16px 18px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);}
+.spg-lbl{font-size:10px;color:var(--gray-soft);margin-bottom:6px;display:flex;justify-content:space-between;}
+.spg-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.spg-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease;}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;}
+.topbar{height:50px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;padding:0 36px;position:sticky;top:0;z-index:9;}
+.tbl{font-size:11px;color:var(--gray-soft);}
+.tbl strong{color:var(--charcoal);}
+.tbb{display:flex;gap:7px;}
+.tb-btn{height:30px;padding:0 13px;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;transition:all .12s;border:1px solid var(--gray-line);display:flex;align-items:center;gap:5px;}
+.tb-prev{background:var(--white);color:var(--gray-mid);}
+.tb-next{background:var(--orange);color:white;border-color:var(--orange);}
+.tb-next:hover{background:var(--orange-dk);}
+.tb-btn svg{width:11px;height:11px;}
+.content{flex:1;overflow-y:auto;}
+.panel{display:none;}.panel.active{display:block;}
+.hero{background:var(--charcoal);padding:36px 44px;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-60px;right:-40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.14) 0%,transparent 65%);pointer-events:none;}
+.eye{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.eye::before{content:"";width:14px;height:2px;background:var(--orange);}
+.ph-title{font-family:"DM Serif Display",serif;font-size:28px;color:var(--cream);line-height:1.2;margin-bottom:7px;position:relative;z-index:1;}
+.ph-sub{font-size:12.5px;color:rgba(250,249,245,.55);line-height:1.65;max-width:480px;position:relative;z-index:1;}
+.ph-meta{display:flex;gap:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);margin-top:18px;}
+.ph-ml{font-size:8.5px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;}
+.ph-mv{font-size:11.5px;color:rgba(250,249,245,.6);font-weight:500;}
+.pbody{padding:32px 44px;}
+.callout{border-radius:9px;padding:13px 15px;margin:16px 0;display:flex;gap:9px;}
+.ci{font-size:14px;flex-shrink:0;margin-top:1px;}
+.ct{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;}
+.cd{font-size:12.5px;line-height:1.65;}
+.tip{background:rgba(120,140,93,.07);border:1px solid rgba(120,140,93,.2);}.tip .ct{color:#3B6D11;}
+.warn{background:rgba(217,119,87,.07);border:1px solid rgba(217,119,87,.2);}.warn .ct{color:var(--orange-dk);}
+.info{background:rgba(106,155,204,.07);border:1px solid rgba(106,155,204,.2);}.info .ct{color:#0C447C;}
+.key{background:var(--charcoal);border:none;}.key .ct{color:var(--orange);}.key .cd{color:rgba(250,249,245,.7);}
+.coach{background:var(--charcoal);border-radius:9px;padding:12px 14px;margin:14px 0;border:1px solid rgba(255,255,255,.07);display:flex;gap:9px;}
+.coach-icon{width:26px;height:26px;flex-shrink:0;background:rgba(217,119,87,.18);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.cstep{font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:2px;}
+.ctxt{font-size:12px;color:rgba(250,249,245,.72);line-height:1.6;}
+.sim{border:1px solid var(--gray-line);border-radius:12px;overflow:hidden;background:var(--white);box-shadow:0 4px 20px rgba(0,0,0,.07);margin:18px 0;}
+.sim-bar{height:34px;background:#F0F0EE;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 11px;gap:6px;}
+.sd{width:9px;height:9px;border-radius:50%;}.sd-r{background:#FF5F57;}.sd-y{background:#FEBC2E;}.sd-g{background:#28C840;}
+.surl{flex:1;height:20px;background:var(--white);border:1px solid var(--gray-line);border-radius:4px;margin:0 9px;font-family:"DM Mono",monospace;font-size:9.5px;color:var(--gray-mid);display:flex;align-items:center;padding:0 7px;}
+.app{display:flex;min-height:340px;}
+.asb{width:178px;flex-shrink:0;background:var(--charcoal);display:flex;flex-direction:column;padding:12px 0;}
+.alogo{padding:0 13px 11px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:7px;}
+.alr{display:flex;align-items:center;gap:5px;margin-bottom:1px;}
+.ali{width:19px;height:19px;background:var(--orange);border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.ali svg{width:10px;height:10px;}
+.aln{font-family:"DM Serif Display",serif;font-size:11.5px;color:var(--cream);}.aln span{color:var(--orange);}
+.als{font-size:7px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;padding-left:24px;}
+.anl{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:4px 13px;}
+.ani{display:flex;align-items:center;gap:5px;padding:4px 13px;font-size:9.5px;color:rgba(250,249,245,.38);cursor:pointer;border-left:2px solid transparent;transition:all .1s;}
+.ani:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.ani.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.ani svg{width:9px;height:9px;flex-shrink:0;}
+.ab{margin-left:auto;font-size:7.5px;font-weight:600;background:rgba(217,119,87,.2);color:var(--orange);padding:1px 4px;border-radius:6px;}
+.am{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.atb{height:34px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 14px;font-size:10.5px;font-weight:500;color:var(--charcoal);}
+.div{height:1px;background:var(--gray-line);margin:26px 0;}
+.done-card{text-align:center;padding:32px 20px;}
+.done-icon{width:52px;height:52px;border-radius:50%;background:rgba(120,140,93,.12);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;}
+.done-icon svg{width:22px;height:22px;color:var(--green);}
+.done-title{font-family:"DM Serif Display",serif;font-size:21px;color:var(--charcoal);margin-bottom:5px;}
+.done-sub{font-size:12.5px;color:var(--gray-mid);line-height:1.65;max-width:380px;margin:0 auto;}
+/* VDD specific */
+.vdd-shell{display:flex;flex:1;overflow:hidden;}
+.vdd-left{width:260px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--gray-line);}
+.vdd-right{flex:1;overflow-y:auto;}
+.vdd-controls{padding:8px 10px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;gap:5px;flex-wrap:wrap;}
+.vpill{height:22px;padding:0 8px;border-radius:11px;font-size:9px;font-weight:600;border:1px solid var(--gray-line);background:var(--white);cursor:pointer;color:var(--gray-mid);}
+.vpill.active{background:var(--charcoal);color:var(--cream);border-color:var(--charcoal);}
+.vnew-btn{height:22px;padding:0 10px;background:var(--orange);color:white;border:none;border-radius:6px;font-family:"DM Sans",sans-serif;font-size:9px;font-weight:600;cursor:pointer;margin-left:auto;transition:all .13s;}
+.vdd-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--gray-line);cursor:pointer;background:var(--white);transition:all .12s;}
+.vdd-row:hover{background:var(--cream);}
+.vdd-row.selected{background:rgba(217,119,87,.06);border-left:3px solid var(--orange);}
+.vdd-row-bar{width:3px;height:26px;border-radius:2px;flex-shrink:0;}
+.vb-pend{background:var(--gray-soft);}.vb-appr{background:var(--green);}.vb-flag{background:#C0634A;}.vb-part{background:var(--orange);}
+.vdd-row-name{font-size:10px;font-weight:500;color:var(--charcoal);flex:1;}
+.vdd-row-tools{font-size:8.5px;color:var(--gray-soft);}
+.vdd-score{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;flex-shrink:0;}
+.vs-na{background:rgba(176,174,165,.2);color:#4A4A46;}
+.vs-appr{background:#EAF3DE;color:#27500A;}
+.vs-flag{background:#FCEBEB;color:#A32D2D;}
+.vs-part{background:#FAEEDA;color:#633806;}
+.vdd-status{font-size:8.5px;font-weight:600;padding:1px 6px;border-radius:3px;flex-shrink:0;}
+.vsb-pend{background:rgba(176,174,165,.2);color:#4A4A46;}
+.vsb-appr{background:#EAF3DE;color:#27500A;}
+.vsb-flag{background:#FCEBEB;color:#A32D2D;}
+.vsb-part{background:#FAEEDA;color:#633806;}
+.vdd-detail-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-soft);font-size:11px;padding:20px;text-align:center;}
+/* Wiz */
+.wiz-ov{display:none;position:absolute;inset:0;background:rgba(20,20,19,.5);align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+.wiz-ov.open{display:flex;}
+.wiz-modal{background:var(--white);border-radius:12px;width:500px;max-height:88%;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 56px rgba(0,0,0,.28);animation:mu .22s ease both;}
+@keyframes mu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.wiz-hdr{padding:14px 18px;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.wiz-title{font-family:"DM Serif Display",serif;font-size:16px;color:var(--charcoal);}
+.wiz-slbl{font-size:9.5px;color:var(--gray-soft);}
+.wiz-close{width:22px;height:22px;border:1px solid var(--gray-line);border-radius:5px;background:none;cursor:pointer;font-size:11px;}
+.wiz-tabs{display:flex;border-bottom:1px solid var(--gray-line);flex-shrink:0;}
+.wtab{flex:1;height:30px;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:500;color:var(--gray-soft);border-right:1px solid var(--gray-line);background:var(--cream);}
+.wtab:last-child{border-right:none;}
+.wtab.active{background:var(--white);color:var(--orange);font-weight:600;}
+.wtab.done{background:var(--white);color:var(--green);}
+.wiz-body{padding:16px 18px;overflow-y:auto;flex:1;}
+.wiz-foot{padding:10px 18px;border-top:1px solid var(--gray-line);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.wiz-note{font-size:10px;color:var(--orange-dk);}
+.wbtn-b{height:28px;padding:0 12px;background:none;border:1px solid var(--gray-line);border-radius:7px;font-family:"DM Sans",sans-serif;font-size:10.5px;cursor:pointer;color:var(--gray-mid);}
+.wbtn-n{height:28px;padding:0 14px;background:var(--orange);border:none;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:10.5px;font-weight:600;color:white;cursor:pointer;}
+.wbtn-n:hover{background:var(--orange-dk);}
+.wbtn-n:disabled{background:var(--gray-line);color:var(--gray-soft);cursor:not-allowed;}
+/* Domain cards */
+.dom-card{border:1px solid var(--gray-line);border-radius:8px;margin-bottom:10px;overflow:hidden;}
+.dom-card-hdr{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;background:var(--cream);cursor:pointer;}
+.dom-card-name{font-size:11.5px;font-weight:600;color:var(--charcoal);}
+.dom-card-prog{font-size:9px;color:var(--gray-soft);}
+.dom-prog-bar{height:3px;background:var(--gray-line);margin:0 12px 10px;border-radius:2px;overflow:hidden;}
+.dom-prog-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .3s;}
+.q-row{display:flex;align-items:flex-start;gap:10px;padding:7px 12px;border-bottom:1px solid var(--gray-line);}
+.q-row:last-child{border-bottom:none;}
+.q-text{font-size:10.5px;color:var(--charcoal);flex:1;line-height:1.5;}
+.q-btns{display:flex;gap:3px;flex-shrink:0;}
+.q-btn{height:22px;padding:0 7px;border-radius:5px;font-size:9px;font-weight:600;border:1px solid var(--gray-line);background:var(--white);cursor:pointer;transition:all .1s;}
+.q-btn:hover{border-color:var(--gray-soft);}
+.q-btn.yes{background:#EAF3DE;border-color:rgba(120,140,93,.3);color:#27500A;}
+.q-btn.partial{background:#FAEEDA;border-color:rgba(217,119,87,.3);color:#633806;}
+.q-btn.no{background:#FCEBEB;border-color:rgba(192,99,74,.2);color:#A32D2D;}
+/* Contract checklist */
+.contract-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-bottom:1px solid var(--gray-line);}
+.contract-item:last-child{border-bottom:none;}
+.contract-chk{width:16px;height:16px;border:1.5px solid var(--gray-line);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .13s;}
+.contract-chk.checked{background:var(--green);border-color:var(--green);}
+.contract-label{font-size:11px;font-weight:600;color:var(--charcoal);margin-bottom:2px;}
+.contract-desc{font-size:10px;color:var(--gray-mid);}
+.contract-req{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(217,119,87,.1);color:var(--orange-dk);margin-left:5px;}
+/* Score ring */
+.score-ring-wrap{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--cream);border-radius:9px;margin-bottom:12px;}
+.score-ring{position:relative;width:64px;height:64px;flex-shrink:0;}
+.score-ring svg{width:64px;height:64px;}
+.score-ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+/* Detail panel */
+.vdet-hdr{padding:12px 14px;border-bottom:1px solid var(--gray-line);}
+.vdet-name{font-size:13px;font-weight:600;color:var(--charcoal);}
+.vdet-sub{font-size:9.5px;color:var(--gray-soft);}
+.dom-bar-row{margin-bottom:8px;}
+.dom-bar-top{display:flex;justify-content:space-between;margin-bottom:3px;}
+.dom-bar-name{font-size:10px;font-weight:500;color:var(--charcoal);}
+.dom-bar-score{font-size:10px;font-weight:600;}
+.dom-bar{height:5px;background:var(--gray-line);border-radius:3px;overflow:hidden;}
+.dom-bar-fill{height:100%;border-radius:3px;}
+.gap-item{border-radius:7px;padding:8px 10px;margin-bottom:6px;border:1px solid;}
+.gap-crit{background:#FCEBEB;border-color:rgba(192,99,74,.2);}
+.gap-high{background:#FAEEDA;border-color:rgba(217,119,87,.2);}
+.gap-med{background:rgba(106,155,204,.08);border-color:rgba(106,155,204,.2);}
+.gap-sev{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:6px;}
+.sev-c{background:#FCEBEB;color:#A32D2D;}.sev-h{background:#FAEEDA;color:#633806;}.sev-m{background:rgba(106,155,204,.12);color:#0C447C;}
+.draft-banner{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(106,155,204,.08);border:1px solid rgba(106,155,204,.2);border-radius:7px;margin-bottom:10px;font-size:10.5px;color:#0C447C;}
+.draft-resume{height:24px;padding:0 10px;background:var(--blue);color:white;border:none;border-radius:5px;font-size:9.5px;font-weight:600;cursor:pointer;margin-left:auto;}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="snav">
+  <div class="snav-logo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard">
+    <div class="snav-row"><div class="snav-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/><path d="M9 12l2 2 4-4" stroke="#D97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="snav-name">Govern<span>AI</span></span></div>
+    <div class="snav-sub">Vendor Oversight Guide</div>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-lbl">Steps</div>
+    <div class="nl active" onclick="goPanel(0)"><span class="ndot"></span>Introduction</div>
+    <div class="nl" onclick="goPanel(1)"><span class="ndot"></span>The VDD module</div>
+    <div class="nl" onclick="goPanel(2)"><span class="ndot"></span>Start an assessment</div>
+    <div class="nl" onclick="goPanel(3)"><span class="ndot"></span>Six domain questions</div>
+    <div class="nl" onclick="goPanel(4)"><span class="ndot"></span>Contract checklist</div>
+    <div class="nl" onclick="goPanel(5)"><span class="ndot"></span>Review score &amp; gaps</div>
+    <div class="nl" onclick="goPanel(6)"><span class="ndot"></span>Save draft &amp; resume</div>
+    <div class="nl" onclick="goPanel(7)"><span class="ndot"></span>Vendor scorecard</div>
+  </div>
+  <div class="snav-prog">
+    <div class="spg-lbl"><span>Progress</span><span id="plbl">1 / 8</span></div>
+    <div class="spg-bar"><div class="spg-fill" id="pfill" style="width:12.5%"></div></div>
+  </div>
+</nav>
+<div class="main">
+  <div class="topbar">
+    <div class="tbl" id="tbl"><strong>Step 1 of 8</strong> &mdash; Introduction</div>
+    <div class="tbb">
+      <button class="tb-btn tb-prev" id="btnprev" onclick="prv()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
+      <button class="tb-btn tb-next" id="btnnext" onclick="nxt()">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+  <div class="content">
+
+<!-- P0 INTRO -->
+<div class="panel active" id="panel-0">
+  <div class="hero">
+    <div class="eye">Interactive Guide</div>
+    <h1 class="ph-title">Vendor Oversight &mdash; Due Diligence</h1>
+    <p class="ph-sub">Learn how to assess every AI vendor using the 53-question six-domain framework, review the contract checklist, interpret the score, and identify governance gaps.</p>
+    <div class="ph-meta">
+      <div><div class="ph-ml">Module</div><div class="ph-mv">Vendor Due Diligence</div></div>
+      <div><div class="ph-ml">NIST AI RMF</div><div class="ph-mv">MAP 5.1 &middot; MEASURE 2.5</div></div>
+      <div><div class="ph-ml">Questions</div><div class="ph-mv">53 across 6 domains</div></div>
+    </div>
+  </div>
+  <div class="pbody">
+    <div class="callout key"><div class="ci">&#127919;</div><div><div class="ct">Why vendor oversight matters</div><div class="cd">Most organizations use AI built by third parties. If a vendor&rsquo;s model produces biased outputs, suffers a breach, or fails unexpectedly, your organization bears the governance and regulatory consequences. The VDD module gives you a structured, documented way to evaluate every vendor&rsquo;s AI governance posture and identify contractual gaps before they become incidents.</div></div></div>
+    <div class="callout info"><div class="ci">&#128161;</div><div><div class="ct">Vendors are created automatically</div><div class="cd">You don&rsquo;t need to manually add vendors. GovernAI reads the Vendor field from every registered AI system and creates a vendor record automatically. Every unique vendor name in your Inventory appears in VDD as a pending record ready for assessment.</div></div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0">
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:12px 14px;background:var(--white)"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--blue);margin-bottom:2px">6</div><div style="font-size:10px;color:var(--gray-soft)">Assessment domains</div></div>
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:12px 14px;background:var(--white)"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--orange);margin-bottom:2px">53</div><div style="font-size:10px;color:var(--gray-soft)">Domain questions</div></div>
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:12px 14px;background:var(--white)"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--green);margin-bottom:2px">7</div><div style="font-size:10px;color:var(--gray-soft)">Required contract provisions</div></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--gray-mid)">The score formula is: <strong>Average domain score &times; 70% + Contract provisions met &times; 30%</strong>. Scores 75+ = Approved, 50&ndash;74 = Conditional, below 50 = Flagged.</p>
+  </div>
+</div>
+
+<!-- P1 VDD MODULE -->
+<div class="panel" id="panel-1">
+  <div class="hero">
+    <div class="eye">Step 1</div>
+    <h1 class="ph-title">The Vendor Due Diligence module</h1>
+    <p class="ph-sub">Navigate to VDD, explore the vendor list, and understand what each status means before starting an assessment.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it</div><div class="ctxt">Click <strong>Vendor Due Diligence</strong> in the sidebar. The list shows all vendors from your Inventory. Click any vendor row to see its detail panel on the right. Click <strong>Internal</strong> (our new vendor from the Churn Predictor registration) to see its pending state.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html</div></div>
+      <div class="app">
+        <div class="asb">
+          <div class="alogo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+          <div class="anl">Modules</div>
+          <div class="ani" onclick="p1nav(this,'inventory')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>AI Inventory <span class="ab">7</span></div>
+          <div class="ani" onclick="p1nav(this,'risk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="ab">7</span></div>
+          <div class="ani" id="p1-vdd-nav" onclick="p1nav(this,'vdd')" style="animation:bpulse 1.4s ease-in-out infinite;border-left:2px solid rgba(217,119,87,.4);color:rgba(250,249,245,.55)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence <span class="ab">2</span></div>
+          <div class="ani" onclick="p1nav(this,'treat')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management <span class="ab">14</span></div>
+        </div>
+        <div class="am">
+          <div class="atb" id="p1-topbar">GRC Dashboard</div>
+          <div id="p1-vdd-view" style="display:none;flex:1">
+            <div class="vdd-shell">
+              <div class="vdd-left">
+                <div style="display:flex;gap:12px;padding:8px 10px;background:var(--white);border-bottom:1px solid var(--gray-line)">
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--orange)">5</div><div style="font-size:8px;color:var(--gray-soft)">vendors</div></div>
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--green)">4</div><div style="font-size:8px;color:var(--gray-soft)">assessed</div></div>
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:18px;color:#C0634A">0</div><div style="font-size:8px;color:var(--gray-soft)">flagged</div></div>
+                </div>
+                <div class="vdd-controls"><button class="vpill active">All</button><button class="vpill">Pending</button><button class="vnew-btn">+ New assessment</button></div>
+                <div>
+                  <div class="vdd-row" onclick="p1sel(this,'Zest AI','1 system','72/100','Conditional')"><div class="vdd-row-bar vb-part"></div><div class="vdd-row-name">Zest AI</div><div class="vdd-row-tools">1 system</div><div class="vdd-score vs-part">72/100</div><div class="vdd-status vsb-part">Conditional</div></div>
+                  <div class="vdd-row" onclick="p1sel(this,'GitHub (Microsoft)','1 system','81/100','Approved')"><div class="vdd-row-bar vb-appr"></div><div class="vdd-row-name">GitHub (Microsoft)</div><div class="vdd-row-tools">1 system</div><div class="vdd-score vs-appr">81/100</div><div class="vdd-status vsb-appr">Approved</div></div>
+                  <div class="vdd-row" onclick="p1sel(this,'Featurespace','1 system','88/100','Approved')"><div class="vdd-row-bar vb-appr"></div><div class="vdd-row-name">Featurespace</div><div class="vdd-row-tools">1 system</div><div class="vdd-score vs-appr">88/100</div><div class="vdd-status vsb-appr">Approved</div></div>
+                  <div class="vdd-row" onclick="p1sel(this,'HireVue','1 system','58/100','Conditional')"><div class="vdd-row-bar vb-part"></div><div class="vdd-row-name">HireVue</div><div class="vdd-row-tools">1 system</div><div class="vdd-score vs-part">58/100</div><div class="vdd-status vsb-part">Conditional</div></div>
+                  <div class="vdd-row" id="p1-internal-row" onclick="p1sel(this,'Internal','1 system','Not assessed','Pending')"><div class="vdd-row-bar vb-pend"></div><div class="vdd-row-name">Internal</div><div class="vdd-row-tools">1 system</div><div class="vdd-score vs-na">Not assessed</div><div class="vdd-status vsb-pend">Pending</div></div>
+                </div>
+              </div>
+              <div class="vdd-right" id="p1-vdd-right"><div class="vdd-detail-empty">&larr; Click a vendor to see their scorecard</div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--gray-soft);font-size:11px" id="p1-msg">&larr; Click Vendor Due Diligence in the sidebar</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip"><div class="ci">&#128161;</div><div><div class="ct">Score thresholds</div><div class="cd"><strong>75&ndash;100 = Approved</strong> &mdash; vendor meets minimum governance standards, continue with annual review. <strong>50&ndash;74 = Conditional</strong> &mdash; material gaps exist, use at measured risk while pursuing remediation. <strong>Below 50 = Flagged</strong> &mdash; significant failures, escalate to senior management and consider vendor replacement.</div></div></div>
+  </div>
+</div>
+
+<!-- P2 START ASSESSMENT -->
+<div class="panel" id="panel-2">
+  <div class="hero">
+    <div class="eye">Step 2</div>
+    <h1 class="ph-title">Start a vendor assessment</h1>
+    <p class="ph-sub">Click &ldquo;+ New assessment&rdquo; or &ldquo;Begin assessment&rdquo; to open the four-step wizard. Select the vendor and proceed.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; open the wizard and select Internal</div><div class="ctxt">Click <strong>+ New assessment</strong> below to open the wizard. Select <strong>Internal</strong> (our Customer Churn Predictor vendor) from the list. Notice it shows &ldquo;Not assessed&rdquo; &mdash; no prior assessment exists. Click Next to proceed to the domain questions.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Vendor Due Diligence</div></div>
+      <div style="position:relative;min-height:360px">
+        <div class="app" style="min-height:360px">
+          <div class="asb">
+            <div class="alogo"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+            <div class="ani active" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence <span class="ab">2</span></div>
+          </div>
+          <div class="am">
+            <div class="atb">Vendor Due Diligence</div>
+            <div class="vdd-shell" style="flex:1">
+              <div class="vdd-left">
+                <div class="vdd-controls"><button class="vpill active">All</button><button class="vnew-btn" onclick="p2openWiz()">+ New assessment</button></div>
+                <div>
+                  <div class="vdd-row"><div class="vdd-row-bar vb-part"></div><div class="vdd-row-name">Zest AI</div><div class="vdd-score vs-part">72/100</div></div>
+                  <div class="vdd-row"><div class="vdd-row-bar vb-appr"></div><div class="vdd-row-name">GitHub (Microsoft)</div><div class="vdd-score vs-appr">81/100</div></div>
+                  <div class="vdd-row" style="background:rgba(217,119,87,.05);border-left:2px solid var(--orange)"><div class="vdd-row-bar vb-pend"></div><div class="vdd-row-name">Internal</div><div class="vdd-score vs-na">Not assessed &mdash; click New assessment</div></div>
+                </div>
+              </div>
+              <div class="vdd-right"><div class="vdd-detail-empty">Select a vendor or click + New assessment to begin</div></div>
+            </div>
+            <!-- Wizard -->
+            <div class="wiz-ov" id="p2-wiz">
+              <div class="wiz-modal">
+                <div class="wiz-hdr"><div class="wiz-title">New Vendor Assessment</div><div class="wiz-slbl">Step 1 of 4</div><button class="wiz-close" onclick="p2closeWiz()">&#10005;</button></div>
+                <div class="wiz-tabs"><div class="wtab active">Select vendor</div><div class="wtab">Domain scores</div><div class="wtab">Contract review</div><div class="wtab">Results</div></div>
+                <div class="wiz-body">
+                  <div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px">Select the vendor to assess. Vendors are drawn from your AI Inventory.</div>
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--gray-line);border-radius:7px;cursor:pointer;background:var(--white)" onclick="p2sel(this,false)"><div style="width:3px;height:22px;border-radius:2px;background:var(--orange);flex-shrink:0"></div><div style="flex:1"><div style="font-size:10.5px;font-weight:500">Zest AI</div><div style="font-size:9px;color:var(--gray-soft)">1 AI system &middot; Last assessed: Mar 2025</div></div><div style="font-size:9px;color:var(--green);font-weight:500">&#10003; Assessed</div></div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--gray-line);border-radius:7px;cursor:pointer;background:var(--white)" onclick="p2sel(this,false)"><div style="width:3px;height:22px;border-radius:2px;background:var(--green);flex-shrink:0"></div><div style="flex:1"><div style="font-size:10.5px;font-weight:500">GitHub (Microsoft)</div><div style="font-size:9px;color:var(--gray-soft)">1 AI system &middot; Last assessed: Feb 2025</div></div><div style="font-size:9px;color:var(--green);font-weight:500">&#10003; Assessed</div></div>
+                    <div id="p2-internal-opt" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--gray-line);border-radius:7px;cursor:pointer;background:var(--white)" onclick="p2sel(this,true)"><div style="width:3px;height:22px;border-radius:2px;background:var(--gray-soft);flex-shrink:0"></div><div style="flex:1"><div style="font-size:10.5px;font-weight:500">Internal</div><div style="font-size:9px;color:var(--gray-soft)">1 AI system &middot; <em style="color:var(--orange-dk)">Not yet assessed</em></div></div></div>
+                  </div>
+                </div>
+                <div class="wiz-foot"><div class="wiz-note" id="p2-note">Select a vendor to continue</div><div style="display:flex;gap:7px"><button class="wbtn-b" style="visibility:hidden">Back</button><button class="wbtn-n" id="p2-next" onclick="p2next()" disabled>Next &rarr;</button></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip"><div class="ci">&#128161;</div><div><div class="ct">Gather vendor documentation before starting</div><div class="cd">The 53 questions require evidence from your vendor: their SOC 2 Type II report, model cards, penetration test results, DPA/BAA documentation, bias audit reports, and SLA terms. Gather these before starting the assessment so you can answer accurately. Use <strong>Save draft</strong> if you need to pause mid-way.</div></div></div>
+  </div>
+</div>
+
+<!-- P3 SIX DOMAIN QUESTIONS -->
+<div class="panel" id="panel-3">
+  <div class="hero">
+    <div class="eye">Step 3</div>
+    <h1 class="ph-title">Six-domain assessment questions</h1>
+    <p class="ph-sub">Answer Yes, Partial, or No for each of the 53 questions across six governance domains. Every question must be answered before proceeding.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; answer the domain questions</div><div class="ctxt">Click <strong>Yes</strong>, <strong>Partial</strong>, or <strong>No</strong> for each question in each domain. For the Customer Churn Predictor (an internally built model), most Model Governance and Security questions will be <strong>Partial</strong> since internal teams rarely have the same formal documentation as commercial vendors.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; VDD Wizard &mdash; Step 2: Domain scores</div></div>
+      <div style="min-height:480px;background:rgba(20,20,19,.3);display:flex;align-items:flex-start;justify-content:center;padding:14px">
+        <div class="wiz-modal" style="position:relative;animation:none;max-width:480px;width:100%">
+          <div class="wiz-hdr"><div class="wiz-title">Domain scores &mdash; Internal</div><div class="wiz-slbl" id="p3-progress">0 / 53 answered</div><button class="wiz-close">&#10005;</button></div>
+          <div class="wiz-tabs"><div class="wtab done">&#10003; Select</div><div class="wtab active">Domain scores</div><div class="wtab">Contract review</div><div class="wtab">Results</div></div>
+          <div class="wiz-body" style="max-height:380px" id="p3-body">
+          </div>
+          <div class="wiz-foot"><div class="wiz-note" id="p3-note">Answer all 53 questions to continue</div><div style="display:flex;gap:7px"><button class="wbtn-b">&#8592; Back</button><button class="wbtn-n" id="p3-next" disabled onclick="alert('In the real app this advances to the Contract review step.')">Next &rarr;</button></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><div class="ci">&#9888;&#65039;</div><div><div class="ct">Yes requires evidence, not just belief</div><div class="cd"><strong>Yes</strong> means you have documented evidence available &mdash; a report, certification, test result, or contractual provision you can produce if asked. <strong>Partial</strong> means some evidence exists but gaps remain. <strong>No</strong> means the control is not in place. Answering Yes without evidence creates a false picture of vendor governance that will fail under regulatory scrutiny.</div></div></div>
+    <div class="div"></div>
+    <div style="border:1px solid var(--gray-line);border-radius:10px;overflow:hidden;margin-bottom:16px">
+      <div style="background:var(--charcoal);padding:9px 14px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,249,245,.5)">Six assessment domains</div>
+      <div style="font-size:11.5px">
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px;align-items:baseline"><div style="font-weight:600;color:var(--charcoal);width:160px;flex-shrink:0">Model Governance (8)</div><div style="color:var(--gray-mid)">Model lifecycle management, validation, change control, version tracking, and model cards.</div></div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px;align-items:baseline"><div style="font-weight:600;color:var(--charcoal);width:160px;flex-shrink:0">Data Handling (9)</div><div style="color:var(--gray-mid)">DPA/BAA coverage, training data prohibition, sub-processor disclosure, data residency, encryption, and deletion rights.</div></div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px;align-items:baseline"><div style="font-weight:600;color:var(--charcoal);width:160px;flex-shrink:0">Security (10)</div><div style="color:var(--gray-mid)">SOC 2 Type II, penetration testing, AI-specific attacks (prompt injection, model inversion), vulnerability management.</div></div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px;align-items:baseline"><div style="font-weight:600;color:var(--charcoal);width:160px;flex-shrink:0">Transparency (8)</div><div style="color:var(--gray-mid)">Instance-level explainability, audit trails, model cards, version history, and decision contestability.</div></div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px;align-items:baseline"><div style="font-weight:600;color:var(--charcoal);width:160px;flex-shrink:0">Business Continuity (8)</div><div style="color:var(--gray-mid)">SLAs with financial penalties, tested BCP/DR, geographic redundancy, defined RTO/RPO, and data portability.</div></div>
+        <div style="padding:8px 14px;display:flex;gap:12px;align-items:baseline"><div style="font-weight:600;color:var(--charcoal);width:160px;flex-shrink:0">Fairness &amp; Bias (10)</div><div style="color:var(--gray-mid)">Independent disparate impact testing, multiple fairness metrics, production bias monitoring, intersectional bias evaluation.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P4 CONTRACT CHECKLIST -->
+<div class="panel" id="panel-4">
+  <div class="hero">
+    <div class="eye">Step 4</div>
+    <h1 class="ph-title">Contract provision checklist</h1>
+    <p class="ph-sub">Check which of the 10 AI-specific contract provisions are present in your vendor agreement. 7 are required, 3 are optional best practice.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; review the contract provisions</div><div class="ctxt">Check the provisions that are present in your contract with the Internal team (or the vendor whose contract you have open). For an internally built system, most of these will be <strong>missing</strong> since internal policies rarely have the same specificity as third-party contracts. Note which Required items are unchecked &mdash; those become Critical gaps in your scorecard.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; VDD Wizard &mdash; Step 3: Contract review</div></div>
+      <div style="min-height:400px;background:rgba(20,20,19,.3);display:flex;align-items:flex-start;justify-content:center;padding:14px">
+        <div class="wiz-modal" style="position:relative;animation:none;max-width:480px;width:100%">
+          <div class="wiz-hdr"><div class="wiz-title">Contract review &mdash; Internal</div><div class="wiz-slbl">Step 3 of 4</div><button class="wiz-close">&#10005;</button></div>
+          <div class="wiz-tabs"><div class="wtab done">&#10003; Select</div><div class="wtab done">&#10003; Domain scores</div><div class="wtab active">Contract review</div><div class="wtab">Results</div></div>
+          <div class="wiz-body" style="max-height:340px">
+            <div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px">Check each provision that is present in your current vendor contract or internal policy documentation.</div>
+            <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:8px;overflow:hidden">
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Training data prohibition <span class="contract-req">Required</span></div><div class="contract-desc">Vendor may not use customer data to train or fine-tune models without explicit written consent</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Model change notification <span class="contract-req">Required</span></div><div class="contract-desc">Minimum 30 days notice before material model changes go live</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Explainability obligation <span class="contract-req">Required</span></div><div class="contract-desc">Vendor must provide decision-level explanations of AI outputs on request</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">IP ownership of outputs <span class="contract-req">Required</span></div><div class="contract-desc">Customer owns all outputs generated using customer data</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Audit rights <span class="contract-req">Required</span></div><div class="contract-desc">Customer has the right to audit vendor AI practices and controls</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Sub-processor disclosure <span class="contract-req">Required</span></div><div class="contract-desc">All sub-processors in the AI delivery chain must be disclosed</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Data deletion / exit terms <span class="contract-req">Required</span></div><div class="contract-desc">All customer data deleted within 30 days of contract termination</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Bias audit requirement <span style="font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.18);color:var(--gray-mid);margin-left:5px">Optional</span></div><div class="contract-desc">Annual third-party bias audit required by contract</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">SLA with financial penalties <span style="font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.18);color:var(--gray-mid);margin-left:5px">Optional</span></div><div class="contract-desc">Defined uptime SLAs with financial remedies for breach</div></div></div>
+              <div class="contract-item" onclick="p4toggle(this)"><div class="contract-chk"></div><div><div class="contract-label">Regulatory cooperation clause <span style="font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.18);color:var(--gray-mid);margin-left:5px">Optional</span></div><div class="contract-desc">Vendor agrees to cooperate with regulatory examinations</div></div></div>
+            </div>
+            <div id="p4-gap-msg" style="display:none;margin-top:10px;padding:8px 10px;background:#FCEBEB;border:1px solid rgba(192,99,74,.2);border-radius:6px;font-size:10.5px;color:#A32D2D">&#9888; Missing Required provisions will generate Critical gap findings in your scorecard</div>
+          </div>
+          <div class="wiz-foot"><div class="wiz-note" id="p4-note"><span id="p4-checked">0</span>/10 provisions checked</div><div style="display:flex;gap:7px"><button class="wbtn-b">&#8592; Back</button><button class="wbtn-n" onclick="alert('In the real app this advances to the Results step showing your overall score and identified gaps.')">Next &rarr;</button></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><div class="ci">&#9888;&#65039;</div><div><div class="ct">Each missing Required provision = one Critical gap finding</div><div class="cd">Required provisions that are not present in your contract generate Critical-severity gaps in the scorecard. These gaps flow automatically into the Risk Management register as findings assigned to your vendor record. They should be prioritized for inclusion at the next contract renewal or amendment.</div></div></div>
+  </div>
+</div>
+
+<!-- P5 SCORE & GAPS -->
+<div class="panel" id="panel-5">
+  <div class="hero">
+    <div class="eye">Step 5</div>
+    <h1 class="ph-title">Review score and gap analysis</h1>
+    <p class="ph-sub">The results step shows your overall score, vendor status tier, and the most significant governance gaps identified.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Review the results screen</div><div class="ctxt">The simulator shows what the results step looks like for a Conditional-scoring vendor. The score ring, tier, and top gaps are shown before you save. Review these carefully &mdash; once you save, the gaps flow into Risk Management as findings.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; VDD Wizard &mdash; Step 4: Results</div></div>
+      <div style="min-height:400px;background:rgba(20,20,19,.3);display:flex;align-items:flex-start;justify-content:center;padding:14px">
+        <div class="wiz-modal" style="position:relative;animation:none;max-width:480px;width:100%">
+          <div class="wiz-hdr"><div class="wiz-title">Results &mdash; Internal</div><div class="wiz-slbl">Step 4 of 4</div><button class="wiz-close">&#10005;</button></div>
+          <div class="wiz-tabs"><div class="wtab done">&#10003; Select</div><div class="wtab done">&#10003; Domain scores</div><div class="wtab done">&#10003; Contract review</div><div class="wtab active">Results</div></div>
+          <div class="wiz-body" style="max-height:340px">
+            <div class="score-ring-wrap">
+              <div class="score-ring">
+                <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="7"/><circle cx="48" cy="48" r="38" fill="none" stroke="var(--orange)" stroke-width="7" stroke-dasharray="238.8" stroke-dashoffset="95.5" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg>
+                <div class="score-ring-lbl"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--orange)">60</div><div style="font-size:8px;color:var(--gray-soft)">/100</div></div>
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--orange-dk);margin-bottom:3px">Conditional approval</div>
+                <div style="font-size:10px;color:var(--gray-mid)">Score: 60/100 &middot; Use at measured risk while pursuing remediation of identified gaps</div>
+              </div>
+            </div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px">Top gaps identified</div>
+            <div class="gap-item gap-crit"><span class="gap-sev sev-c">Critical</span><strong style="font-size:10px">Data handling protections inadequate</strong><div style="font-size:9.5px;color:var(--gray-mid);margin-top:3px">No DPA/BAA covering the AI system. Request as condition of renewal.</div></div>
+            <div class="gap-item gap-crit"><span class="gap-sev sev-c">Critical</span><strong style="font-size:10px">Missing contract: Training data prohibition</strong><div style="font-size:9.5px;color:var(--gray-mid);margin-top:3px">Vendor may use customer data without restriction. Add clause at next contract renewal.</div></div>
+            <div class="gap-item gap-high"><span class="gap-sev sev-h">High</span><strong style="font-size:10px">No independent bias testing evidence provided</strong><div style="font-size:9.5px;color:var(--gray-mid);margin-top:3px">Require annual third-party bias audit as contract condition.</div></div>
+            <div class="gap-item gap-high"><span class="gap-sev sev-h">High</span><strong style="font-size:10px">Insufficient security documentation</strong><div style="font-size:9.5px;color:var(--gray-mid);margin-top:3px">No SOC 2 Type II report provided. Request current report as condition of renewal.</div></div>
+          </div>
+          <div class="wiz-foot"><div></div><div style="display:flex;gap:7px"><button class="wbtn-b">&#8592; Back</button><button class="wbtn-n" style="background:var(--green)" onclick="p5save()">Save assessment</button></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="p5-saved" style="display:none">
+      <div class="callout tip"><div class="ci">&#10003;</div><div><div class="ct">Assessment saved</div><div class="cd">The vendor record is updated to Conditional approval (60/100). All identified gaps flow automatically into the Risk Management register as findings. Navigate to Risk Management to begin remediating the Critical data handling and contract provision gaps.</div></div></div>
+    </div>
+    <div class="div"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0">
+      <div style="border:1px solid rgba(120,140,93,.3);border-radius:9px;padding:12px 14px;background:#EAF3DE;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:#27500A">75+</div><div style="font-size:10px;color:#3B6D11;font-weight:600">Approved</div></div>
+      <div style="border:1px solid rgba(217,119,87,.3);border-radius:9px;padding:12px 14px;background:#FAEEDA;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:#633806">50&ndash;74</div><div style="font-size:10px;color:var(--orange-dk);font-weight:600">Conditional</div></div>
+      <div style="border:1px solid rgba(192,99,74,.2);border-radius:9px;padding:12px 14px;background:#FCEBEB;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:#A32D2D">Below 50</div><div style="font-size:10px;color:#A32D2D;font-weight:600">Flagged</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- P6 SAVE DRAFT -->
+<div class="panel" id="panel-6">
+  <div class="hero">
+    <div class="eye">Step 6</div>
+    <h1 class="ph-title">Save draft &amp; resume later</h1>
+    <p class="ph-sub">The VDD assessment takes time &mdash; you need to gather vendor documentation. Use Save draft to pause and resume without losing progress.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; save a draft and see the indicator</div><div class="ctxt">Click <strong>Save draft</strong> below. The modal closes and a blue draft indicator appears on the vendor row and in the detail panel, showing your progress and when you last saved. Click <strong>Resume</strong> to pick up where you left off.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; VDD Wizard &mdash; Domain scores (draft)</div></div>
+      <div style="position:relative;min-height:380px">
+        <div class="app" style="min-height:380px">
+          <div class="asb">
+            <div class="alogo"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+            <div class="ani active" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence</div>
+          </div>
+          <div class="am">
+            <div class="atb">Vendor Due Diligence</div>
+            <div class="vdd-shell" style="flex:1">
+              <div class="vdd-left">
+                <div class="vdd-controls"><button class="vnew-btn">+ New assessment</button></div>
+                <div>
+                  <div class="vdd-row"><div class="vdd-row-bar vb-part"></div><div class="vdd-row-name">Zest AI</div><div class="vdd-score vs-part">72/100</div></div>
+                  <div class="vdd-row selected" id="p6-internal-row" onclick="p6showDetail()"><div class="vdd-row-bar vb-pend"></div><div class="vdd-row-name">Internal</div><div id="p6-row-status"><div class="vdd-score vs-na">Not assessed</div><div class="vdd-status vsb-pend">Pending</div></div></div>
+                </div>
+              </div>
+              <div class="vdd-right" id="p6-right">
+                <div id="p6-pending-state">
+                  <div class="vdet-hdr"><div class="vdet-name">Internal</div><div class="vdet-sub">1 AI system &middot; Pending assessment</div></div>
+                  <div style="padding:12px 14px">
+                    <div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px">No assessment has been completed yet.</div>
+                    <button style="height:28px;padding:0 14px;background:var(--orange);color:white;border:none;border-radius:7px;font-size:10.5px;font-weight:600;cursor:pointer" onclick="p6openWiz()">Begin assessment</button>
+                  </div>
+                </div>
+                <div id="p6-draft-state" style="display:none">
+                  <div class="vdet-hdr"><div class="vdet-name">Internal</div><div class="vdet-sub">1 AI system &middot; Draft in progress</div></div>
+                  <div style="padding:12px 14px">
+                    <div class="draft-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px;flex-shrink:0"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg><div><strong>Draft in progress</strong> &mdash; 28/53 domain questions &middot; 2 contract provisions reviewed &middot; Saved just now</div><button class="draft-resume" onclick="alert('In the real app this reopens the wizard at the exact question where you paused.')">Resume &rarr;</button></div>
+                    <div style="font-size:11px;color:var(--gray-mid)">Progress is saved automatically when you click Save draft. You can return to this assessment at any time. Others cannot see your draft answers.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Wizard with Save Draft -->
+            <div class="wiz-ov" id="p6-wiz">
+              <div class="wiz-modal">
+                <div class="wiz-hdr"><div class="wiz-title">Domain scores &mdash; Internal</div><div class="wiz-slbl">28 / 53 answered</div><button class="wiz-close" onclick="p6closeWiz()">&#10005;</button></div>
+                <div class="wiz-tabs"><div class="wtab done">&#10003; Select</div><div class="wtab active">Domain scores</div><div class="wtab">Contract review</div><div class="wtab">Results</div></div>
+                <div class="wiz-body" style="max-height:260px">
+                  <div style="font-size:11px;color:var(--gray-mid);margin-bottom:10px;font-style:italic">53 questions across 6 domains. Use Save draft to pause and return later.</div>
+                  <div style="background:var(--cream);border-radius:8px;padding:10px 12px;margin-bottom:8px">
+                    <div style="font-size:10.5px;font-weight:600;color:var(--charcoal);margin-bottom:6px">Overall progress</div>
+                    <div style="height:6px;background:var(--gray-line);border-radius:3px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:53%;background:var(--orange);border-radius:3px"></div></div>
+                    <div style="font-size:9px;color:var(--gray-soft)">28 of 53 questions answered</div>
+                  </div>
+                  <div style="font-size:10px;color:var(--gray-mid)">Remaining domains: Transparency (0/8), Business Continuity (0/8), Fairness &amp; Bias (0/10)</div>
+                </div>
+                <div class="wiz-foot">
+                  <div style="display:flex;gap:7px">
+                    <button style="height:28px;padding:0 12px;border:1px solid rgba(106,155,204,.3);border-radius:7px;font-size:10px;font-weight:600;color:var(--blue);background:rgba(106,155,204,.07);cursor:pointer" onclick="p6saveDraft()">&#128190; Save draft</button>
+                  </div>
+                  <div style="display:flex;gap:7px"><button class="wbtn-b">&#8592; Back</button><button class="wbtn-n" disabled>Next &rarr;</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout info"><div class="ci">&#128190;</div><div><div class="ct">Draft saves all your progress</div><div class="cd">When you save a draft, GovernAI stores all answers you have given so far, your current wizard step, and a timestamp. The vendor row and detail panel show a blue draft indicator. Click <strong>Resume &rarr;</strong> in the detail panel to reopen the wizard at exactly where you stopped. You can save draft as many times as you like during an assessment.</div></div></div>
+  </div>
+</div>
+
+<!-- P7 VENDOR SCORECARD -->
+<div class="panel" id="panel-7">
+  <div class="hero">
+    <div class="eye">Step 7</div>
+    <h1 class="ph-title">Reading the vendor scorecard</h1>
+    <p class="ph-sub">After saving, the detail panel shows the complete scorecard &mdash; overall score, domain breakdown, contract gaps, and linked AI systems.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; explore the scorecard</div><div class="ctxt">Click the domain bars and gap items below to understand the full scorecard. Click a linked AI system chip to navigate directly to that system&rsquo;s Risk Assessment record.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Vendor Due Diligence &mdash; Zest AI scorecard</div></div>
+      <div class="app">
+        <div class="asb">
+          <div class="alogo"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+          <div class="ani active" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence</div>
+        </div>
+        <div class="am">
+          <div class="atb">Vendor Due Diligence</div>
+          <div class="vdd-shell" style="flex:1">
+            <div class="vdd-left">
+              <div>
+                <div class="vdd-row" onclick="p7sel(this,'Zest AI',72,'part')"><div class="vdd-row-bar vb-part"></div><div class="vdd-row-name">Zest AI</div><div class="vdd-score vs-part">72/100</div></div>
+                <div class="vdd-row" onclick="p7sel(this,'GitHub',81,'appr')"><div class="vdd-row-bar vb-appr"></div><div class="vdd-row-name">GitHub (Microsoft)</div><div class="vdd-score vs-appr">81/100</div></div>
+                <div class="vdd-row" onclick="p7sel(this,'Featurespace',88,'appr')"><div class="vdd-row-bar vb-appr"></div><div class="vdd-row-name">Featurespace</div><div class="vdd-score vs-appr">88/100</div></div>
+              </div>
+            </div>
+            <div class="vdd-right" id="p7-right">
+              <div class="vdd-detail-empty">&larr; Click a vendor to view their scorecard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div class="done-card">
+      <div class="done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="done-title">Vendor Oversight guide complete!</div>
+      <div class="done-sub">You now know how to run a vendor assessment, interpret the six-domain score, review the contract checklist, save drafts, and read the full scorecard. Return to GovernAI and assess your first pending vendor.</div>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>
+</div>
+
+<script>
+var cur=0;
+var panels=document.querySelectorAll('.panel');
+var navLinks=document.querySelectorAll('.nl');
+var LABELS=['Introduction','The VDD module','Start an assessment','Six domain questions','Contract checklist','Review score and gaps','Save draft and resume','Vendor scorecard'];
+function goPanel(n){
+  panels[cur].classList.remove('active');navLinks[cur].classList.remove('active');
+  if(cur<n)navLinks[cur].classList.add('done');
+  cur=n;panels[cur].classList.add('active');navLinks[cur].classList.add('active');
+  document.getElementById('tbl').innerHTML='<strong>Step '+(cur+1)+' of '+panels.length+'</strong> &mdash; '+LABELS[cur];
+  document.getElementById('btnprev').disabled=cur===0;
+  var nb=document.getElementById('btnnext');
+  nb.innerHTML=cur===panels.length-1?'Finish':'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:11px;height:11px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  document.getElementById('plbl').textContent=(cur+1)+' / '+panels.length;
+  document.getElementById('pfill').style.width=((cur+1)/panels.length*100)+'%';
+  window.scrollTo(0,0);
+}
+function nxt(){if(cur<panels.length-1){goPanel(cur+1);}else{window.location.href='governai_training_center.html';}}
+function prv(){if(cur>0)goPanel(cur-1);}
+
+function p1nav(el,mod){
+  document.querySelectorAll('.ani').forEach(function(i){i.classList.remove('active');});
+  el.classList.add('active');el.style.animation='none';
+  var titles={inventory:'AI Inventory',risk:'Risk Assessment',vdd:'Vendor Due Diligence',treat:'Risk Management'};
+  document.getElementById('p1-topbar').textContent=titles[mod]||mod;
+  var v=document.getElementById('p1-vdd-view');
+  var m=document.getElementById('p1-msg');
+  if(mod==='vdd'){v.style.display='flex';m.style.display='none';}
+  else{v.style.display='none';m.style.display='flex';m.textContent='\u2190 Click Vendor Due Diligence in the sidebar';}
+}
+function p1sel(el,vendor,tools,score,status){
+  document.querySelectorAll('#panel-1 .vdd-row').forEach(function(r){r.classList.remove('selected');});
+  el.classList.add('selected');
+  var right=document.getElementById('p1-vdd-right');
+  var isPending=status==='Pending';
+  var scoreColor=score.includes('88')||score.includes('81')?'var(--green)':score.includes('72')||score.includes('58')?'var(--orange)':score.includes('Not')?'var(--gray-soft)':'#C0634A';
+  right.innerHTML='<div class="vdet-hdr"><div class="vdet-name">'+vendor+'</div><div class="vdet-sub">'+tools+(isPending?' &middot; Not yet assessed':' &middot; Assessed')+' </div></div>'
+    +'<div style="padding:10px 14px">'
+    +(isPending?'<div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px">This vendor has not been assessed yet. Click Begin assessment to start the four-step wizard.</div><button style="height:26px;padding:0 12px;background:var(--orange);color:white;border:none;border-radius:6px;font-size:10.5px;font-weight:600;cursor:pointer" onclick="alert(\'In the real app this opens the VDD wizard for this vendor.\')">Begin assessment</button>'
+    :'<div class="score-ring-wrap" style="margin-bottom:10px"><div class="score-ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="7"/><circle cx="48" cy="48" r="38" fill="none" stroke="'+scoreColor+'" stroke-width="7" stroke-dasharray="238.8" stroke-dashoffset="'+(238.8*(1-parseInt(score)/100)).toFixed(1)+'" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg><div class="score-ring-lbl"><div style="font-family:\'DM Serif Display\',serif;font-size:16px;color:'+scoreColor+'">'+parseInt(score)+'</div><div style="font-size:8px;color:var(--gray-soft)">/100</div></div></div><div><div style="font-size:12px;font-weight:600;color:'+scoreColor+'">'+status+'</div></div></div>'
+    +'<div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px">Six-domain breakdown</div>'
+    +['Model Governance','Data Handling','Security','Transparency','Business Continuity','Fairness & Bias'].map(function(d,i){var s=[6,7,8,7,9,5][i];var col=s>=7?'var(--green)':s>=4?'var(--orange)':'#C0634A';return '<div class="dom-bar-row"><div class="dom-bar-top"><div class="dom-bar-name">'+d+'</div><div class="dom-bar-score" style="color:'+col+'">'+s+'/10</div></div><div class="dom-bar"><div class="dom-bar-fill" style="width:'+(s*10)+'%;background:'+col+'"></div></div></div>';}).join(''))
+    +'</div>';
+}
+
+function p2openWiz(){document.getElementById('p2-wiz').classList.add('open');}
+function p2closeWiz(){document.getElementById('p2-wiz').classList.remove('open');}
+function p2sel(el,isTarget){
+  document.querySelectorAll('#p2-wiz [onclick^="p2sel"]').forEach(function(o){o.style.borderColor='var(--gray-line)';o.style.background='var(--white)';});
+  el.style.borderColor='var(--orange)';el.style.background='rgba(217,119,87,.05)';
+  var nb=document.getElementById('p2-next');
+  var note=document.getElementById('p2-note');
+  nb.disabled=false;
+  note.textContent=isTarget?'Internal selected \u2014 click Next':'System selected';
+  note.style.color=isTarget?'var(--green)':'';
+}
+function p2next(){p2closeWiz();alert('In the real app clicking Next here advances to the 53-question domain assessment. See Panel 3 in this guide to try the domain questions.');}
+
+// P3 domain questions
+var p3Answers={};
+var DOMAINS=[
+  {name:'Model Governance',qs:['Does the vendor maintain a formal model inventory?','Is there a documented model development lifecycle?','Does the vendor conduct independent model validation?']},
+  {name:'Data Handling',qs:['Does the vendor provide a clear DPA or BAA?','Is customer data prohibited from model training?','Does the vendor disclose all sub-processors?']},
+  {name:'Security',qs:['Does the vendor hold a current SOC 2 Type II?','Has the vendor conducted AI-specific penetration testing?','Are AI-specific attacks (prompt injection) defended against?']},
+];
+function buildP3(){
+  var body=document.getElementById('p3-body');
+  if(!body)return;
+  body.innerHTML='<div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px;font-style:italic">Showing 3 of 6 domains (9 of 53 questions). All 53 must be answered in the real app.</div>'
+    +DOMAINS.map(function(d,di){
+      return '<div class="dom-card"><div class="dom-card-hdr"><div class="dom-card-name">'+d.name+'</div><div class="dom-card-prog" id="dp'+di+'">0/'+d.qs.length+' answered</div></div>'
+        +'<div class="dom-prog-bar"><div class="dom-prog-fill" id="df'+di+'" style="width:0%"></div></div>'
+        +d.qs.map(function(q,qi){
+          var qid='q'+di+'_'+qi;
+          return '<div class="q-row"><div class="q-text">'+q+'</div><div class="q-btns"><button class="q-btn" onclick="p3ans(\''+qid+'\',0,this,\'yes\')">Yes</button><button class="q-btn" onclick="p3ans(\''+qid+'\',0.5,this,\'partial\')">Partial</button><button class="q-btn" onclick="p3ans(\''+qid+'\',0,this,\'no\')">No</button></div></div>';
+        }).join('')
+        +'</div>';
+    }).join('');
+}
+function p3ans(qid,val,btn,type){
+  var parts=qid.split('_');var di=parseInt(parts[0].replace('q',''));
+  btn.closest('.q-btns').querySelectorAll('.q-btn').forEach(function(b){b.className='q-btn';});
+  btn.classList.add(type);
+  p3Answers[qid]=val;
+  var domQs=DOMAINS[di].qs.length;
+  var domAnswered=0;
+  for(var i=0;i<domQs;i++){if(p3Answers['q'+di+'_'+i]!==undefined)domAnswered++;}
+  document.getElementById('dp'+di).textContent=domAnswered+'/'+domQs+' answered';
+  document.getElementById('df'+di).style.width=(domAnswered/domQs*100)+'%';
+  var total=Object.keys(p3Answers).length;
+  document.getElementById('p3-progress').textContent=total+' / 53 answered (showing 9)';
+  if(total>=9){
+    document.getElementById('p3-next').disabled=false;
+    document.getElementById('p3-note').textContent='Demo complete! All 53 required in real app.';
+    document.getElementById('p3-note').style.color='var(--green)';
+  }
+}
+
+// P4 contract
+var p4count=0;
+function p4toggle(el){
+  var chk=el.querySelector('.contract-chk');
+  var isChecked=chk.classList.contains('checked');
+  if(isChecked){chk.classList.remove('checked');chk.innerHTML='';p4count--;}
+  else{chk.classList.add('checked');chk.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" style="width:10px;height:10px"><path d="M20 6L9 17l-5-5"/></svg>';p4count++;}
+  document.getElementById('p4-checked').textContent=p4count;
+  var missing=7-Math.min(p4count,7);
+  var msg=document.getElementById('p4-gap-msg');
+  msg.style.display=missing>0?'block':'none';
+  if(missing>0)msg.textContent='\u26a0 '+missing+' Required provision'+(missing!==1?'s':'')+' missing \u2014 each will generate a Critical gap finding';
+}
+
+// P5 save
+function p5save(){
+  document.getElementById('p5-saved').style.display='block';
+}
+
+// P6 draft
+function p6openWiz(){document.getElementById('p6-wiz').classList.add('open');}
+function p6closeWiz(){document.getElementById('p6-wiz').classList.remove('open');}
+function p6saveDraft(){
+  p6closeWiz();
+  document.getElementById('p6-pending-state').style.display='none';
+  document.getElementById('p6-draft-state').style.display='block';
+  document.getElementById('p6-row-status').innerHTML='<div style="font-size:8px;color:var(--blue);font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(106,155,204,.12)">Draft saved</div>';
+}
+function p6showDetail(){
+  document.getElementById('p6-pending-state').style.display='block';
+  document.getElementById('p6-draft-state').style.display='none';
+}
+
+// P7 scorecard
+function p7sel(el,vendor,score,tier){
+  document.querySelectorAll('#panel-7 .vdd-row').forEach(function(r){r.classList.remove('selected');});
+  el.classList.add('selected');
+  var colors={appr:'var(--green)',part:'var(--orange)',flag:'#C0634A'};
+  var col=colors[tier]||'var(--gray-soft)';
+  var tiers={appr:'Approved',part:'Conditional approval',flag:'Flagged &mdash; remediation required'};
+  var domScores={
+    'Zest AI':[6,7,7,7,8,5],
+    'GitHub':[8,8,9,6,8,7],
+    'Featurespace':[9,8,9,8,9,8],
+  };
+  var scores=domScores[vendor]||[7,7,7,7,7,7];
+  var doms=['Model Governance','Data Handling','Security','Transparency','Business Continuity','Fairness & Bias'];
+  document.getElementById('p7-right').innerHTML='<div class="vdet-hdr"><div class="vdet-name">'+vendor+'</div><div class="vdet-sub">Assessed &middot; Score: '+score+'/100</div></div>'
+    +'<div style="padding:10px 14px">'
+    +'<div class="score-ring-wrap" style="margin-bottom:12px"><div class="score-ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="7"/><circle cx="48" cy="48" r="38" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="238.8" stroke-dashoffset="'+(238.8*(1-score/100)).toFixed(1)+'" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg><div class="score-ring-lbl"><div style="font-family:\'DM Serif Display\',serif;font-size:18px;color:'+col+'">'+score+'</div><div style="font-size:8px;color:var(--gray-soft)">/100</div></div></div><div><div style="font-size:13px;font-weight:600;color:'+col+'">'+tiers[tier]+'</div></div></div>'
+    +'<div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px">Six-domain scorecard</div>'
+    +doms.map(function(d,i){var s=scores[i];var c=s>=7?'var(--green)':s>=4?'var(--orange)':'#C0634A';var lbl=s>=7?'Pass':s>=4?'Review':'Fail';return '<div class="dom-bar-row"><div class="dom-bar-top"><div class="dom-bar-name">'+d+'</div><div style="display:flex;align-items:center;gap:6px"><div class="dom-bar-score" style="color:'+c+'">'+s+'/10</div><div style="font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:'+(s>=7?'#EAF3DE':s>=4?'#FAEEDA':'#FCEBEB')+';color:'+(s>=7?'#27500A':s>=4?'#633806':'#A32D2D')+'">'+lbl+'</div></div></div><div class="dom-bar"><div class="dom-bar-fill" style="width:'+(s*10)+'%;background:'+c+'"></div></div></div>';}).join('')
+    +'<div style="margin-top:12px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:6px">Linked AI systems</div>'
+    +'<div style="display:flex;gap:5px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid var(--gray-line);border-radius:5px;font-size:10px;cursor:pointer;background:var(--white)" onclick="alert(\'In the real app this navigates to the Risk Assessment for this system.\')"><div style="width:5px;height:5px;border-radius:50%;background:#C0634A"></div>Credit Underwriting AI <span style="font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:3px;background:#FCEBEB;color:#A32D2D;margin-left:4px">RSK 7/10</span></div></div>'
+    +'</div>';
+}
+
+buildP3();
+goPanel(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovernAI — Training Center</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#FAF9F5;color:#141413;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:#141413;padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:30px;height:30px;background:#D97757;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:16px;height:16px;}
+.logo-name{font-family:'DM Serif Display',serif;font-size:18px;color:#FAF9F5;}
+.logo-name span{color:#D97757;}
+.back-btn{display:flex;align-items:center;gap:6px;color:rgba(250,249,245,.5);font-size:12px;text-decoration:none;padding:6px 12px;border:1px solid rgba(255,255,255,.1);border-radius:7px;transition:all .15s;}
+.back-btn:hover{color:#FAF9F5;border-color:rgba(255,255,255,.3);}
+
+/* HERO */
+.hero{background:#141413;padding:56px 80px 52px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-80px;right:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.15) 0%,transparent 65%);pointer-events:none;}
+.hero-inner{max-width:700px;position:relative;z-index:1;}
+.eyebrow{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#D97757;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:'';width:16px;height:2px;background:#D97757;display:block;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:40px;line-height:1.15;color:#FAF9F5;margin-bottom:12px;}
+.hero p{font-size:15px;color:rgba(250,249,245,.55);line-height:1.7;max-width:520px;margin-bottom:28px;}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.chip{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(250,249,245,.55);}
+
+/* BODY */
+.body{max-width:1100px;margin:0 auto;padding:52px 48px 80px;}
+
+/* PATH BANNER */
+.path-banner{background:#141413;border-radius:14px;padding:20px 26px;margin-bottom:44px;}
+.path-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#D97757;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.path-label::before{content:'';width:14px;height:2px;background:#D97757;display:block;}
+.path-steps{display:flex;align-items:center;flex-wrap:nowrap;gap:5px;}
+.path-step{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);white-space:nowrap;}
+.step-num{width:19px;height:19px;border-radius:50%;background:#D97757;color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-name{font-size:11px;font-weight:500;color:rgba(250,249,245,.75);}
+.path-arrow{font-size:13px;color:rgba(255,255,255,.2);flex-shrink:0;}
+
+/* SECTION TITLE */
+.section-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#7A7870;margin:0 0 20px;display:flex;align-items:center;gap:12px;}
+.section-title::after{content:'';flex:1;height:1px;background:#E8E6DC;}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:48px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px;}
+
+/* GUIDE CARD */
+.guide-card{display:block;text-decoration:none;color:inherit;border:1.5px solid #E8E6DC;border-radius:16px;overflow:hidden;background:#fff;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.guide-card:hover{border-color:#D97757;transform:translateY(-3px);box-shadow:0 12px 32px rgba(217,119,87,.15);}
+.card-accent{height:5px;}
+.card-body{padding:22px 24px;}
+.card-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px;}
+.card-tag{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:5px;display:inline-block;margin-bottom:10px;}
+.card-title{font-family:'DM Serif Display',serif;font-size:19px;color:#141413;margin-bottom:10px;line-height:1.3;}
+.card-desc{font-size:13px;color:#7A7870;line-height:1.7;margin-bottom:14px;}
+.card-topics{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px;}
+.topic{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;background:#FAF9F5;border:1px solid #E8E6DC;color:#7A7870;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid #E8E6DC;}
+.card-time{font-size:11.5px;color:#B0AEA5;display:flex;align-items:center;gap:5px;}
+.card-cta{font-size:12.5px;font-weight:700;color:#D97757;display:flex;align-items:center;gap:5px;transition:gap .15s;}
+.guide-card:hover .card-cta{gap:9px;}
+
+/* NIST GRID */
+.nist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px;}
+.nist-card{border:1.5px solid #E8E6DC;border-radius:11px;padding:16px 18px;background:#fff;transition:all .15s;cursor:pointer;text-decoration:none;display:block;color:inherit;}
+.nist-card:hover{border-color:#D97757;background:rgba(217,119,87,.02);}
+.nist-fn{font-family:'DM Mono',monospace;font-size:10.5px;font-weight:600;padding:3px 11px;border-radius:5px;display:inline-block;margin-bottom:9px;}
+.nist-label{font-size:13px;font-weight:600;color:#141413;margin-bottom:4px;}
+.nist-tasks{font-size:11.5px;color:#7A7870;line-height:1.5;}
+
+/* BACK TO APP */
+.back-to-app{text-align:center;padding:32px 0 0;border-top:1px solid #E8E6DC;margin-top:20px;}
+.back-to-app p{font-size:13px;color:#7A7870;margin-bottom:14px;}
+.app-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;background:#141413;color:#FAF9F5;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;transition:all .15s;}
+.app-btn:hover{background:#D97757;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a href="governai_112.html" class="topbar-logo" onclick="window.location.href='governai_112.html';return false;" title="Go to GRC Dashboard">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity="0.9"/>
+        <path d="M9 12l2 2 4-4" stroke="#D97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="logo-name">Govern<span>AI</span></span>
+  </a>
+  <a href="governai_112.html" class="back-btn" onclick="window.location.href='governai_112.html';return false;" title="Go to GRC Dashboard">
+    ← Back to GovernAI
+  </a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Training Center</div>
+    <h1>Learn how to use GovernAI</h1>
+    <p>Step-by-step interactive guides for every core workflow. Each guide opens a live clickable simulator — click buttons, fill forms, and see exactly how the platform works before using it on real data.</p>
+    <div class="hero-chips">
+      <div class="chip">⏱ 5–20 min per guide</div>
+      <div class="chip">🖱 Live clickable simulator</div>
+      <div class="chip">🛡 NIST AI RMF aligned</div>
+      <div class="chip">5 interactive guides</div>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- Recommended path -->
+  <div class="path-banner">
+    <div class="path-label">Recommended learning path</div>
+    <div class="path-steps">
+      <div class="path-step"><div class="step-num">1</div><div class="step-name">Program Setup</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-step"><div class="step-num">2</div><div class="step-name">Register a System</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-step"><div class="step-num">3</div><div class="step-name">Risk Assessment</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-step"><div class="step-num">4</div><div class="step-name">Vendor Oversight</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-step"><div class="step-num">5</div><div class="step-name">Finding Remediation</div></div>
+    </div>
+  </div>
+
+  <!-- GETTING STARTED -->
+  <div class="section-title">Getting started</div>
+  <div class="grid-2">
+
+    <a href="governai_programsetup_interactive.html" class="guide-card">
+      <div class="card-accent" style="background:#6A9BCC;"></div>
+      <div class="card-body">
+        <div class="card-icon" style="background:rgba(106,155,204,.12);color:#6A9BCC;">📋</div>
+        <div class="card-tag" style="background:rgba(106,155,204,.1);color:#0C447C;">Governance Playbook · 8 steps</div>
+        <div class="card-title">Governance Program Setup</div>
+        <div class="card-desc">Set up your AI governance foundation using the Playbook. Complete GOVERN phase tasks, assign owners, upload evidence, and track your program maturity toward NIST AI RMF compliance.</div>
+        <div class="card-topics">
+          <span class="topic">Phase navigation</span>
+          <span class="topic">Task completion</span>
+          <span class="topic">Evidence upload</span>
+          <span class="topic">Owner assignment</span>
+          <span class="topic">Maturity tracking</span>
+        </div>
+        <div class="card-footer">
+          <div class="card-time">⏱ ~10 min</div>
+          <div class="card-cta">Open guide ↗</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="governai_registration_interactive.html" class="guide-card">
+      <div class="card-accent" style="background:#D97757;"></div>
+      <div class="card-body">
+        <div class="card-icon" style="background:rgba(217,119,87,.1);color:#D97757;">🗄️</div>
+        <div class="card-tag" style="background:rgba(217,119,87,.1);color:#C15F3C;">AI Inventory · 8 steps</div>
+        <div class="card-title">AI System Registration</div>
+        <div class="card-desc">Register a new AI system in the Inventory. Covers all 12 form fields, regulatory flag selection, data type classification, and what triggers automatically in other modules after saving.</div>
+        <div class="card-topics">
+          <span class="topic">All 12 fields</span>
+          <span class="topic">Regulatory flags</span>
+          <span class="topic">Data types</span>
+          <span class="topic">Live form simulation</span>
+          <span class="topic">Auto-created records</span>
+        </div>
+        <div class="card-footer">
+          <div class="card-time">⏱ ~8 min</div>
+          <div class="card-cta">Open guide ↗</div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- CORE WORKFLOWS -->
+  <div class="section-title">Core workflows</div>
+  <div class="grid-3">
+
+    <a href="governai_riskassessment_interactive.html" class="guide-card">
+      <div class="card-accent" style="background:#C0634A;"></div>
+      <div class="card-body">
+        <div class="card-icon" style="background:rgba(192,99,74,.1);color:#C0634A;">⚖️</div>
+        <div class="card-tag" style="background:rgba(192,99,74,.1);color:#C0634A;">Risk Assessment · 8 steps</div>
+        <div class="card-title">Performing a Risk Assessment</div>
+        <div class="card-desc">Run the four-step formal assessment wizard. Score six risk dimensions using live sliders, understand the weighted scoring formula, and review automatically generated findings.</div>
+        <div class="card-topics">
+          <span class="topic">4-step wizard</span>
+          <span class="topic">Live sliders</span>
+          <span class="topic">6 dimensions</span>
+          <span class="topic">Auto findings</span>
+        </div>
+        <div class="card-footer">
+          <div class="card-time">⏱ ~12 min</div>
+          <div class="card-cta">Open guide ↗</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="governai_vendoroversight_interactive.html" class="guide-card">
+      <div class="card-accent" style="background:#788C5D;"></div>
+      <div class="card-body">
+        <div class="card-icon" style="background:rgba(120,140,93,.12);color:#788C5D;">🤝</div>
+        <div class="card-tag" style="background:rgba(120,140,93,.1);color:#3B6D11;">Vendor Due Diligence · 8 steps</div>
+        <div class="card-title">Vendor Oversight</div>
+        <div class="card-desc">Assess any AI vendor using the 53-question six-domain framework. Review the contract provision checklist, interpret the overall score, save drafts, and read the completed scorecard.</div>
+        <div class="card-topics">
+          <span class="topic">53 questions</span>
+          <span class="topic">6 domains</span>
+          <span class="topic">Contract checklist</span>
+          <span class="topic">Score ring</span>
+          <span class="topic">Save draft</span>
+        </div>
+        <div class="card-footer">
+          <div class="card-time">⏱ ~15 min</div>
+          <div class="card-cta">Open guide ↗</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="governai_findingremediation_interactive.html" class="guide-card">
+      <div class="card-accent" style="background:#9B7DBF;"></div>
+      <div class="card-body">
+        <div class="card-icon" style="background:rgba(155,125,191,.12);color:#9B7DBF;">🛡️</div>
+        <div class="card-tag" style="background:rgba(155,125,191,.1);color:#7A5DAA;">Risk Management · 9 steps</div>
+        <div class="card-title">Finding Remediation</div>
+        <div class="card-desc">Triage findings in the Risk Management register, assign pathways and owners, advance status from open to resolved, add remediation notes and evidence, and formally accept residual risks.</div>
+        <div class="card-topics">
+          <span class="topic">4 pathways</span>
+          <span class="topic">Status lifecycle</span>
+          <span class="topic">Owner assignment</span>
+          <span class="topic">Evidence upload</span>
+          <span class="topic">Formal acceptance</span>
+        </div>
+        <div class="card-footer">
+          <div class="card-time">⏱ ~20 min</div>
+          <div class="card-cta">Open guide ↗</div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- NIST COVERAGE -->
+  <div class="section-title">NIST AI RMF coverage</div>
+  <div class="nist-grid">
+    <a href="governai_112.html#playbook" class="nist-card">
+      <div class="nist-fn" style="background:rgba(106,155,204,.15);color:#0C447C;">GOVERN</div>
+      <div class="nist-label">Governance Playbook — Phase 1</div>
+      <div class="nist-tasks">6 tasks · Foundations, policy, roles, incident response</div>
+    </a>
+    <a href="governai_112.html#inventory" class="nist-card">
+      <div class="nist-fn" style="background:rgba(217,119,87,.12);color:#C15F3C;">MAP 1</div>
+      <div class="nist-label">AI Inventory — Registration</div>
+      <div class="nist-tasks">6 tasks · System context, use cases, stakeholder impact</div>
+    </a>
+    <a href="governai_112.html#risk" class="nist-card">
+      <div class="nist-fn" style="background:rgba(120,140,93,.12);color:#27500A;">MAP 2</div>
+      <div class="nist-label">Risk Assessment Engine</div>
+      <div class="nist-tasks">6 tasks · Risk ID, bias, explainability, vendor risk</div>
+    </a>
+    <a href="governai_112.html#risk" class="nist-card">
+      <div class="nist-fn" style="background:rgba(155,125,191,.12);color:#7A5DAA;">MEASURE</div>
+      <div class="nist-label">Risk Assessment + Playbook</div>
+      <div class="nist-tasks">6 tasks · Metrics, bias testing, monitoring thresholds</div>
+    </a>
+    <a href="governai_112.html#treat" class="nist-card">
+      <div class="nist-fn" style="background:rgba(192,99,74,.1);color:#A32D2D;">MANAGE 1</div>
+      <div class="nist-label">Risk Management module</div>
+      <div class="nist-tasks">5 tasks · Controls, treatment pathways, acceptance</div>
+    </a>
+    <a href="governai_112.html#playbook" class="nist-card">
+      <div class="nist-fn" style="background:rgba(90,125,90,.12);color:#27500A;">MANAGE 2</div>
+      <div class="nist-label">Governance Playbook — Phase 6</div>
+      <div class="nist-tasks">6 tasks · Review cadences, monitoring, board reporting</div>
+    </a>
+  </div>
+
+  <div class="back-to-app">
+    <p>Ready to start governing your AI systems?</p>
+    <a href="governai_112.html" class="app-btn" onclick="window.location.href='governai_112.html';return false;" title="Go to GRC Dashboard">← Back to GovernAI</a>
+  </div>
+
+</div>
+</body>
+</html>

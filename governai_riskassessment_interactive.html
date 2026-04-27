@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovernAI — Risk Assessment Interactive Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:#D97757; --orange-dk:#C15F3C; --orange-lt:#FDF1EC;
+  --charcoal:#141413; --cream:#FAF9F5; --white:#FFFFFF;
+  --gray-soft:#B0AEA5; --gray-line:#E8E6DC; --gray-mid:#7A7870;
+  --blue:#6A9BCC; --green:#788C5D; --red:#C0634A;
+  --sidebar-w:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+
+/* ── OUTER SHELL ── */
+.shell{display:flex;min-height:100vh;}
+
+/* ── LEFT NAV ── */
+.snav{width:var(--sidebar-w);flex-shrink:0;background:var(--charcoal);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;overflow-y:auto;z-index:10;}
+.snav::-webkit-scrollbar{width:3px;}
+.snav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);}
+.snav-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06);}
+.snav-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+.snav-li{width:28px;height:28px;background:var(--orange);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.snav-li svg{width:15px;height:15px;}
+.snav-ln{font-family:'DM Serif Display',serif;font-size:16px;color:var(--cream);}
+.snav-ln span{color:var(--orange);}
+.snav-sub{font-size:9px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;padding-left:36px;}
+.snav-sec{padding:14px 0 4px;}
+.snav-sec-label{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:6px 20px 4px;}
+.snav-link{display:flex;align-items:center;gap:8px;padding:6px 20px;font-size:12px;color:rgba(250,249,245,.45);text-decoration:none;cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.snav-link:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.snav-link.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.snav-link.done{color:rgba(120,140,93,.8);}
+.snav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0;}
+.snav-link.done .snav-dot{opacity:1;background:var(--green);}
+.snav-prog{padding:18px 20px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);}
+.snav-prog-label{font-size:10px;color:var(--gray-soft);margin-bottom:7px;display:flex;justify-content:space-between;}
+.snav-prog-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.snav-prog-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;}
+.topbar{height:52px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;padding:0 40px;position:sticky;top:0;z-index:9;}
+.tb-label{font-size:11px;color:var(--gray-soft);}
+.tb-label strong{color:var(--charcoal);}
+.tb-btns{display:flex;gap:8px;}
+.tb-btn{height:32px;padding:0 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;border:1px solid var(--gray-line);display:flex;align-items:center;gap:6px;}
+.tb-prev{background:var(--white);color:var(--gray-mid);}
+.tb-prev:hover{background:var(--cream);}
+.tb-next{background:var(--orange);color:white;border-color:var(--orange);}
+.tb-next:hover{background:var(--orange-dk);}
+.tb-next:disabled{background:var(--gray-line);border-color:var(--gray-line);color:var(--gray-soft);cursor:not-allowed;}
+.tb-btn svg{width:11px;height:11px;}
+
+/* ── PANELS ── */
+.content{flex:1;overflow-y:auto;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── HERO ── */
+.hero{background:var(--charcoal);padding:40px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-40px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.15) 0%,transparent 65%);pointer-events:none;}
+.ph-eye{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.ph-eye::before{content:'';width:16px;height:2px;background:var(--orange);}
+.ph-title{font-family:'DM Serif Display',serif;font-size:30px;color:var(--cream);line-height:1.2;margin-bottom:8px;position:relative;z-index:1;}
+.ph-sub{font-size:13px;color:rgba(250,249,245,.55);line-height:1.65;max-width:500px;position:relative;z-index:1;}
+.ph-meta{display:flex;gap:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.07);margin-top:20px;}
+.ph-meta-item .ph-ml{font-size:9px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;}
+.ph-meta-item .ph-mv{font-size:12px;color:rgba(250,249,245,.6);font-weight:500;}
+
+/* ── BODY ── */
+.pbody{padding:36px 48px;}
+
+/* ── CALLOUTS ── */
+.callout{border-radius:9px;padding:14px 16px;margin:18px 0;display:flex;gap:10px;}
+.ci{font-size:15px;flex-shrink:0;margin-top:1px;}
+.ct{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;}
+.cd{font-size:12.5px;line-height:1.65;}
+.tip{background:rgba(120,140,93,.07);border:1px solid rgba(120,140,93,.2);}
+.tip .ct{color:#3B6D11;}
+.warn{background:rgba(217,119,87,.07);border:1px solid rgba(217,119,87,.2);}
+.warn .ct{color:var(--orange-dk);}
+.info{background:rgba(106,155,204,.07);border:1px solid rgba(106,155,204,.2);}
+.info .ct{color:#0C447C;}
+.key{background:var(--charcoal);border:none;}
+.key .ct{color:var(--orange);}
+.key .cd{color:rgba(250,249,245,.7);}
+
+/* ── COACH ── */
+.coach{background:var(--charcoal);border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid rgba(255,255,255,.08);display:flex;gap:10px;}
+.coach-icon{width:28px;height:28px;flex-shrink:0;background:rgba(217,119,87,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.coach-step{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:3px;}
+.coach-text{font-size:12.5px;color:rgba(250,249,245,.75);line-height:1.6;}
+
+/* ── SIMULATOR SHELL ── */
+.sim{border:1px solid var(--gray-line);border-radius:14px;overflow:hidden;background:var(--white);box-shadow:0 4px 24px rgba(0,0,0,.07);margin:20px 0;}
+.sim-bar{height:36px;background:#F0F0EE;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 12px;gap:7px;}
+.sim-dot{width:10px;height:10px;border-radius:50%;}
+.sim-dot-r{background:#FF5F57;} .sim-dot-y{background:#FEBC2E;} .sim-dot-g{background:#28C840;}
+.sim-url{flex:1;height:20px;background:var(--white);border:1px solid var(--gray-line);border-radius:4px;margin:0 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--gray-mid);display:flex;align-items:center;padding:0 8px;}
+
+/* ── APP LAYOUT ── */
+.app{display:flex;min-height:380px;}
+.app-sidebar{width:185px;flex-shrink:0;background:var(--charcoal);display:flex;flex-direction:column;padding:14px 0;}
+.app-logo{padding:0 14px 12px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:8px;}
+.alogo-row{display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.alogo-icon{width:20px;height:20px;background:var(--orange);border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.alogo-icon svg{width:11px;height:11px;}
+.alogo-name{font-family:'DM Serif Display',serif;font-size:12px;color:var(--cream);}
+.alogo-name span{color:var(--orange);}
+.alogo-sub{font-size:7.5px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;padding-left:26px;}
+.anav-label{font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:4px 14px;}
+.anav-item{display:flex;align-items:center;gap:5px;padding:5px 14px;font-size:10px;color:rgba(250,249,245,.4);cursor:pointer;border-left:2px solid transparent;transition:all .1s;}
+.anav-item:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.anav-item.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.anav-item svg{width:10px;height:10px;flex-shrink:0;}
+.anav-badge{margin-left:auto;font-size:8px;font-weight:600;background:rgba(217,119,87,.2);color:var(--orange);padding:1px 5px;border-radius:7px;}
+.app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.app-topbar{height:36px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 16px;font-size:11px;font-weight:500;color:var(--charcoal);}
+
+/* ── RA SPLIT PANEL ── */
+.ra-shell{display:flex;flex:1;overflow:hidden;}
+.ra-left{width:280px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--gray-line);}
+.ra-right{flex:1;overflow-y:auto;}
+.ra-summary{display:flex;gap:14px;padding:10px 14px;background:var(--white);border-bottom:1px solid var(--gray-line);}
+.ra-sum-num{font-family:'DM Serif Display',serif;font-size:20px;line-height:1;}
+.ra-sum-lbl{font-size:9px;color:var(--gray-soft);font-weight:500;}
+.ra-sum-sep{width:1px;background:var(--gray-line);}
+.ra-controls{padding:8px 10px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;gap:5px;flex-wrap:wrap;}
+.ra-pill{height:22px;padding:0 8px;border-radius:11px;font-size:9px;font-weight:600;border:1px solid var(--gray-line);background:var(--white);cursor:pointer;color:var(--gray-mid);}
+.ra-pill.active{background:var(--charcoal);color:var(--cream);border-color:var(--charcoal);}
+.ra-new-btn{height:22px;padding:0 10px;background:var(--orange);color:white;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer;margin-left:auto;white-space:nowrap;transition:all .13s;animation:btnPulse 1.4s ease-in-out infinite;}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,119,87,.5)}50%{box-shadow:0 0 0 5px rgba(217,119,87,0)}}
+.ra-new-btn.no-pulse{animation:none;}
+.ra-list{overflow-y:auto;flex:1;}
+.ra-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--gray-line);cursor:pointer;background:var(--white);transition:all .12s;}
+.ra-row:hover{background:var(--cream);}
+.ra-row.selected{background:rgba(217,119,87,.06);border-left:3px solid var(--orange);}
+.ra-row-bar{width:3px;height:26px;border-radius:2px;flex-shrink:0;}
+.rb-h{background:#C0634A;} .rb-m{background:var(--orange);} .rb-l{background:var(--green);}
+.ra-row-id{font-family:'DM Mono',monospace;font-size:8.5px;background:rgba(20,20,19,.06);padding:1px 5px;border-radius:3px;flex-shrink:0;color:var(--charcoal);}
+.ra-row-name{font-size:10px;font-weight:500;color:var(--charcoal);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ra-prov{font-size:8px;color:var(--gray-soft);font-style:italic;}
+.ra-status{font-size:8.5px;font-weight:600;padding:1px 6px;border-radius:3px;flex-shrink:0;}
+.st-prov{background:rgba(176,174,165,.2);color:#4A4A46;}
+.st-comp{background:#EAF3DE;color:#27500A;}
+.ra-score-ring-sm{width:22px;height:22px;flex-shrink:0;}
+.ra-detail-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-soft);font-size:11px;padding:20px;text-align:center;}
+
+/* Detail panel */
+.ra-det-header{padding:14px 16px;border-bottom:1px solid var(--gray-line);background:var(--white);}
+.ra-det-name{font-size:14px;font-weight:600;color:var(--charcoal);margin-bottom:3px;}
+.ra-det-sub{font-size:10px;color:var(--gray-soft);}
+.ra-score-display{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--gray-line);background:var(--cream);}
+.ra-big-ring{position:relative;width:60px;height:60px;flex-shrink:0;}
+.ra-big-ring svg{width:60px;height:60px;}
+.ra-big-ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ra-score-num{font-family:'DM Serif Display',serif;font-size:16px;line-height:1;}
+.ra-score-den{font-size:8px;color:var(--gray-soft);}
+.ra-score-tier{font-size:11px;font-weight:600;}
+.ra-score-note{font-size:9px;color:var(--gray-soft);margin-top:2px;}
+.ra-dims{padding:12px 16px;}
+.ra-dim-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:10px;}
+.ra-dim-row{margin-bottom:10px;}
+.ra-dim-top{display:flex;justify-content:space-between;margin-bottom:3px;}
+.ra-dim-name{font-size:10px;font-weight:500;color:var(--charcoal);}
+.ra-dim-score{font-size:10px;font-weight:600;}
+.ra-dim-bar{height:5px;background:var(--gray-line);border-radius:3px;overflow:hidden;}
+.ra-dim-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.ra-dim-note{font-size:8.5px;color:var(--gray-soft);margin-top:2px;}
+.ra-findings{padding:0 16px 16px;}
+.ra-findings-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px;}
+.ra-finding{border-radius:7px;padding:8px 10px;margin-bottom:6px;border:1px solid;}
+.ra-finding-crit{background:#FCEBEB;border-color:rgba(192,99,74,.2);}
+.ra-finding-high{background:#FAEEDA;border-color:rgba(217,119,87,.2);}
+.ra-finding-med{background:rgba(106,155,204,.08);border-color:rgba(106,155,204,.2);}
+.ra-finding-top{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.ra-finding-sev{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;}
+.sev-crit{background:#FCEBEB;color:#A32D2D;}
+.sev-high{background:#FAEEDA;color:#633806;}
+.sev-med{background:rgba(106,155,204,.12);color:#0C447C;}
+.ra-finding-text{font-size:10px;font-weight:500;color:var(--charcoal);}
+.ra-det-actions{padding:12px 16px;border-top:1px solid var(--gray-line);display:flex;gap:7px;}
+.ra-action-btn{height:28px;padding:0 12px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;border:1px solid;transition:all .12s;}
+.ra-btn-primary{background:var(--orange);color:white;border-color:var(--orange);}
+.ra-btn-primary:hover{background:var(--orange-dk);}
+.ra-btn-secondary{background:var(--white);color:var(--charcoal);border-color:var(--gray-line);}
+
+/* ── WIZARD MODAL ── */
+.wiz-overlay{display:none;position:absolute;inset:0;background:rgba(20,20,19,.5);align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+.wiz-overlay.open{display:flex;}
+.wiz-modal{background:var(--white);border-radius:14px;width:520px;max-height:88%;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 56px rgba(0,0,0,.28);animation:modalUp .22s ease both;}
+@keyframes modalUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.wiz-header{padding:16px 20px;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.wiz-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--charcoal);}
+.wiz-step-lbl{font-size:10px;color:var(--gray-soft);}
+.wiz-close{width:24px;height:24px;border:1px solid var(--gray-line);border-radius:5px;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-soft);}
+.wiz-tabs{display:flex;gap:0;border-bottom:1px solid var(--gray-line);flex-shrink:0;}
+.wiz-tab{flex:1;height:32px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--gray-soft);border-right:1px solid var(--gray-line);background:var(--cream);}
+.wiz-tab:last-child{border-right:none;}
+.wiz-tab.active{background:var(--white);color:var(--orange);font-weight:600;}
+.wiz-tab.done{background:var(--white);color:var(--green);}
+.wiz-body{padding:18px 20px;overflow-y:auto;flex:1;}
+.wiz-footer{padding:12px 20px;border-top:1px solid var(--gray-line);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.wiz-note{font-size:10.5px;color:var(--orange-dk);}
+.wiz-btn-back{height:30px;padding:0 14px;background:none;border:1px solid var(--gray-line);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;color:var(--gray-mid);}
+.wiz-btn-back:hover{background:var(--cream);}
+.wiz-btn-next{height:30px;padding:0 16px;background:var(--orange);border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:white;cursor:pointer;transition:background .12s;}
+.wiz-btn-next:hover{background:var(--orange-dk);}
+.wiz-btn-next:disabled{background:var(--gray-line);color:var(--gray-soft);cursor:not-allowed;}
+
+/* Step 0 - system selection */
+.sys-option{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--gray-line);border-radius:8px;margin-bottom:6px;cursor:pointer;background:var(--white);transition:all .12s;}
+.sys-option:hover{border-color:var(--orange);background:rgba(217,119,87,.03);}
+.sys-option.selected{border-color:var(--orange);background:rgba(217,119,87,.06);}
+.sys-opt-bar{width:3px;height:24px;border-radius:2px;flex-shrink:0;}
+.sys-opt-name{font-size:11px;font-weight:500;color:var(--charcoal);flex:1;}
+.sys-opt-sub{font-size:9.5px;color:var(--gray-soft);}
+.sys-opt-risk{font-size:8.5px;font-weight:600;padding:1px 6px;border-radius:4px;flex-shrink:0;}
+.risk-high{background:#FCEBEB;color:#A32D2D;} .risk-med{background:#FAEEDA;color:#633806;} .risk-low{background:#EAF3DE;color:#27500A;}
+
+/* Step 1 - context questions */
+.ctx-q{margin-bottom:14px;padding:11px 13px;border:1px solid var(--gray-line);border-radius:8px;background:var(--cream);}
+.ctx-label{font-size:11px;font-weight:600;color:var(--charcoal);margin-bottom:3px;}
+.ctx-sub{font-size:10px;color:var(--gray-soft);margin-bottom:8px;font-style:italic;}
+.ctx-opts{display:flex;flex-direction:column;gap:4px;}
+.ctx-opt{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;border:1px solid var(--gray-line);background:var(--white);transition:all .12s;}
+.ctx-opt:hover{border-color:var(--orange);background:rgba(217,119,87,.04);}
+.ctx-opt.selected{border-color:var(--orange);background:rgba(217,119,87,.08);}
+.ctx-opt-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--gray-line);flex-shrink:0;margin-top:1px;transition:all .12s;}
+.ctx-opt.selected .ctx-opt-dot{border-color:var(--orange);background:var(--orange);}
+.ctx-opt-text{font-size:10.5px;color:var(--charcoal);line-height:1.5;}
+
+/* Step 2 - sliders */
+.dim-card{border:1px solid var(--gray-line);border-radius:8px;padding:11px 13px;margin-bottom:8px;background:var(--cream);}
+.dim-card-title{font-size:11px;font-weight:600;color:var(--charcoal);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center;}
+.dim-card-desc{font-size:9.5px;color:var(--gray-soft);margin-bottom:8px;}
+.dim-slider-wrap{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.dim-slider{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:var(--gray-line);border-radius:2px;outline:none;cursor:pointer;}
+.dim-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--orange);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.dim-slider-lbl{font-size:9px;color:var(--gray-soft);}
+.dim-score-val{font-size:12px;font-weight:700;min-width:24px;text-align:center;}
+.dim-endlabels{display:flex;justify-content:space-between;font-size:8.5px;color:var(--gray-soft);}
+
+/* Step 3 - results */
+.result-ring-wrap{display:flex;align-items:center;gap:16px;padding:14px 16px;background:var(--cream);border-radius:10px;margin-bottom:14px;}
+.result-ring{position:relative;width:80px;height:80px;flex-shrink:0;}
+.result-ring svg{width:80px;height:80px;}
+.result-ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.result-score{font-family:'DM Serif Display',serif;font-size:22px;line-height:1;}
+.result-slash{font-size:11px;color:var(--gray-soft);}
+.result-tier{font-size:14px;font-weight:600;color:var(--charcoal);margin-bottom:4px;}
+.result-note{font-size:11px;color:var(--gray-mid);}
+.result-findings-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px;}
+.result-finding{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:7px;margin-bottom:5px;border:1px solid;}
+
+/* ── DIM EXPLAINER TABLE ── */
+.dim-table{border:1px solid var(--gray-line);border-radius:10px;overflow:hidden;margin:16px 0;}
+.dim-table-row{display:grid;grid-template-columns:26px 140px 50px 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--gray-line);font-size:11px;}
+.dim-table-row:last-child{border-bottom:none;}
+.dim-table-row:first-child{background:var(--charcoal);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.dim-table-row:first-child .dtc{color:rgba(250,249,245,.5);padding:8px 10px;}
+.dtc{padding:9px 10px;color:var(--gray-mid);line-height:1.4;vertical-align:top;border-right:1px solid var(--gray-line);}
+.dtc:last-child{border-right:none;}
+.dtc-name{font-weight:600;color:var(--charcoal);}
+.dtc-wt{font-family:'DM Mono',monospace;font-size:10px;text-align:center;color:var(--orange);font-weight:600;}
+.dtc-idx{font-family:'DM Mono',monospace;font-size:9px;color:var(--gray-soft);text-align:center;padding-top:10px;}
+
+/* Finding explainer */
+.find-card{border:1px solid var(--gray-line);border-radius:9px;overflow:hidden;margin-bottom:10px;}
+.find-card-hdr{padding:9px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--gray-line);background:var(--cream);}
+.find-card-body{padding:9px 13px;font-size:12px;color:var(--gray-mid);line-height:1.6;}
+
+/* ── SCORE VISUAL ── */
+.score-scale{display:flex;gap:4px;margin:14px 0;}
+.score-block{flex:1;border-radius:6px;padding:8px 10px;text-align:center;}
+.score-block-val{font-family:'DM Serif Display',serif;font-size:18px;}
+.score-block-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.sb-low{background:#EAF3DE;} .sb-low .score-block-val{color:#27500A;} .sb-low .score-block-lbl{color:#3B6D11;}
+.sb-med{background:#FAEEDA;} .sb-med .score-block-val{color:#633806;} .sb-med .score-block-lbl{color:var(--orange-dk);}
+.sb-high{background:#FCEBEB;} .sb-high .score-block-val{color:#A32D2D;} .sb-high .score-block-lbl{color:#A32D2D;}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:var(--gray-line);margin:28px 0;}
+
+/* ── COMPLETION ── */
+.done-card{text-align:center;padding:36px 24px;}
+.done-icon{width:56px;height:56px;border-radius:50%;background:rgba(120,140,93,.12);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+.done-icon svg{width:24px;height:24px;color:var(--green);}
+.done-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--charcoal);margin-bottom:6px;}
+.done-sub{font-size:13px;color:var(--gray-mid);line-height:1.65;max-width:400px;margin:0 auto;}
+
+/* ── DOWNSTREAM GRID ── */
+.ds-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+.ds-card{border:1px solid var(--gray-line);border-radius:10px;padding:13px 15px;background:var(--white);position:relative;overflow:hidden;}
+.ds-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.ds-inv::before{background:var(--charcoal);}
+.ds-pb::before{background:var(--blue);}
+.ds-treat::before{background:var(--orange);}
+.ds-dash::before{background:var(--green);}
+.ds-mod{font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:4px;}
+.ds-title{font-size:12px;font-weight:600;color:var(--charcoal);margin-bottom:3px;}
+.ds-desc{font-size:11px;color:var(--gray-mid);line-height:1.55;}
+.ds-em{font-size:16px;margin-bottom:5px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- NAV -->
+<nav class="snav">
+  <div class="snav-logo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard">
+    <div class="snav-logo-row"><div class="snav-li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/><path d="M9 12l2 2 4-4" stroke="#D97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="snav-ln">Govern<span>AI</span></span></div>
+    <div class="snav-sub">Risk Assessment Guide</div>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Steps</div>
+    <div class="snav-link active" onclick="goPanel(0)"><span class="snav-dot"></span>Introduction</div>
+    <div class="snav-link" onclick="goPanel(1)"><span class="snav-dot"></span>Navigate to Risk Assessment</div>
+    <div class="snav-link" onclick="goPanel(2)"><span class="snav-dot"></span>Step 1 — Select a system</div>
+    <div class="snav-link" onclick="goPanel(3)"><span class="snav-dot"></span>Step 2 — Context questions</div>
+    <div class="snav-link" onclick="goPanel(4)"><span class="snav-dot"></span>Step 3 — Score dimensions</div>
+    <div class="snav-link" onclick="goPanel(5)"><span class="snav-dot"></span>Step 4 — Review results</div>
+    <div class="snav-link" onclick="goPanel(6)"><span class="snav-dot"></span>Save the assessment</div>
+    <div class="snav-link" onclick="goPanel(7)"><span class="snav-dot"></span>What happens next</div>
+  </div>
+  <div class="snav-prog">
+    <div class="snav-prog-label"><span>Progress</span><span id="prog-lbl">1 / 8</span></div>
+    <div class="snav-prog-bar"><div class="snav-prog-fill" id="prog-fill" style="width:12.5%"></div></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-label" id="tb-lbl"><strong>Step 1 of 8</strong> — Introduction</div>
+    <div class="tb-btns">
+      <button class="tb-btn tb-prev" id="btn-prev" onclick="prevPanel()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back
+      </button>
+      <button class="tb-btn tb-next" id="btn-next" onclick="nextPanel()">Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+<!-- ═══ PANEL 0: INTRO ═══ -->
+<div class="panel active" id="panel-0">
+  <div class="hero">
+    <div class="ph-eye">Interactive Guide</div>
+    <h1 class="ph-title">Risk Assessment Engine</h1>
+    <p class="ph-sub">Walk through all four steps of a formal AI risk assessment — from selecting the system to reviewing results and saving. Click every button, answer every question, and move every slider in the live simulator.</p>
+    <div class="ph-meta">
+      <div class="ph-meta-item"><div class="ph-ml">Module</div><div class="ph-mv">Risk Assessment</div></div>
+      <div class="ph-meta-item"><div class="ph-ml">NIST AI RMF</div><div class="ph-mv">MAP · MEASURE</div></div>
+      <div class="ph-meta-item"><div class="ph-ml">Time to complete</div><div class="ph-mv">10–20 minutes per system</div></div>
+      <div class="ph-meta-item"><div class="ph-ml">Example system</div><div class="ph-mv">Customer Churn Predictor</div></div>
+    </div>
+  </div>
+  <div class="pbody">
+    <div class="callout key"><div class="ci">🎯</div><div><div class="ct">What a risk assessment does</div><div class="cd">A formal risk assessment converts a Provisional placeholder record into a real scored profile — a number from 0 to 10 across six risk dimensions, a risk tier (Low/Medium/High), an automatically generated set of governance findings, and a calculated next review date. It is the core governance action that creates accountability and drives everything else.</div></div></div>
+    <div class="callout info"><div class="ci">ℹ️</div><div><div class="ct">Example system</div><div class="cd">We will assess the <strong>Customer Churn Predictor</strong> registered in the previous guide — an internally built model that scores customers on churn likelihood and triggers automatic retention outreach. No human review step exists before action is taken.</div></div></div>
+    <div class="callout tip"><div class="ci">💡</div><div><div class="ct">Score based on current state</div><div class="cd">Score each dimension based on <strong>how the system operates today</strong> — not how you intend to improve it, not what is in the vendor contract. If human review is supposed to happen but rarely does in practice, score for the actual behavior.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 1: NAVIGATE ═══ -->
+<div class="panel" id="panel-1">
+  <div class="hero">
+    <div class="ph-eye">Step 1</div>
+    <h1 class="ph-title">Navigate to Risk Assessment</h1>
+    <p class="ph-sub">Click the Risk Assessment module in the sidebar and find your system's Provisional record.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">👆</div><div><div class="coach-step">Try it</div><div class="coach-text">Click <strong>Risk Assessment</strong> in the sidebar. The panel switches to show the RA module with all systems listed. Find <strong>SYS-007 Customer Churn Predictor</strong> — it shows as Provisional with a blank score ring. Click that row to select it and see the empty detail panel.</div></div></div>
+
+    <div class="sim">
+      <div class="sim-bar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html</div></div>
+      <div style="position:relative">
+        <div class="app">
+          <div class="app-sidebar">
+            <div class="app-logo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard"><div class="alogo-row"><div class="alogo-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="alogo-name">Govern<span>AI</span></span></div><div class="alogo-sub">AI Governance Platform</div></div>
+            <div class="anav-label" style="margin-top:6px">Overview</div>
+            <div class="anav-item" onclick="p1Nav(this,'dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>GRC Dashboard</div>
+            <div class="anav-label" style="margin-top:4px">Modules</div>
+            <div class="anav-item" onclick="p1Nav(this,'playbook')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Governance Playbook</div>
+            <div class="anav-item" onclick="p1Nav(this,'inventory')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>AI Inventory <span class="anav-badge">7</span></div>
+            <div class="anav-item" id="p1-ra-nav" onclick="p1Nav(this,'risk')" style="animation:btnPulse 1.4s ease-in-out infinite;border-left:2px solid rgba(217,119,87,.4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="anav-badge">7</span></div>
+            <div class="anav-item" onclick="p1Nav(this,'vdd')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence <span class="anav-badge">4</span></div>
+            <div class="anav-item" onclick="p1Nav(this,'treat')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management <span class="anav-badge">12</span></div>
+          </div>
+          <div class="app-main">
+            <div class="app-topbar" id="p1-topbar">GRC Dashboard</div>
+            <div id="p1-ra-view" style="display:none;flex:1">
+              <div class="ra-shell">
+                <div class="ra-left">
+                  <div class="ra-summary"><div><div class="ra-sum-num" style="color:var(--orange)">7</div><div class="ra-sum-lbl">systems</div></div><div class="ra-sum-sep"></div><div><div class="ra-sum-num" style="color:#C0634A">3</div><div class="ra-sum-lbl">high risk</div></div><div class="ra-sum-sep"></div><div><div class="ra-sum-num" style="color:var(--green)">6</div><div class="ra-sum-lbl">assessed</div></div></div>
+                  <div class="ra-controls">
+                    <button class="ra-pill active">All systems</button>
+                    <button class="ra-pill">Pending</button>
+                    <button class="ra-new-btn no-pulse" onclick="p1NewAssess()">+ New assessment</button>
+                  </div>
+                  <div class="ra-list">
+                    <div class="ra-row" onclick="p1SelectRow(this,'SYS-001','Credit Underwriting AI','Zest AI','High',7)"><div class="ra-row-bar rb-h"></div><div class="ra-row-id">SYS-001</div><div class="ra-row-name">Credit Underwriting AI</div><div class="ra-status st-comp">Complete</div></div>
+                    <div class="ra-row" onclick="p1SelectRow(this,'SYS-002','Clinical Decision Support','Nuance DAX','High',8)"><div class="ra-row-bar rb-h"></div><div class="ra-row-id">SYS-002</div><div class="ra-row-name">Clinical Decision Support</div><div class="ra-status st-comp">Complete</div></div>
+                    <div class="ra-row" onclick="p1SelectRow(this,'SYS-003','AI Code Assistant','GitHub','Medium',4)"><div class="ra-row-bar rb-m"></div><div class="ra-row-id">SYS-003</div><div class="ra-row-name">AI Code Assistant</div><div class="ra-status st-comp">Complete</div></div>
+                    <div class="ra-row" onclick="p1SelectRow(this,'SYS-004','Fraud Detection AI','Featurespace','High',7)"><div class="ra-row-bar rb-h"></div><div class="ra-row-id">SYS-004</div><div class="ra-row-name">Fraud Detection AI</div><div class="ra-status st-comp">Complete</div></div>
+                    <div class="ra-row" onclick="p1SelectRow(this,'SYS-005','HR Recruitment AI','HireVue','Medium',5)"><div class="ra-row-bar rb-m"></div><div class="ra-row-id">SYS-005</div><div class="ra-row-name">HR Recruitment AI</div><div class="ra-status st-comp">Complete</div></div>
+                    <div class="ra-row" onclick="p1SelectRow(this,'SYS-006','Document Intelligence','Azure AI','Low',2)"><div class="ra-row-bar rb-l"></div><div class="ra-row-id">SYS-006</div><div class="ra-row-name">Document Intelligence</div><div class="ra-status st-comp">Complete</div></div>
+                    <div class="ra-row" id="p1-row-007" onclick="p1SelectRow(this,'SYS-007','Customer Churn Predictor','Internal','Medium',0)"><div class="ra-row-bar rb-m"></div><div class="ra-row-id">SYS-007</div><div class="ra-row-name">Customer Churn Predictor</div><div class="ra-prov">Provisional</div></div>
+                  </div>
+                </div>
+                <div class="ra-right" id="p1-ra-right">
+                  <div class="ra-detail-empty">← Select a system from the list to view its assessment detail</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--gray-soft);font-size:11px" id="p1-msg">← Click Risk Assessment in the sidebar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip"><div class="ci">💡</div><div><div class="ct">Reading the list</div><div class="cd">Each row shows the system ID, name, a colored risk tier bar on the left edge (red = High, orange = Medium, green = Low), the assessment status, and a score ring. Provisional records show blank rings — they are placeholders created automatically when you registered the system. Click <strong>+ New assessment</strong> to begin the wizard for any system.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 2: STEP 0 - SELECT ═══ -->
+<div class="panel" id="panel-2">
+  <div class="hero">
+    <div class="ph-eye">Wizard Step 1 of 4</div>
+    <h1 class="ph-title">Select the system</h1>
+    <p class="ph-sub">The wizard opens with a list of all registered AI systems. Select the one you want to assess and click Next.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">👆</div><div><div class="coach-step">Try it</div><div class="coach-text">Click <strong>+ New assessment</strong> below to open the wizard. Then select <strong>Customer Churn Predictor (SYS-007)</strong> from the list. Notice it shows "Provisional" — indicating it exists but has never been formally scored. Click <strong>Next</strong> to proceed.</div></div></div>
+
+    <div class="sim">
+      <div class="sim-bar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html — Risk Assessment</div></div>
+      <div style="position:relative;min-height:360px">
+        <div class="app" style="min-height:360px">
+          <div class="app-sidebar">
+            <div class="app-logo"><div class="alogo-row"><div class="alogo-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="alogo-name">Govern<span>AI</span></span></div></div>
+            <div class="anav-item active" style="margin-top:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="anav-badge">7</span></div>
+          </div>
+          <div class="app-main">
+            <div class="app-topbar">Risk Assessment</div>
+            <div style="flex:1;display:flex;flex-direction:column">
+              <div class="ra-controls"><button class="ra-pill active">All systems</button><button class="ra-new-btn" onclick="p2OpenWiz()">+ New assessment</button></div>
+              <div style="padding:8px;overflow-y:auto;flex:1">
+                <div class="ra-row"><div class="ra-row-bar rb-h"></div><div class="ra-row-id">SYS-001</div><div class="ra-row-name">Credit Underwriting AI</div><div class="ra-status st-comp">Complete</div></div>
+                <div class="ra-row" style="opacity:.5"><div class="ra-row-bar rb-h"></div><div class="ra-row-id">SYS-002</div><div class="ra-row-name">Clinical Decision Support</div><div class="ra-status st-comp">Complete</div></div>
+                <div class="ra-row" style="opacity:.5"><div class="ra-row-bar rb-m"></div><div class="ra-row-id">SYS-003</div><div class="ra-row-name">AI Code Assistant</div><div class="ra-status st-comp">Complete</div></div>
+                <div class="ra-row" style="background:rgba(217,119,87,.06);border-left:2px solid var(--orange)"><div class="ra-row-bar rb-m"></div><div class="ra-row-id">SYS-007</div><div class="ra-row-name">Customer Churn Predictor</div><div class="ra-prov">Provisional — click New assessment to begin</div></div>
+              </div>
+            </div>
+            <!-- Wizard -->
+            <div class="wiz-overlay" id="p2-wiz">
+              <div class="wiz-modal">
+                <div class="wiz-header"><div class="wiz-title">New Risk Assessment</div><div class="wiz-step-lbl">Step 1 of 4</div><button class="wiz-close" onclick="p2CloseWiz()">✕</button></div>
+                <div class="wiz-tabs"><div class="wiz-tab active">Select system</div><div class="wiz-tab">Context</div><div class="wiz-tab">Score dimensions</div><div class="wiz-tab">Results</div></div>
+                <div class="wiz-body">
+                  <div style="font-size:11.5px;color:var(--gray-mid);margin-bottom:12px">Select the AI system you want to formally assess.</div>
+                  <div class="sys-option" onclick="p2SelectSys(this)"><div class="sys-opt-bar rb-h"></div><div><div class="sys-opt-name">Credit Underwriting AI</div><div class="sys-opt-sub">Zest AI · Credit Risk</div></div><div class="sys-opt-risk risk-high">High</div><div style="font-size:9px;color:var(--green);margin-left:4px">✓ Assessed</div></div>
+                  <div class="sys-option" onclick="p2SelectSys(this)"><div class="sys-opt-bar rb-m"></div><div><div class="sys-opt-name">AI Code Assistant</div><div class="sys-opt-sub">GitHub · Engineering</div></div><div class="sys-opt-risk risk-med">Medium</div><div style="font-size:9px;color:var(--green);margin-left:4px">✓ Assessed</div></div>
+                  <div class="sys-option" id="p2-sys-007" onclick="p2SelectSys(this,true)"><div class="sys-opt-bar rb-m"></div><div><div class="sys-opt-name">Customer Churn Predictor</div><div class="sys-opt-sub">Internal · Analytics · <em style="color:var(--orange-dk)">Provisional</em></div></div><div class="sys-opt-risk risk-med">Medium</div></div>
+                </div>
+                <div class="wiz-footer"><div class="wiz-note" id="p2-note">Select a system to continue</div><div style="display:flex;gap:8px"><button class="wiz-btn-back" style="visibility:hidden">Back</button><button class="wiz-btn-next" id="p2-next" onclick="p2Next()" disabled>Next →</button></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip"><div class="ci">💡</div><div><div class="ct">Re-assessing existing systems</div><div class="cd">You can also run the wizard on a previously assessed system by clicking <strong>Re-assess</strong> in the detail panel. The wizard skips Step 1 (system selection) and goes straight to context questions, pre-filling your previous answers.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 3: STEP 1 - CONTEXT ═══ -->
+<div class="panel" id="panel-3">
+  <div class="hero">
+    <div class="ph-eye">Wizard Step 2 of 4</div>
+    <h1 class="ph-title">Context questions</h1>
+    <p class="ph-sub">Four questions that shape how the scoring engine weights each risk dimension. All four must be answered before proceeding.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">👆</div><div><div class="coach-step">Try it — answer all four questions</div><div class="coach-text">Select the best answer for each question as it applies to the <strong>Customer Churn Predictor</strong>. The correct answers for this system are highlighted in the explanations below the simulator. All four must be answered before Next unlocks.</div></div></div>
+
+    <div class="sim">
+      <div class="sim-bar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html — Risk Assessment Wizard · Step 2</div></div>
+      <div style="min-height:420px;background:rgba(20,20,19,.3);display:flex;align-items:flex-start;justify-content:center;padding:20px">
+        <div class="wiz-modal" style="position:relative;animation:none;max-width:480px;width:100%">
+          <div class="wiz-header"><div class="wiz-title">Context — Customer Churn Predictor</div><div class="wiz-step-lbl">Step 2 of 4</div><button class="wiz-close">✕</button></div>
+          <div class="wiz-tabs"><div class="wiz-tab done">✓ Select system</div><div class="wiz-tab active">Context</div><div class="wiz-tab">Score dimensions</div><div class="wiz-tab">Results</div></div>
+          <div class="wiz-body" style="max-height:340px">
+            <div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px;font-style:italic">These questions shape how the scoring engine weights each risk dimension.</div>
+            <!-- Q1 -->
+            <div class="ctx-q">
+              <div class="ctx-label">1. What is the primary purpose of this AI system?</div>
+              <div class="ctx-sub">Select the option that best describes how this system is used.</div>
+              <div class="ctx-opts">
+                <div class="ctx-opt" onclick="p3Answer(this,'q1')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Makes or informs decisions directly affecting individuals (credit, clinical, hiring, insurance)</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q1')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Supports operational processes with moderate downstream impact</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q1')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Productivity or internal tool — no direct effect on individuals</div></div>
+              </div>
+            </div>
+            <!-- Q2 -->
+            <div class="ctx-q">
+              <div class="ctx-label">2. Who is affected by this system's outputs?</div>
+              <div class="ctx-sub">Consider the broadest realistic scope of impact.</div>
+              <div class="ctx-opts">
+                <div class="ctx-opt" onclick="p3Answer(this,'q2')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">External individuals (customers, patients, job applicants, borrowers)</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q2')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Mix of internal staff and external parties</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q2')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Internal staff only</div></div>
+              </div>
+            </div>
+            <!-- Q3 -->
+            <div class="ctx-q">
+              <div class="ctx-label">3. What is the consequence of a material error or failure?</div>
+              <div class="ctx-sub">Consider worst-case realistic scenarios.</div>
+              <div class="ctx-opts">
+                <div class="ctx-opt" onclick="p3Answer(this,'q3')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">High — adverse decision affecting individual rights, safety, or finances; regulatory exposure</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q3')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Medium — operational disruption, reputational risk, or recoverable financial loss</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q3')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Low — minor inconvenience, easily corrected, no external impact</div></div>
+              </div>
+            </div>
+            <!-- Q4 -->
+            <div class="ctx-q">
+              <div class="ctx-label">4. Has this system undergone any formal technical validation?</div>
+              <div class="ctx-sub">Includes model validation, bias testing, accuracy benchmarking, or security review.</div>
+              <div class="ctx-opts">
+                <div class="ctx-opt" onclick="p3Answer(this,'q4')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">No formal validation — deployed without structured assessment</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q4')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Partial — some testing completed but gaps remain</div></div>
+                <div class="ctx-opt" onclick="p3Answer(this,'q4')"><div class="ctx-opt-dot"></div><div class="ctx-opt-text">Yes — comprehensive validation including bias testing and performance benchmarking</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="wiz-footer"><div class="wiz-note" id="p3-note">Answer all 4 questions to continue</div><div style="display:flex;gap:8px"><button class="wiz-btn-back">← Back</button><button class="wiz-btn-next" id="p3-next" disabled>Next →</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">Correct answers for the Customer Churn Predictor</h3>
+    <div class="callout info"><div class="ci">Q1</div><div><div class="ct">Supports operational processes with moderate downstream impact</div><div class="cd">The Churn Predictor drives retention outreach decisions, but it doesn't directly determine individual rights or financial outcomes the way a credit underwriting model does. It is operational — the consequence is operational disruption or missed revenue, not adverse action on an individual's legal rights.</div></div></div>
+    <div class="callout info"><div class="ci">Q2</div><div><div class="ct">External individuals — customers</div><div class="cd">The system scores actual customers. Even though the outreach decision is internal, the population affected is external customers who may receive (or miss receiving) retention offers based on the AI's output.</div></div></div>
+    <div class="callout info"><div class="ci">Q3</div><div><div class="ct">Medium — operational disruption, reputational risk, or recoverable financial loss</div><div class="cd">If the model systematically misclassifies at-risk customers, the company loses revenue and customer relationships. This is recoverable but significant. It rises to High if the retention offers constitute credit products regulated under ECOA.</div></div></div>
+    <div class="callout info"><div class="ci">Q4</div><div><div class="ct">No formal validation — deployed without structured assessment</div><div class="cd">The system was built and deployed internally without a structured validation process. This is the honest answer for many internally built models. It is critical to record this accurately — it will generate a finding in the results step.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 4: STEP 2 - SCORE DIMS ═══ -->
+<div class="panel" id="panel-4">
+  <div class="hero">
+    <div class="ph-eye">Wizard Step 3 of 4</div>
+    <h1 class="ph-title">Score the six dimensions</h1>
+    <p class="ph-sub">Move each slider from 1 (low risk) to 10 (high risk) based on the system's current state. Score what is true today — not what you plan to implement.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">👆</div><div><div class="coach-step">Try it — move all six sliders</div><div class="coach-text">Set each slider to the recommended value shown in the guidance below each dimension. The scoring formula weights each dimension differently — Decision impact counts most (22%), Model transparency counts least (10%). Watch the live preview score update as you move the sliders.</div></div></div>
+
+    <div class="sim">
+      <div class="sim-bar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html — Risk Assessment Wizard · Step 3</div></div>
+      <div style="min-height:480px;background:rgba(20,20,19,.3);display:flex;align-items:flex-start;justify-content:center;padding:16px">
+        <div class="wiz-modal" style="position:relative;animation:none;max-width:480px;width:100%">
+          <div class="wiz-header">
+            <div class="wiz-title">Score dimensions — Churn Predictor</div>
+            <div class="wiz-step-lbl" id="p4-live-score">Live score: —</div>
+            <button class="wiz-close">✕</button>
+          </div>
+          <div class="wiz-tabs"><div class="wiz-tab done">✓ Select system</div><div class="wiz-tab done">✓ Context</div><div class="wiz-tab active">Score dimensions</div><div class="wiz-tab">Results</div></div>
+          <div class="wiz-body" style="max-height:380px">
+            <div style="font-size:11px;color:var(--gray-mid);margin-bottom:12px;font-style:italic">Score each dimension from 1 (low risk) to 10 (high risk) based on the system's current state.</div>
+            <div id="p4-dims"></div>
+          </div>
+          <div class="wiz-footer"><div class="wiz-note">Move all sliders, then click Next to see results</div><div style="display:flex;gap:8px"><button class="wiz-btn-back">← Back</button><button class="wiz-btn-next" onclick="p4Next()">Next →</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:4px">The six dimensions explained</h3>
+    <p style="font-size:12.5px;color:var(--gray-mid);margin-bottom:14px">Each dimension is weighted differently in the final score. Higher weight = greater influence on the overall result.</p>
+
+    <div class="dim-table">
+      <div class="dim-table-row"><div class="dtc">#</div><div class="dtc">Dimension</div><div class="dtc">Weight</div><div class="dtc">Low (1–3)</div><div class="dtc">Medium (4–6)</div><div class="dtc">High (7–10)</div></div>
+      <div class="dim-table-row"><div class="dtc-idx dtc">1</div><div class="dtc dtc-name">Decision impact</div><div class="dtc dtc-wt">22%</div><div class="dtc">Informational only</div><div class="dtc">Informs significant decisions</div><div class="dtc">Directly determines consequential outcomes for individuals</div></div>
+      <div class="dim-table-row"><div class="dtc-idx dtc">2</div><div class="dtc dtc-name">Data sensitivity</div><div class="dtc dtc-wt">20%</div><div class="dtc">No personal data</div><div class="dtc">PII or employee data</div><div class="dtc">PHI, financial, biometrics, or regulated data</div></div>
+      <div class="dim-table-row"><div class="dtc-idx dtc">3</div><div class="dtc dtc-name">Regulatory exposure</div><div class="dtc dtc-wt">20%</div><div class="dtc">No known obligations</div><div class="dtc">Operates in regulated sector, applicability unclear</div><div class="dtc">Directly subject to SR 11-7, HIPAA, FDA SaMD, ECOA, EU AI Act</div></div>
+      <div class="dim-table-row"><div class="dtc-idx dtc">4</div><div class="dtc dtc-name">Human oversight</div><div class="dtc dtc-wt">15%</div><div class="dtc">Meaningful human review of all outputs</div><div class="dtc">Review occurs but often rubber-stamped</div><div class="dtc">Fully automated — no human checkpoint</div></div>
+      <div class="dim-table-row"><div class="dtc-idx dtc">5</div><div class="dtc dtc-name">Third-party dependency</div><div class="dtc dtc-wt">13%</div><div class="dtc">Fully audited, SOC 2 + independent bias reports</div><div class="dtc">Some documentation, gaps remain</div><div class="dtc">Black-box model, minimal vendor transparency</div></div>
+      <div class="dim-table-row"><div class="dtc-idx dtc">6</div><div class="dtc dtc-name">Model transparency</div><div class="dtc dtc-wt">10%</div><div class="dtc">Full explainability — feature importance and audit trail</div><div class="dtc">Partial explainability available</div><div class="dtc">Outputs unexplainable, no audit trail</div></div>
+    </div>
+
+    <div class="callout warn"><div class="ci">⚠️</div><div><div class="ct">Score current state, not intended state</div><div class="cd">If you plan to add human review next quarter but it does not exist today, score Human oversight as High. Controls that are planned but not implemented do not reduce risk — they are findings.</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 5: STEP 3 - RESULTS ═══ -->
+<div class="panel" id="panel-5">
+  <div class="hero">
+    <div class="ph-eye">Wizard Step 4 of 4</div>
+    <h1 class="ph-title">Review results &amp; findings</h1>
+    <p class="ph-sub">The wizard shows your overall score, risk tier, and automatically generated governance findings. Review them before saving.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">👆</div><div><div class="coach-step">Review the results screen</div><div class="coach-text">The simulator below shows what the results step looks like for the Customer Churn Predictor with the scores from Step 3. Review the overall score, risk tier, and the findings generated. Each finding comes from a specific dimension scoring above its threshold.</div></div></div>
+
+    <div class="sim">
+      <div class="sim-bar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html — Risk Assessment Wizard · Step 4 — Results</div></div>
+      <div style="min-height:420px;background:rgba(20,20,19,.3);display:flex;align-items:flex-start;justify-content:center;padding:16px">
+        <div class="wiz-modal" style="position:relative;animation:none;max-width:480px;width:100%">
+          <div class="wiz-header"><div class="wiz-title">Results — Customer Churn Predictor</div><div class="wiz-step-lbl">Step 4 of 4</div><button class="wiz-close">✕</button></div>
+          <div class="wiz-tabs"><div class="wiz-tab done">✓ Select system</div><div class="wiz-tab done">✓ Context</div><div class="wiz-tab done">✓ Score dimensions</div><div class="wiz-tab active">Results</div></div>
+          <div class="wiz-body" style="max-height:340px">
+            <div class="result-ring-wrap">
+              <div class="result-ring">
+                <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="7"/><circle cx="48" cy="48" r="38" fill="none" stroke="#C0634A" stroke-width="7" stroke-dasharray="238.8" stroke-dashoffset="71.6" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg>
+                <div class="result-ring-lbl"><div class="result-score" style="color:#C0634A">7</div><div class="result-slash">/ 10</div></div>
+              </div>
+              <div>
+                <div class="result-tier" style="color:#C0634A">High risk</div>
+                <div class="result-note">Next review: In 12 months</div>
+                <div class="result-note">NIST functions: MAP · MEASURE · MANAGE</div>
+              </div>
+            </div>
+            <div class="result-findings-title">3 findings generated</div>
+            <div class="result-finding ra-finding-crit">
+              <div class="ra-finding-top"><span class="ra-finding-sev sev-crit">Critical</span><div class="ra-finding-text">Sensitive data processing without documented controls</div></div>
+            </div>
+            <div class="result-finding ra-finding-high">
+              <div class="ra-finding-top"><span class="ra-finding-sev sev-high">High</span><div class="ra-finding-text">Automated decisioning with no human checkpoint</div></div>
+            </div>
+            <div class="result-finding ra-finding-high">
+              <div class="ra-finding-top"><span class="ra-finding-sev sev-high">High</span><div class="ra-finding-text">Regulatory compliance gap not formally assessed</div></div>
+            </div>
+          </div>
+          <div class="wiz-footer"><div class="wiz-note">Review findings, then save to finalize</div><div style="display:flex;gap:8px"><button class="wiz-btn-back">← Back</button><button class="wiz-btn-next" style="background:var(--green);border-color:var(--green)">Save assessment</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">Understanding the score</h3>
+    <div class="score-scale">
+      <div class="score-block sb-low"><div class="score-block-val">1–3</div><div class="score-block-lbl">Low risk</div></div>
+      <div class="score-block sb-med"><div class="score-block-val">4–6</div><div class="score-block-lbl">Medium risk</div></div>
+      <div class="score-block sb-high"><div class="score-block-val">7–10</div><div class="score-block-lbl">High risk</div></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--gray-mid);margin-bottom:20px">The score is a weighted average: <strong>Decision impact × 22% + Data sensitivity × 20% + Regulatory exposure × 20% + Human oversight × 15% + Third-party dependency × 13% + Model transparency × 10%</strong>.</p>
+
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">Where the findings come from</h3>
+    <div class="find-card">
+      <div class="find-card-hdr"><span class="ra-finding-sev sev-crit">Critical</span><div style="font-size:11px;font-weight:600;flex:1">Sensitive data processing without documented controls</div><div style="font-size:9px;color:var(--gray-soft)">Data sensitivity ≥ 7</div></div>
+      <div class="find-card-body">Financial and PII data scored 8/10 — above the Critical threshold of 7. The recommended control: verify BAA/DPA coverage, implement data minimization review, and confirm the sub-processor chain. This finding will appear in Risk Management automatically.</div>
+    </div>
+    <div class="find-card">
+      <div class="find-card-hdr"><span class="ra-finding-sev sev-high">High</span><div style="font-size:11px;font-weight:600;flex:1">Automated decisioning with no human checkpoint</div><div style="font-size:9px;color:var(--gray-soft)">Human oversight ≥ 7</div></div>
+      <div class="find-card-body">Human oversight scored 8/10 — the system triggers outreach automatically with no human review. Recommended control: implement sampling-based human review and automated exception flagging for anomalous outputs.</div>
+    </div>
+    <div class="find-card">
+      <div class="find-card-hdr"><span class="ra-finding-sev sev-high">High</span><div style="font-size:11px;font-weight:600;flex:1">Regulatory compliance gap not formally assessed</div><div style="font-size:9px;color:var(--gray-soft)">Regulatory exposure ≥ 6</div></div>
+      <div class="find-card-body">Regulatory exposure scored 6/10 — the system operates under GDPR/CPRA obligations that have not been formally assessed. Recommended control: run a compliance gap assessment and remediate priority gaps within 60 days.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 6: SAVE ═══ -->
+<div class="panel" id="panel-6">
+  <div class="hero">
+    <div class="ph-eye">Step 6</div>
+    <h1 class="ph-title">Save the assessment</h1>
+    <p class="ph-sub">Click Save assessment and watch the system's status change from Provisional to High risk — Assessed.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">👆</div><div><div class="coach-step">Try it — save and see the detail panel populate</div><div class="coach-text">Click <strong>Save assessment</strong> in the wizard below. Watch SYS-007 change from Provisional to Complete in the list, and see the full scored detail panel appear on the right with dimension bars, findings, and actions.</div></div></div>
+
+    <div class="sim">
+      <div class="sim-bar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html — Risk Assessment</div></div>
+      <div style="position:relative;min-height:460px">
+        <div class="app" style="min-height:460px">
+          <div class="app-sidebar">
+            <div class="app-logo"><div class="alogo-row"><div class="alogo-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="alogo-name">Govern<span>AI</span></span></div></div>
+            <div class="anav-item active" style="margin-top:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="anav-badge" id="p6-ra-badge">7</span></div>
+          </div>
+          <div class="app-main">
+            <div class="app-topbar">Risk Assessment</div>
+            <div class="ra-shell" style="flex:1">
+              <div class="ra-left">
+                <div class="ra-controls"><button class="ra-pill active">All systems</button><button class="ra-new-btn no-pulse" onclick="p6OpenWiz()">+ New assessment</button></div>
+                <div class="ra-list" id="p6-list">
+                  <div class="ra-row"><div class="ra-row-bar rb-h"></div><div class="ra-row-id">SYS-001</div><div class="ra-row-name">Credit Underwriting AI</div><div class="ra-status st-comp">Complete</div></div>
+                  <div class="ra-row" onclick="p6SelectRow(this,'007')"><div class="ra-row-bar rb-m"></div><div class="ra-row-id">SYS-007</div><div class="ra-row-name">Customer Churn Predictor</div><div class="ra-prov" id="p6-007-status">Provisional</div></div>
+                </div>
+              </div>
+              <div class="ra-right" id="p6-right">
+                <div class="ra-detail-empty" id="p6-empty">← Select a system to view its assessment</div>
+                <div id="p6-detail" style="display:none">
+                  <div class="ra-det-header">
+                    <div class="ra-det-name"><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(20,20,19,.06);padding:1px 5px;border-radius:3px;margin-right:6px">SYS-007</span>Customer Churn Predictor</div>
+                    <div class="ra-det-sub">Internal · Analytics · Assessed today</div>
+                  </div>
+                  <div class="ra-score-display">
+                    <div class="ra-big-ring">
+                      <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="8"/><circle cx="48" cy="48" r="38" fill="none" stroke="#C0634A" stroke-width="8" stroke-dasharray="238.8" stroke-dashoffset="71.6" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg>
+                      <div class="ra-big-ring-lbl"><div class="ra-score-num" style="color:#C0634A">7</div><div class="ra-score-den">/10</div></div>
+                    </div>
+                    <div><div class="ra-score-tier" style="color:#C0634A">High risk</div><div class="ra-score-note">Next review: In 12 months</div><div class="ra-score-note" style="margin-top:3px">MAP · MEASURE · MANAGE</div></div>
+                  </div>
+                  <div class="ra-dims">
+                    <div class="ra-dim-title">Six risk dimensions</div>
+                    <div class="ra-dim-row"><div class="ra-dim-top"><div class="ra-dim-name">Decision impact</div><div class="ra-dim-score" style="color:var(--orange)">5/10</div></div><div class="ra-dim-bar"><div class="ra-dim-fill" style="width:50%;background:var(--orange)"></div></div><div class="ra-dim-note">Informs significant decisions</div></div>
+                    <div class="ra-dim-row"><div class="ra-dim-top"><div class="ra-dim-name">Data sensitivity</div><div class="ra-dim-score" style="color:#C0634A">8/10</div></div><div class="ra-dim-bar"><div class="ra-dim-fill" style="width:80%;background:#C0634A"></div></div><div class="ra-dim-note">PHI, financial, biometrics, or regulated data</div></div>
+                    <div class="ra-dim-row"><div class="ra-dim-top"><div class="ra-dim-name">Regulatory exposure</div><div class="ra-dim-score" style="color:var(--orange)">6/10</div></div><div class="ra-dim-bar"><div class="ra-dim-fill" style="width:60%;background:var(--orange)"></div></div><div class="ra-dim-note">Operates in regulated sector</div></div>
+                    <div class="ra-dim-row"><div class="ra-dim-top"><div class="ra-dim-name">Human oversight</div><div class="ra-dim-score" style="color:#C0634A">8/10</div></div><div class="ra-dim-bar"><div class="ra-dim-fill" style="width:80%;background:#C0634A"></div></div><div class="ra-dim-note">Fully automated — no human checkpoint</div></div>
+                    <div class="ra-dim-row"><div class="ra-dim-top"><div class="ra-dim-name">Third-party dependency</div><div class="ra-dim-score" style="color:var(--green)">3/10</div></div><div class="ra-dim-bar"><div class="ra-dim-fill" style="width:30%;background:var(--green)"></div></div><div class="ra-dim-note">Internal model — high visibility</div></div>
+                    <div class="ra-dim-row"><div class="ra-dim-top"><div class="ra-dim-name">Model transparency</div><div class="ra-dim-score" style="color:var(--green)">3/10</div></div><div class="ra-dim-bar"><div class="ra-dim-fill" style="width:30%;background:var(--green)"></div></div><div class="ra-dim-note">Partial explainability available</div></div>
+                  </div>
+                  <div class="ra-findings">
+                    <div class="ra-findings-title">Findings &amp; controls (3)</div>
+                    <div class="ra-finding ra-finding-crit"><div class="ra-finding-top"><span class="ra-finding-sev sev-crit">Critical</span><div class="ra-finding-text">Sensitive data processing without documented controls</div></div></div>
+                    <div class="ra-finding ra-finding-high"><div class="ra-finding-top"><span class="ra-finding-sev sev-high">High</span><div class="ra-finding-text">Automated decisioning with no human checkpoint</div></div></div>
+                    <div class="ra-finding ra-finding-high"><div class="ra-finding-top"><span class="ra-finding-sev sev-high">High</span><div class="ra-finding-text">Regulatory compliance gap not formally assessed</div></div></div>
+                  </div>
+                  <div class="ra-det-actions">
+                    <button class="ra-action-btn ra-btn-secondary">Re-assess</button>
+                    <button class="ra-action-btn ra-btn-primary" onclick="alert('In the real app, this would navigate to Risk Management and display all 3 findings ready for treatment.')">Send findings to Risk Management →</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Wizard modal -->
+            <div class="wiz-overlay" id="p6-wiz">
+              <div class="wiz-modal" style="max-width:460px">
+                <div class="wiz-header"><div class="wiz-title">Results — Customer Churn Predictor</div><div class="wiz-step-lbl">Step 4 of 4</div><button class="wiz-close" onclick="p6CloseWiz()">✕</button></div>
+                <div class="wiz-tabs"><div class="wiz-tab done">✓ Select</div><div class="wiz-tab done">✓ Context</div><div class="wiz-tab done">✓ Score</div><div class="wiz-tab active">Results</div></div>
+                <div class="wiz-body">
+                  <div class="result-ring-wrap">
+                    <div class="result-ring" style="width:64px;height:64px">
+                      <svg viewBox="0 0 96 96" style="width:64px;height:64px"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="7"/><circle cx="48" cy="48" r="38" fill="none" stroke="#C0634A" stroke-width="7" stroke-dasharray="238.8" stroke-dashoffset="71.6" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg>
+                      <div class="result-ring-lbl"><div class="result-score" style="color:#C0634A;font-size:18px">7</div><div class="result-slash" style="font-size:9px">/10</div></div>
+                    </div>
+                    <div><div class="result-tier" style="color:#C0634A;font-size:13px">High risk</div><div class="result-note" style="font-size:10px">3 findings generated · Next review in 12 months</div></div>
+                  </div>
+                  <div class="result-findings-title">Findings</div>
+                  <div class="result-finding ra-finding-crit"><div class="ra-finding-top"><span class="ra-finding-sev sev-crit">Critical</span><div class="ra-finding-text" style="font-size:10px">Sensitive data processing without documented controls</div></div></div>
+                  <div class="result-finding ra-finding-high"><div class="ra-finding-top"><span class="ra-finding-sev sev-high">High</span><div class="ra-finding-text" style="font-size:10px">Automated decisioning with no human checkpoint</div></div></div>
+                  <div class="result-finding ra-finding-high"><div class="ra-finding-top"><span class="ra-finding-sev sev-high">High</span><div class="ra-finding-text" style="font-size:10px">Regulatory compliance gap not formally assessed</div></div></div>
+                </div>
+                <div class="wiz-footer"><div></div><div style="display:flex;gap:8px"><button class="wiz-btn-back">← Back</button><button class="wiz-btn-next" id="p6-save-btn" onclick="p6Save()" style="background:var(--green);border-color:var(--green)">Save assessment</button></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="p6-feedback" style="display:none">
+      <div class="callout tip"><div class="ci">✅</div><div><div class="ct">Assessment saved successfully</div><div class="cd">SYS-007 is now classified as <strong>High risk — Assessed</strong>. The score ring in the list shows 7/10. The detail panel shows all six dimension bars, the three generated findings, and two action buttons. Click "Send findings to Risk Management" to push all three findings into the remediation register.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 7: WHAT HAPPENS ═══ -->
+<div class="panel" id="panel-7">
+  <div class="hero">
+    <div class="ph-eye">Step 7</div>
+    <h1 class="ph-title">What happens after saving</h1>
+    <p class="ph-sub">Saving a formal assessment triggers automatic updates across four modules — and starts the governance clock for this system.</p>
+  </div>
+  <div class="pbody">
+    <div class="ds-grid">
+      <div class="ds-card ds-inv"><div class="ds-em">🗄️</div><div class="ds-mod">AI Inventory</div><div class="ds-title">Risk tier and status updated</div><div class="ds-desc">SYS-007 changes from Medium/Pending to <strong>High/Approved</strong>. The system's NIST functions, next review date, and findings list are all updated from the assessment results.</div></div>
+      <div class="ds-card ds-treat"><div class="ds-em">🛡️</div><div class="ds-mod">Risk Management</div><div class="ds-title">3 findings appear automatically</div><div class="ds-desc">Click "Send findings to Risk Management →" in the detail panel to push all three findings into the active register. Each gets a CTRL- ID, a default owner, and a recommended deadline.</div></div>
+      <div class="ds-card ds-pb"><div class="ds-em">📋</div><div class="ds-mod">Governance Playbook</div><div class="ds-title">Two tasks auto-complete</div><div class="ds-desc">The MAP 2 risk identification task and the MEASURE system assessment task are marked complete automatically — without any manual action in the Playbook.</div></div>
+      <div class="ds-card ds-dash"><div class="ds-em">📊</div><div class="ds-mod">GRC Dashboard</div><div class="ds-title">Metrics and maturity update</div><div class="ds-desc">The Assessments ratio improves (7/7 = 100%). The Program Maturity score rises because AI Systems Assessed component is now fully complete. The activity trail logs the assessment completion.</div></div>
+    </div>
+
+    <div class="callout key"><div class="ci">→</div><div><div class="ct">Your next step</div><div class="cd">Navigate to <strong>Risk Management</strong> and find the three new findings for Customer Churn Predictor. Start with the Critical finding — assign an owner, set a 30-day deadline, choose the Mitigate pathway, and add notes documenting the remediation plan. This is where governance turns into action.</div></div></div>
+
+    <div class="div"></div>
+    <div class="done-card">
+      <div class="done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="done-title">Assessment guide complete!</div>
+      <div class="done-sub" style="margin-bottom:20px">You have walked through all four wizard steps, understand what each dimension means, and know what happens automatically after saving. Return to GovernAI and assess your next Provisional system.</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <div style="background:var(--cream);border:1px solid var(--gray-line);border-radius:9px;padding:11px 16px;font-size:12px;color:var(--gray-mid);text-align:left;max-width:200px"><strong style="color:var(--charcoal);display:block;margin-bottom:3px">High risk (7–10)</strong>Annual review · Most findings generated</div>
+        <div style="background:var(--cream);border:1px solid var(--gray-line);border-radius:9px;padding:11px 16px;font-size:12px;color:var(--gray-mid);text-align:left;max-width:200px"><strong style="color:var(--charcoal);display:block;margin-bottom:3px">Medium risk (4–6)</strong>18-month review · Selective findings</div>
+        <div style="background:var(--cream);border:1px solid var(--gray-line);border-radius:9px;padding:11px 16px;font-size:12px;color:var(--gray-mid);text-align:left;max-width:200px"><strong style="color:var(--charcoal);display:block;margin-bottom:3px">Low risk (1–3)</strong>24-month review · Fewer findings</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ── Navigation ──────────────────────────────────────────────
+var cur = 0;
+var panels = document.querySelectorAll('.panel');
+var navLinks = document.querySelectorAll('.snav-link');
+var labels = ['Introduction','Navigate to Risk Assessment','Step 1 — Select system','Step 2 — Context questions','Step 3 — Score dimensions','Step 4 — Review results','Save the assessment','What happens next'];
+
+function goPanel(n) {
+  panels[cur].classList.remove('active');
+  navLinks[cur].classList.remove('active');
+  if (cur < n) navLinks[cur].classList.add('done');
+  cur = n;
+  panels[cur].classList.add('active');
+  navLinks[cur].classList.add('active');
+  document.getElementById('tb-lbl').innerHTML = '<strong>Step '+(cur+1)+' of '+panels.length+'</strong> — '+labels[cur];
+  document.getElementById('btn-prev').disabled = cur === 0;
+  var nb = document.getElementById('btn-next');
+  nb.textContent = cur === panels.length-1 ? 'Finish' : 'Next →';
+  nb.innerHTML = cur === panels.length-1 ? 'Finish' : 'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:11px;height:11px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  document.getElementById('prog-lbl').textContent = (cur+1)+' / '+panels.length;
+  document.getElementById('prog-fill').style.width = ((cur+1)/panels.length*100)+'%';
+  window.scrollTo(0,0);
+}
+function nextPanel() { if (cur < panels.length-1) { goPanel(cur+1); } else { window.location.href='governai_training_center.html'; } }
+function prevPanel() { if (cur > 0) goPanel(cur-1); }
+
+// ── Panel 1: Navigate ──────────────────────────────────────
+function p1Nav(el, mod) {
+  document.querySelectorAll('.anav-item').forEach(function(i){ i.classList.remove('active'); });
+  el.classList.add('active');
+  el.style.animation = 'none';
+  var titles = {dashboard:'GRC Dashboard',playbook:'Governance Playbook',inventory:'AI Inventory',risk:'Risk Assessment',vdd:'Vendor Due Diligence',treat:'Risk Management'};
+  document.getElementById('p1-topbar').textContent = titles[mod]||mod;
+  var raView = document.getElementById('p1-ra-view');
+  var msg = document.getElementById('p1-msg');
+  if (mod === 'risk') { raView.style.display='flex'; msg.style.display='none'; }
+  else { raView.style.display='none'; msg.style.display='flex'; msg.textContent = '← Click Risk Assessment in the sidebar'; }
+}
+function p1SelectRow(el, id, name, vendor, tier, score) {
+  document.querySelectorAll('#p1 .ra-row, #panel-1 .ra-row').forEach(function(r){ r.classList.remove('selected'); });
+  el.classList.add('selected');
+  var right = document.getElementById('p1-ra-right');
+  var circ = 2*Math.PI*38;
+  var tierColor = tier==='High'?'#C0634A':tier==='Medium'?'var(--orange)':'var(--green)';
+  if (score === 0) {
+    right.innerHTML = '<div class="ra-det-header"><div class="ra-det-name">'+name+'</div><div class="ra-det-sub">'+vendor+' · Provisional — not yet formally assessed</div></div><div style="padding:16px;font-size:12px;color:var(--gray-mid);background:var(--cream)"><div style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--gray-line);border-radius:8px;background:var(--white);margin-bottom:12px"><div style="font-size:28px;opacity:.3">○</div><div><div style="font-weight:600;color:var(--charcoal)">Provisional record</div><div style="font-size:11px">This system is registered but has not been formally risk-scored. Click "+ New assessment" to begin the four-step wizard.</div></div></div></div><div class="ra-det-actions"><button class="ra-action-btn ra-btn-primary" onclick="p1NewAssess()">+ New assessment</button></div>';
+  } else {
+    var offset = circ*(1-score/10);
+    right.innerHTML = '<div class="ra-det-header"><div class="ra-det-name">'+name+'</div><div class="ra-det-sub">'+vendor+' · Formally assessed</div></div><div class="ra-score-display"><div class="ra-big-ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="38" fill="none" stroke="#E8E6DC" stroke-width="8"/><circle cx="48" cy="48" r="38" fill="none" stroke="'+tierColor+'" stroke-width="8" stroke-dasharray="'+circ.toFixed(1)+'" stroke-dashoffset="'+offset.toFixed(1)+'" stroke-linecap="round" transform="rotate(-90 48 48)"/></svg><div class="ra-big-ring-lbl"><div class="ra-score-num" style="color:'+tierColor+'">'+score+'</div><div class="ra-score-den">/10</div></div></div><div><div class="ra-score-tier" style="color:'+tierColor+'">'+tier+' risk</div><div class="ra-score-note">Formally assessed</div></div></div><div class="ra-dims"><div class="ra-dim-title">Dimension scores available after formal assessment</div></div>';
+  }
+}
+function p1NewAssess() { alert('In the real GovernAI app, this opens the four-step wizard. Continue to the next panel in this guide to walk through the wizard step-by-step.'); }
+
+// ── Panel 2: Select system ─────────────────────────────────
+function p2OpenWiz() { document.getElementById('p2-wiz').classList.add('open'); }
+function p2CloseWiz() { document.getElementById('p2-wiz').classList.remove('open'); }
+function p2SelectSys(el, isTarget) {
+  document.querySelectorAll('#p2-wiz .sys-option').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  var nextBtn = document.getElementById('p2-next');
+  var note = document.getElementById('p2-note');
+  if (isTarget) {
+    nextBtn.disabled = false;
+    note.textContent = 'Customer Churn Predictor selected';
+    note.style.color = 'var(--green)';
+  } else {
+    nextBtn.disabled = false;
+    note.textContent = 'System selected — click Next to continue';
+    note.style.color = '';
+  }
+}
+function p2Next() { p2CloseWiz(); alert('In the real app, clicking Next here advances to the Context questions step. Continue to the next panel in this guide to try the context questions.'); }
+
+// ── Panel 3: Context questions ─────────────────────────────
+var p3Answers = {};
+function p3Answer(el, qid) {
+  var opts = el.closest('.ctx-opts').querySelectorAll('.ctx-opt');
+  opts.forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  p3Answers[qid] = true;
+  var answered = Object.keys(p3Answers).length;
+  var nextBtn = document.getElementById('p3-next');
+  var note = document.getElementById('p3-note');
+  if (answered >= 4) {
+    nextBtn.disabled = false;
+    nextBtn.textContent = 'Next →';
+    note.textContent = 'All questions answered ✓';
+    note.style.color = 'var(--green)';
+  } else {
+    note.textContent = answered + ' of 4 answered';
+  }
+}
+
+// ── Panel 4: Score dimensions ──────────────────────────────
+var RA_DIMS = [
+  {id:'impact',name:'Decision impact',weight:0.22,low:'Informational only',high:'Directly determines consequential outcomes',rec:5,recNote:'Moderate — informs outreach decisions'},
+  {id:'data',name:'Data sensitivity',weight:0.20,low:'No personal data',high:'PHI, financial, biometrics',rec:8,recNote:'High — processes PII and financial transaction data'},
+  {id:'regulatory',name:'Regulatory exposure',weight:0.20,low:'No known obligations',high:'SR 11-7, HIPAA, ECOA, EU AI Act',rec:6,recNote:'Medium-high — GDPR/CPRA applies, ECOA possible'},
+  {id:'oversight',name:'Human oversight',weight:0.15,low:'Meaningful human review of all outputs',high:'Fully automated — no human checkpoint',rec:8,recNote:'High — no human review before outreach triggers'},
+  {id:'vendor',name:'Third-party dependency',weight:0.13,low:'Fully audited, SOC 2 + bias reports',high:'Black-box, minimal transparency',rec:3,recNote:'Low — internally built model with full code access'},
+  {id:'transparency',name:'Model transparency',weight:0.10,low:'Full explainability — feature importance and audit trail',high:'Outputs unexplainable, no audit trail',rec:3,recNote:'Low-medium — sklearn model with some interpretability'}
+];
+
+function buildP4Dims() {
+  var container = document.getElementById('p4-dims');
+  if (!container) return;
+  container.innerHTML = RA_DIMS.map(function(d) {
+    var col = d.rec >= 7 ? '#C0634A' : d.rec >= 4 ? 'var(--orange)' : 'var(--green)';
+    return '<div class="dim-card">'
+      +'<div class="dim-card-title"><span>'+d.name+'</span><span style="font-size:9px;color:var(--gray-soft);font-weight:400">Weight: '+Math.round(d.weight*100)+'%</span></div>'
+      +'<div class="dim-card-desc">'+d.low+' → '+d.high+'</div>'
+      +'<div class="dim-slider-wrap">'
+      +'<span class="dim-slider-lbl">Low</span>'
+      +'<input type="range" class="dim-slider" min="1" max="10" value="'+d.rec+'" id="sl-'+d.id+'" oninput="updateScore()">'
+      +'<span class="dim-slider-lbl">High</span>'
+      +'<span class="dim-score-val" id="sv-'+d.id+'" style="color:'+col+'">'+d.rec+'</span>'
+      +'</div>'
+      +'<div class="dim-endlabels"><span>'+d.low+'</span><span>'+d.high+'</span></div>'
+      +'<div style="font-size:9.5px;color:var(--orange-dk);margin-top:5px">Suggested for Churn Predictor: '+d.rec+'/10 — '+d.recNote+'</div>'
+      +'</div>';
+  }).join('');
+  updateScore();
+}
+
+function updateScore() {
+  var total = 0;
+  RA_DIMS.forEach(function(d) {
+    var sl = document.getElementById('sl-'+d.id);
+    var sv = document.getElementById('sv-'+d.id);
+    if (!sl || !sv) return;
+    var val = parseInt(sl.value);
+    total += val * d.weight;
+    var col = val >= 7 ? '#C0634A' : val >= 4 ? 'var(--orange)' : 'var(--green)';
+    sv.textContent = val;
+    sv.style.color = col;
+  });
+  var score = Math.round(total);
+  var tier = score >= 7 ? 'High' : score >= 4 ? 'Medium' : 'Low';
+  var tierCol = score >= 7 ? '#C0634A' : score >= 4 ? 'var(--orange)' : 'var(--green)';
+  var lbl = document.getElementById('p4-live-score');
+  if (lbl) lbl.innerHTML = 'Live score: <strong style="color:'+tierCol+'">'+score+'/10 — '+tier+' risk</strong>';
+}
+
+function p4Next() { alert('In the real app, clicking Next here advances to the Results step which shows your final score and generated findings. See Panel 5 in this guide for the results walkthrough.'); }
+
+// ── Panel 6: Save ──────────────────────────────────────────
+function p6OpenWiz() { document.getElementById('p6-wiz').classList.add('open'); }
+function p6CloseWiz() { document.getElementById('p6-wiz').classList.remove('open'); }
+function p6SelectRow(el, id) {
+  document.querySelectorAll('#panel-6 .ra-row').forEach(function(r){ r.classList.remove('selected'); });
+  el.classList.add('selected');
+  if (id === '007') {
+    document.getElementById('p6-empty').style.display = 'flex';
+    document.getElementById('p6-detail').style.display = 'none';
+  }
+}
+function p6Save() {
+  var btn = document.getElementById('p6-save-btn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+  setTimeout(function() {
+    p6CloseWiz();
+    // Update status badge in list
+    var statusEl = document.getElementById('p6-007-status');
+    if (statusEl) {
+      statusEl.className = 'ra-status st-comp';
+      statusEl.textContent = 'Complete';
+    }
+    // Select the row and show detail
+    var row007 = document.querySelector('#panel-6 .ra-row:last-child');
+    if (row007) { row007.classList.add('selected'); }
+    document.getElementById('p6-empty').style.display = 'none';
+    document.getElementById('p6-detail').style.display = 'block';
+    // Animate dimension bars
+    setTimeout(function() {
+      document.querySelectorAll('#p6-detail .ra-dim-fill').forEach(function(bar) {
+        bar.style.transition = 'width .8s ease';
+      });
+    }, 100);
+    document.getElementById('p6-feedback').style.display = 'block';
+    btn.textContent = 'Save assessment';
+    btn.disabled = false;
+  }, 900);
+}
+
+// Init
+goPanel(0);
+buildP4Dims();
+</script>
+</body>
+</html>

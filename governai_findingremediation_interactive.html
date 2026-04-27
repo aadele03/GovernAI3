@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovernAI — Finding Remediation Interactive Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#D97757;--orange-dk:#C15F3C;--charcoal:#141413;--cream:#FAF9F5;--white:#FFFFFF;--gray-soft:#B0AEA5;--gray-line:#E8E6DC;--gray-mid:#7A7870;--blue:#6A9BCC;--green:#788C5D;--sw:220px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:"DM Sans",sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+.shell{display:flex;min-height:100vh;}
+.snav{width:var(--sw);flex-shrink:0;background:var(--charcoal);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;overflow-y:auto;z-index:10;}
+.snav-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.snav-row{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+.snav-icon{width:26px;height:26px;background:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.snav-icon svg{width:14px;height:14px;}
+.snav-name{font-family:"DM Serif Display",serif;font-size:15px;color:var(--cream);}
+.snav-name span{color:var(--orange);}
+.snav-sub{font-size:8.5px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;padding-left:33px;}
+.snav-sec{padding:12px 0 4px;}
+.snav-sec-lbl{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:5px 18px 3px;}
+.nl{display:flex;align-items:center;gap:7px;padding:5px 18px;font-size:11.5px;color:rgba(250,249,245,.4);cursor:pointer;border-left:2px solid transparent;transition:all .12s;}
+.nl:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.nl.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.nl.done{color:rgba(120,140,93,.75);}
+.ndot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0;}
+.nl.done .ndot{opacity:1;background:var(--green);}
+.snav-prog{padding:16px 18px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);}
+.spg-lbl{font-size:10px;color:var(--gray-soft);margin-bottom:6px;display:flex;justify-content:space-between;}
+.spg-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.spg-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease;}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;}
+.topbar{height:50px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;padding:0 36px;position:sticky;top:0;z-index:9;}
+.tbl{font-size:11px;color:var(--gray-soft);}
+.tbl strong{color:var(--charcoal);}
+.tbb{display:flex;gap:7px;}
+.tb-btn{height:30px;padding:0 13px;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;transition:all .12s;border:1px solid var(--gray-line);display:flex;align-items:center;gap:5px;}
+.tb-prev{background:var(--white);color:var(--gray-mid);}
+.tb-next{background:var(--orange);color:white;border-color:var(--orange);}
+.tb-next:hover{background:var(--orange-dk);}
+.tb-btn svg{width:11px;height:11px;}
+.content{flex:1;overflow-y:auto;}
+.panel{display:none;}.panel.active{display:block;}
+.hero{background:var(--charcoal);padding:36px 44px;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-60px;right:-40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.14) 0%,transparent 65%);pointer-events:none;}
+.eye{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.eye::before{content:"";width:14px;height:2px;background:var(--orange);}
+.ph-title{font-family:"DM Serif Display",serif;font-size:28px;color:var(--cream);line-height:1.2;margin-bottom:7px;position:relative;z-index:1;}
+.ph-sub{font-size:12.5px;color:rgba(250,249,245,.55);line-height:1.65;max-width:480px;position:relative;z-index:1;}
+.ph-meta{display:flex;gap:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);margin-top:18px;}
+.ph-ml{font-size:8.5px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;}
+.ph-mv{font-size:11.5px;color:rgba(250,249,245,.6);font-weight:500;}
+.pbody{padding:32px 44px;}
+.callout{border-radius:9px;padding:13px 15px;margin:16px 0;display:flex;gap:9px;}
+.ci{font-size:14px;flex-shrink:0;margin-top:1px;}
+.ct{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;}
+.cd{font-size:12.5px;line-height:1.65;}
+.tip{background:rgba(120,140,93,.07);border:1px solid rgba(120,140,93,.2);}.tip .ct{color:#3B6D11;}
+.warn{background:rgba(217,119,87,.07);border:1px solid rgba(217,119,87,.2);}.warn .ct{color:var(--orange-dk);}
+.info{background:rgba(106,155,204,.07);border:1px solid rgba(106,155,204,.2);}.info .ct{color:#0C447C;}
+.key{background:var(--charcoal);border:none;}.key .ct{color:var(--orange);}.key .cd{color:rgba(250,249,245,.7);}
+.coach{background:var(--charcoal);border-radius:9px;padding:12px 14px;margin:14px 0;border:1px solid rgba(255,255,255,.07);display:flex;gap:9px;}
+.coach-icon{width:26px;height:26px;flex-shrink:0;background:rgba(217,119,87,.18);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.cstep{font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:2px;}
+.ctxt{font-size:12px;color:rgba(250,249,245,.72);line-height:1.6;}
+.sim{border:1px solid var(--gray-line);border-radius:12px;overflow:hidden;background:var(--white);box-shadow:0 4px 20px rgba(0,0,0,.07);margin:18px 0;}
+.sim-bar{height:34px;background:#F0F0EE;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 11px;gap:6px;}
+.sd{width:9px;height:9px;border-radius:50%;}.sd-r{background:#FF5F57;}.sd-y{background:#FEBC2E;}.sd-g{background:#28C840;}
+.surl{flex:1;height:20px;background:var(--white);border:1px solid var(--gray-line);border-radius:4px;margin:0 9px;font-family:"DM Mono",monospace;font-size:9.5px;color:var(--gray-mid);display:flex;align-items:center;padding:0 7px;}
+.app{display:flex;min-height:340px;}
+.asb{width:178px;flex-shrink:0;background:var(--charcoal);display:flex;flex-direction:column;padding:12px 0;}
+.alogo{padding:0 13px 11px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:7px;}
+.alr{display:flex;align-items:center;gap:5px;margin-bottom:1px;}
+.ali{width:19px;height:19px;background:var(--orange);border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.ali svg{width:10px;height:10px;}
+.aln{font-family:"DM Serif Display",serif;font-size:11.5px;color:var(--cream);}.aln span{color:var(--orange);}
+.als{font-size:7px;color:var(--gray-soft);letter-spacing:.07em;text-transform:uppercase;padding-left:24px;}
+.anl{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:4px 13px;}
+.ani{display:flex;align-items:center;gap:5px;padding:4px 13px;font-size:9.5px;color:rgba(250,249,245,.38);cursor:pointer;border-left:2px solid transparent;transition:all .1s;}
+.ani:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.ani.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.ani svg{width:9px;height:9px;flex-shrink:0;}
+.ab{margin-left:auto;font-size:7.5px;font-weight:600;background:rgba(217,119,87,.2);color:var(--orange);padding:1px 4px;border-radius:6px;}
+.am{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.atb{height:34px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 14px;font-size:10.5px;font-weight:500;color:var(--charcoal);}
+.div{height:1px;background:var(--gray-line);margin:26px 0;}
+.done-card{text-align:center;padding:32px 20px;}
+.done-icon{width:52px;height:52px;border-radius:50%;background:rgba(120,140,93,.12);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;}
+.done-icon svg{width:22px;height:22px;color:var(--green);}
+.done-title{font-family:"DM Serif Display",serif;font-size:21px;color:var(--charcoal);margin-bottom:5px;}
+.done-sub{font-size:12.5px;color:var(--gray-mid);line-height:1.65;max-width:380px;margin:0 auto;}
+/* Treat specific */
+.treat-shell{display:flex;flex:1;overflow:hidden;}
+.treat-left{width:280px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--gray-line);}
+.treat-right{flex:1;overflow-y:auto;}
+.treat-controls{padding:7px 9px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;gap:4px;flex-wrap:wrap;}
+.tpill{height:22px;padding:0 7px;border-radius:11px;font-size:8.5px;font-weight:600;border:1px solid var(--gray-line);background:var(--white);cursor:pointer;color:var(--gray-mid);}
+.tpill.active{background:var(--charcoal);color:var(--cream);border-color:var(--charcoal);}
+.treat-list{flex:1;overflow-y:auto;}
+.group-hdr{display:flex;align-items:center;gap:6px;padding:6px 9px;background:var(--cream);border-bottom:1px solid var(--gray-line);cursor:pointer;}
+.group-sys-name{font-size:9px;font-weight:700;color:var(--charcoal);text-transform:uppercase;letter-spacing:.05em;flex:1;}
+.group-count{font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(217,119,87,.1);color:var(--orange-dk);}
+.group-chev{font-size:9px;color:var(--gray-soft);}
+.treat-row{display:flex;align-items:center;gap:6px;padding:6px 9px;border-bottom:1px solid var(--gray-line);cursor:pointer;background:var(--white);transition:all .1s;}
+.treat-row:hover{background:var(--cream);}
+.treat-row.selected{background:rgba(217,119,87,.06);border-left:2px solid var(--orange);}
+.treat-sev-bar{width:3px;height:24px;border-radius:2px;flex-shrink:0;}
+.tb-crit{background:#C0634A;}.tb-high{background:var(--orange);}.tb-med{background:var(--blue);}
+.treat-id{font-family:"DM Mono",monospace;font-size:7.5px;background:rgba(20,20,19,.06);padding:1px 4px;border-radius:3px;flex-shrink:0;color:var(--charcoal);}
+.treat-name{font-size:9.5px;font-weight:500;color:var(--charcoal);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.treat-status-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;flex-shrink:0;}
+.st-open{background:rgba(176,174,165,.2);color:#4A4A46;}
+.st-inp{background:#FAEEDA;color:#633806;}
+.st-res{background:#EAF3DE;color:#27500A;}
+.st-acc{background:rgba(106,155,204,.12);color:#0C447C;}
+.sev-crit-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:#FCEBEB;color:#A32D2D;flex-shrink:0;}
+.sev-high-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:#FAEEDA;color:#633806;flex-shrink:0;}
+.sev-med-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(106,155,204,.12);color:#0C447C;flex-shrink:0;}
+.treat-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-soft);font-size:11px;padding:20px;text-align:center;}
+/* Detail panel */
+.det-hdr{padding:12px 14px;border-bottom:1px solid var(--gray-line);background:var(--white);}
+.det-title{font-size:12.5px;font-weight:600;color:var(--charcoal);margin-bottom:3px;}
+.det-sub{font-size:9.5px;color:var(--gray-soft);}
+.det-section{padding:10px 14px;border-bottom:1px solid var(--gray-line);}
+.det-sec-label{font-size:8.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px;}
+.det-field{margin-bottom:9px;}
+.det-field-lbl{font-size:9.5px;font-weight:600;color:var(--charcoal);margin-bottom:3px;}
+.det-field-val{font-size:11px;color:var(--gray-mid);}
+.det-select{width:100%;height:28px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-family:"DM Sans",sans-serif;font-size:11px;color:var(--charcoal);background:var(--cream);}
+.det-select:focus{border-color:var(--orange);outline:none;}
+.det-input{width:100%;height:28px;padding:0 8px;border:1px solid var(--gray-line);border-radius:6px;font-family:"DM Sans",sans-serif;font-size:11px;color:var(--charcoal);background:var(--cream);}
+.det-textarea{width:100%;height:60px;padding:6px 8px;border:1px solid var(--gray-line);border-radius:6px;font-family:"DM Sans",sans-serif;font-size:11px;color:var(--charcoal);background:var(--cream);resize:none;}
+.det-ev-zone{border:1.5px dashed var(--gray-line);border-radius:6px;padding:8px;text-align:center;font-size:10px;color:var(--gray-soft);cursor:pointer;transition:all .12s;}
+.det-ev-zone:hover{border-color:var(--orange);color:var(--orange);}
+.det-actions{padding:10px 14px;border-top:1px solid var(--gray-line);display:flex;gap:6px;flex-wrap:wrap;}
+.da-btn{height:28px;padding:0 12px;border-radius:7px;font-family:"DM Sans",sans-serif;font-size:10px;font-weight:600;cursor:pointer;border:1px solid;transition:all .12s;}
+.da-primary{background:var(--orange);color:white;border-color:var(--orange);}
+.da-primary:hover{background:var(--orange-dk);}
+.da-secondary{background:var(--white);color:var(--charcoal);border-color:var(--gray-line);}
+.da-accept{background:var(--white);color:var(--blue);border-color:var(--blue);}
+.da-resolve{background:var(--green);color:white;border-color:var(--green);}
+/* Pathway cards */
+.pathway-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.pw-card{border:1px solid var(--gray-line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--white);transition:all .12s;}
+.pw-card:hover{border-color:var(--orange);background:rgba(217,119,87,.03);}
+.pw-card.selected{border-color:var(--orange);background:rgba(217,119,87,.07);}
+.pw-icon{font-size:18px;margin-bottom:5px;}
+.pw-name{font-size:11.5px;font-weight:600;color:var(--charcoal);margin-bottom:3px;}
+.pw-desc{font-size:10.5px;color:var(--gray-mid);line-height:1.5;}
+/* Status flow */
+.status-flow{display:flex;align-items:center;gap:0;margin:12px 0;}
+.sf-node{padding:7px 12px;border-radius:7px;font-size:10px;font-weight:600;text-align:center;}
+.sf-open{background:rgba(176,174,165,.2);color:#4A4A46;}
+.sf-inp{background:#FAEEDA;color:#633806;}
+.sf-res{background:#EAF3DE;color:#27500A;}
+.sf-arrow{font-size:12px;color:var(--gray-soft);padding:0 5px;}
+.sf-active{box-shadow:0 0 0 2px var(--orange);}
+/* Accept modal */
+.modal-ov{display:none;position:absolute;inset:0;background:rgba(20,20,19,.5);align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+.modal-ov.open{display:flex;}
+.modal-box{background:var(--white);border-radius:10px;width:400px;max-height:85%;overflow-y:auto;box-shadow:0 14px 40px rgba(0,0,0,.25);animation:mu .2s ease both;}
+@keyframes mu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal-hdr{padding:14px 16px;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:"DM Serif Display",serif;font-size:16px;color:var(--charcoal);}
+.modal-close{width:22px;height:22px;border:1px solid var(--gray-line);border-radius:5px;background:none;cursor:pointer;font-size:11px;}
+.modal-body{padding:14px 16px;}
+.modal-foot{padding:10px 16px;border-top:1px solid var(--gray-line);display:flex;justify-content:flex-end;gap:7px;}
+.mbtn-c{height:28px;padding:0 12px;background:none;border:1px solid var(--gray-line);border-radius:7px;font-size:11px;cursor:pointer;}
+.mbtn-s{height:28px;padding:0 14px;background:var(--blue);border:none;border-radius:7px;font-size:11px;font-weight:600;color:white;cursor:pointer;}
+.mbtn-s:hover{background:#4D7FAA;}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="snav">
+  <div class="snav-logo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard">
+    <div class="snav-row"><div class="snav-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/><path d="M9 12l2 2 4-4" stroke="#D97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="snav-name">Govern<span>AI</span></span></div>
+    <div class="snav-sub">Finding Remediation Guide</div>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-lbl">Steps</div>
+    <div class="nl active" onclick="goPanel(0)"><span class="ndot"></span>Introduction</div>
+    <div class="nl" onclick="goPanel(1)"><span class="ndot"></span>Navigate to Risk Management</div>
+    <div class="nl" onclick="goPanel(2)"><span class="ndot"></span>Understand finding sources</div>
+    <div class="nl" onclick="goPanel(3)"><span class="ndot"></span>Triage a Critical finding</div>
+    <div class="nl" onclick="goPanel(4)"><span class="ndot"></span>Choose a pathway</div>
+    <div class="nl" onclick="goPanel(5)"><span class="ndot"></span>Assign owner &amp; deadline</div>
+    <div class="nl" onclick="goPanel(6)"><span class="ndot"></span>Add notes &amp; evidence</div>
+    <div class="nl" onclick="goPanel(7)"><span class="ndot"></span>Advance status &amp; resolve</div>
+    <div class="nl" onclick="goPanel(8)"><span class="ndot"></span>Formal risk acceptance</div>
+  </div>
+  <div class="snav-prog">
+    <div class="spg-lbl"><span>Progress</span><span id="plbl">1 / 9</span></div>
+    <div class="spg-bar"><div class="spg-fill" id="pfill" style="width:11.1%"></div></div>
+  </div>
+</nav>
+<div class="main">
+  <div class="topbar">
+    <div class="tbl" id="tbl"><strong>Step 1 of 9</strong> &mdash; Introduction</div>
+    <div class="tbb">
+      <button class="tb-btn tb-prev" id="btnprev" onclick="prv()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back</button>
+      <button class="tb-btn tb-next" id="btnnext" onclick="nxt()">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+  <div class="content">
+
+<!-- P0 INTRO -->
+<div class="panel active" id="panel-0">
+  <div class="hero">
+    <div class="eye">Interactive Guide</div>
+    <h1 class="ph-title">Finding Remediation</h1>
+    <p class="ph-sub">Learn how to triage findings in the Risk Management register, assign pathways and owners, advance status from open to resolved, and formally accept residual risks.</p>
+    <div class="ph-meta">
+      <div><div class="ph-ml">Module</div><div class="ph-mv">Risk Management</div></div>
+      <div><div class="ph-ml">NIST AI RMF</div><div class="ph-mv">MANAGE 1 &middot; MANAGE 2</div></div>
+      <div><div class="ph-ml">Status flow</div><div class="ph-mv">Open &rarr; In progress &rarr; Resolved</div></div>
+    </div>
+  </div>
+  <div class="pbody">
+    <div class="callout key"><div class="ci">&#127919;</div><div><div class="ct">Where findings come from</div><div class="cd">Risk Management findings are generated from three sources: <strong>Risk Assessment</strong> (when dimension scores exceed thresholds), <strong>Vendor Due Diligence</strong> (when domain or contract provision gaps are identified), and <strong>AI Inventory</strong> (when systems are registered with high-risk data types or no human oversight). Findings can also be added manually.</div></div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0">
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:11px 13px;background:var(--white)"><div style="font-family:'DM Serif Display',serif;font-size:20px;color:#C0634A;margin-bottom:2px">Critical</div><div style="font-size:9.5px;color:var(--gray-soft)">30-day deadline</div></div>
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:11px 13px;background:var(--white)"><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--orange);margin-bottom:2px">High</div><div style="font-size:9.5px;color:var(--gray-soft)">60-day deadline</div></div>
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:11px 13px;background:var(--white)"><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--blue);margin-bottom:2px">Medium</div><div style="font-size:9.5px;color:var(--gray-soft)">90-day deadline</div></div>
+      <div style="border:1px solid var(--gray-line);border-radius:9px;padding:11px 13px;background:var(--white);border-left:3px solid var(--orange-dk)"><div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--charcoal);margin-bottom:2px">4</div><div style="font-size:9.5px;color:var(--gray-soft)">Pathways available</div></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--gray-mid)">The four pathways are: <strong>Mitigate</strong> (implement a control), <strong>Accept</strong> (formally document residual risk), <strong>Transfer</strong> (shift via contract or insurance), and <strong>Avoid</strong> (decommission the system or feature). Most findings should be mitigated &mdash; accept is a last resort requiring senior sign-off.</p>
+  </div>
+</div>
+
+<!-- P1 NAVIGATE -->
+<div class="panel" id="panel-1">
+  <div class="hero">
+    <div class="eye">Step 1</div>
+    <h1 class="ph-title">Navigate to Risk Management</h1>
+    <p class="ph-sub">Findings are grouped by AI system with High-risk systems first. Critical findings are surfaced to the top of each group.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it</div><div class="ctxt">Click <strong>Risk Management</strong> in the sidebar. The list shows findings grouped by AI system. Expand any group by clicking the system name header. Click a finding row to see its detail panel. Find the Critical finding for <strong>Customer Churn Predictor</strong> and click it.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html</div></div>
+      <div class="app">
+        <div class="asb">
+          <div class="alogo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+          <div class="anl">Modules</div>
+          <div class="ani" onclick="p1nav(this,'inventory')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>AI Inventory <span class="ab">7</span></div>
+          <div class="ani" onclick="p1nav(this,'risk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="ab">7</span></div>
+          <div class="ani" onclick="p1nav(this,'vdd')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence <span class="ab">2</span></div>
+          <div class="ani" id="p1-treat-nav" onclick="p1nav(this,'treat')" style="animation:bpulse 1.4s ease-in-out infinite;border-left:2px solid rgba(217,119,87,.4);color:rgba(250,249,245,.55)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management <span class="ab">14</span></div>
+        </div>
+        <div class="am">
+          <div class="atb" id="p1-topbar">GRC Dashboard</div>
+          <div id="p1-treat-view" style="display:none;flex:1">
+            <div class="treat-shell">
+              <div class="treat-left">
+                <div style="display:flex;gap:10px;padding:7px 9px;background:var(--white);border-bottom:1px solid var(--gray-line)">
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--charcoal)">14</div><div style="font-size:8px;color:var(--gray-soft)">findings</div></div>
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:16px;color:#C0634A">3</div><div style="font-size:8px;color:var(--gray-soft)">critical</div></div>
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--orange)">8</div><div style="font-size:8px;color:var(--gray-soft)">open</div></div>
+                  <div><div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--green)">4</div><div style="font-size:8px;color:var(--gray-soft)">resolved</div></div>
+                </div>
+                <div class="treat-controls"><button class="tpill active">All</button><button class="tpill">Open</button><button class="tpill">Critical</button><button class="tpill">Overdue</button></div>
+                <div class="treat-list" id="p1-treat-list">
+                  <div class="group-hdr" onclick="p1toggleGroup(this)"><div class="treat-sev-bar tb-crit"></div><div class="group-sys-name">Credit Underwriting AI</div><div class="group-count">4 findings</div><div class="group-chev">&#9660;</div></div>
+                  <div class="group-body">
+                    <div class="treat-row" onclick="p1selRow(this,'CTRL-RSK-RSK001-00','Disparate impact in credit decisions not tested','Critical','RA')"><div class="treat-sev-bar tb-crit"></div><div class="treat-id">CTRL-001</div><div class="treat-name">Disparate impact in credit decisions not tested</div><div class="sev-crit-badge">Critical</div><div class="treat-status-badge st-inp">In progress</div></div>
+                    <div class="treat-row" onclick="p1selRow(this,'CTRL-RSK-RSK001-01','Model validation results not independently reviewed','High','RA')"><div class="treat-sev-bar tb-high"></div><div class="treat-id">CTRL-002</div><div class="treat-name">Model validation not independently reviewed</div><div class="sev-high-badge">High</div><div class="treat-status-badge st-open">Open</div></div>
+                  </div>
+                  <div class="group-hdr" onclick="p1toggleGroup(this)"><div class="treat-sev-bar tb-crit"></div><div class="group-sys-name">Customer Churn Predictor (SYS-007)</div><div class="group-count">3 findings</div><div class="group-chev">&#9660;</div></div>
+                  <div class="group-body" id="p1-churn-group">
+                    <div class="treat-row" id="p1-crit-row" onclick="p1selRow(this,'CTRL-RSK-RSK007-00','Sensitive data processing without documented controls','Critical','RA')"><div class="treat-sev-bar tb-crit"></div><div class="treat-id">CTRL-010</div><div class="treat-name">Sensitive data processing without documented controls</div><div class="sev-crit-badge">Critical</div><div class="treat-status-badge st-open">Open</div></div>
+                    <div class="treat-row" onclick="p1selRow(this,'CTRL-RSK-RSK007-01','Automated decisioning with no human checkpoint','High','RA')"><div class="treat-sev-bar tb-high"></div><div class="treat-id">CTRL-011</div><div class="treat-name">Automated decisioning with no human checkpoint</div><div class="sev-high-badge">High</div><div class="treat-status-badge st-open">Open</div></div>
+                    <div class="treat-row" onclick="p1selRow(this,'CTRL-RSK-RSK007-02','Regulatory compliance gap not formally assessed','High','RA')"><div class="treat-sev-bar tb-high"></div><div class="treat-id">CTRL-012</div><div class="treat-name">Regulatory compliance gap not formally assessed</div><div class="sev-high-badge">High</div><div class="treat-status-badge st-open">Open</div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="treat-right" id="p1-right"><div class="treat-empty">&larr; Click a finding to view its details</div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--gray-soft);font-size:11px" id="p1-msg">&larr; Click Risk Management in the sidebar</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip"><div class="ci">&#128161;</div><div><div class="ct">Reading the list layout</div><div class="cd">Findings are grouped by AI system &mdash; systems with the highest risk tier appear first. Within each group, Critical findings surface to the top. The colored bar on the left of each row indicates severity: red = Critical, orange = High, blue = Medium. Click the group header to collapse or expand a system&rsquo;s findings.</div></div></div>
+  </div>
+</div>
+
+<!-- P2 SOURCES -->
+<div class="panel" id="panel-2">
+  <div class="hero">
+    <div class="eye">Step 2</div>
+    <h1 class="ph-title">Finding sources &mdash; where they come from</h1>
+    <p class="ph-sub">Every finding in Risk Management originates from one of four sources. The source determines its ID prefix and the recommended remediation approach.</p>
+  </div>
+  <div class="pbody">
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--gray-line);border-radius:10px;overflow:hidden;margin-bottom:20px">
+      <div style="background:var(--charcoal);padding:9px 14px;display:grid;grid-template-columns:120px 1fr 140px;gap:10px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,249,245,.4)">
+        <div>Source</div><div>When generated</div><div>ID format</div>
+      </div>
+      <div style="padding:10px 14px;border-bottom:1px solid var(--gray-line);display:grid;grid-template-columns:120px 1fr 140px;gap:10px;align-items:start;background:var(--white)">
+        <div style="font-weight:600;font-size:11px;color:var(--charcoal)">&#9654; Risk Assessment</div>
+        <div style="font-size:11px;color:var(--gray-mid)">When a dimension score (e.g. Data sensitivity, Human oversight) exceeds its threshold during a formal assessment. Generated automatically when you save.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(20,20,19,.06);padding:3px 7px;border-radius:4px;color:var(--charcoal)">CTRL-RSK-xxx-00</div>
+      </div>
+      <div style="padding:10px 14px;border-bottom:1px solid var(--gray-line);display:grid;grid-template-columns:120px 1fr 140px;gap:10px;align-items:start;background:var(--cream)">
+        <div style="font-weight:600;font-size:11px;color:var(--charcoal)">&#9654; Vendor Due Diligence</div>
+        <div style="font-size:11px;color:var(--gray-mid)">When domain scores fall below acceptable levels or required contract provisions are missing. Generated automatically when you save a VDD assessment.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(20,20,19,.06);padding:3px 7px;border-radius:4px;color:var(--charcoal)">CTRL-VND-xxx-00</div>
+      </div>
+      <div style="padding:10px 14px;border-bottom:1px solid var(--gray-line);display:grid;grid-template-columns:120px 1fr 140px;gap:10px;align-items:start;background:var(--white)">
+        <div style="font-weight:600;font-size:11px;color:var(--charcoal)">&#9654; AI Inventory</div>
+        <div style="font-size:11px;color:var(--gray-mid)">When a system is registered with high-risk attributes: critical data types (PHI, financial) with no human oversight flag. Generated when the system is first saved.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(20,20,19,.06);padding:3px 7px;border-radius:4px;color:var(--charcoal)">CTRL-INV-xxx-00</div>
+      </div>
+      <div style="padding:10px 14px;display:grid;grid-template-columns:120px 1fr 140px;gap:10px;align-items:start;background:var(--cream)">
+        <div style="font-weight:600;font-size:11px;color:var(--charcoal)">&#9654; Manual</div>
+        <div style="font-size:11px;color:var(--gray-mid)">When a finding is entered directly by a risk officer &mdash; e.g. from an internal audit, penetration test, or management self-identification.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(20,20,19,.06);padding:3px 7px;border-radius:4px;color:var(--charcoal)">CTRL-001, CTRL-002&hellip;</div>
+      </div>
+    </div>
+    <div class="callout info"><div class="ci">&#8203;&#8203;&#128161;</div><div><div class="ct">The same issue can appear from multiple sources</div><div class="cd">A data handling risk can generate a finding from the RA (Data sensitivity dimension), a VDD finding (Data Handling domain), and an Inventory finding (PHI flag + no oversight). GovernAI uses a composite deduplication key to prevent the exact same finding appearing multiple times. Each source adds a distinct finding.</div></div></div>
+  </div>
+</div>
+
+<!-- P3 TRIAGE -->
+<div class="panel" id="panel-3">
+  <div class="hero">
+    <div class="eye">Step 3</div>
+    <h1 class="ph-title">Triage a Critical finding</h1>
+    <p class="ph-sub">Click a Critical finding to open the detail panel. Review the full finding description, severity, source, and current status before taking any action.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; open and read the Critical finding</div><div class="ctxt">Click the <strong>Critical &mdash; Sensitive data processing</strong> finding in the list below to select it and see the full detail panel. Read the finding description, note the source (Risk Assessment), the auto-assigned deadline (30 days for Critical), and the status (Open).</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Risk Management</div></div>
+      <div style="position:relative;min-height:420px">
+        <div class="app" style="min-height:420px">
+          <div class="asb">
+            <div class="alogo"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+            <div class="ani active" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management <span class="ab">14</span></div>
+          </div>
+          <div class="am">
+            <div class="atb">Risk Management</div>
+            <div class="treat-shell" style="flex:1">
+              <div class="treat-left" style="width:250px">
+                <div class="treat-controls"><button class="tpill active">All</button><button class="tpill">Critical</button></div>
+                <div>
+                  <div class="group-hdr"><div class="treat-sev-bar tb-crit"></div><div class="group-sys-name">Customer Churn Predictor</div><div class="group-count">3</div></div>
+                  <div class="treat-row" id="p3-crit" onclick="p3select(this)"><div class="treat-sev-bar tb-crit"></div><div class="treat-id">CTRL-010</div><div class="treat-name">Sensitive data processing without documented controls</div><div class="sev-crit-badge">Critical</div><div class="treat-status-badge st-open">Open</div></div>
+                  <div class="treat-row" onclick="p3selectOther(this,'Automated decisioning with no human checkpoint','High')"><div class="treat-sev-bar tb-high"></div><div class="treat-id">CTRL-011</div><div class="treat-name">Automated decisioning with no human checkpoint</div><div class="sev-high-badge">High</div><div class="treat-status-badge st-open">Open</div></div>
+                  <div class="treat-row" onclick="p3selectOther(this,'Regulatory compliance gap not formally assessed','High')"><div class="treat-sev-bar tb-high"></div><div class="treat-id">CTRL-012</div><div class="treat-name">Regulatory compliance gap not formally assessed</div><div class="sev-high-badge">High</div><div class="treat-status-badge st-open">Open</div></div>
+                </div>
+              </div>
+              <div class="treat-right" id="p3-right"><div class="treat-empty">&larr; Click the Critical finding above</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><div class="ci">&#9888;&#65039;</div><div><div class="ct">Critical findings have a 30-day default deadline</div><div class="cd">GovernAI automatically sets the deadline to 30 days from today for Critical findings, 60 days for High, and 90 days for Medium. These defaults are based on standard governance timelines. You can override them in the detail panel if your policy requires different timelines, but you should document the reason for any extension.</div></div></div>
+  </div>
+</div>
+
+<!-- P4 PATHWAY -->
+<div class="panel" id="panel-4">
+  <div class="hero">
+    <div class="eye">Step 4</div>
+    <h1 class="ph-title">Choose a treatment pathway</h1>
+    <p class="ph-sub">Every finding must have a pathway assigned before it can be advanced. Choose one of four options based on your organization&rsquo;s risk appetite.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; select Mitigate for the Critical finding</div><div class="ctxt">Click one of the pathway cards below to select it. For the Critical data handling finding on the Churn Predictor, <strong>Mitigate</strong> is the right choice &mdash; we will implement a DPA/BAA and data handling policy. The Accept pathway is only appropriate when residual risk is within your documented risk appetite.</div></div></div>
+    <div class="pathway-grid" style="margin:0 0 20px">
+      <div class="pw-card" id="pw-mitigate" onclick="p4selectPw(this,'Mitigate')">
+        <div class="pw-icon">&#128737;&#65039;</div>
+        <div class="pw-name">Mitigate</div>
+        <div class="pw-desc">Implement a control to reduce the likelihood or impact of the risk. The most common pathway for Critical and High findings.</div>
+      </div>
+      <div class="pw-card" id="pw-accept" onclick="p4selectPw(this,'Accept')">
+        <div class="pw-icon">&#128221;</div>
+        <div class="pw-name">Accept</div>
+        <div class="pw-desc">Formally document that you are accepting the residual risk. Requires sign-off from the appropriate risk owner. Last resort &mdash; not appropriate for Critical findings without board approval.</div>
+      </div>
+      <div class="pw-card" id="pw-transfer" onclick="p4selectPw(this,'Transfer')">
+        <div class="pw-icon">&#128203;</div>
+        <div class="pw-name">Transfer</div>
+        <div class="pw-desc">Shift the risk to a third party via insurance, contract indemnification, or outsourcing. The underlying risk remains &mdash; you are transferring the financial consequence.</div>
+      </div>
+      <div class="pw-card" id="pw-avoid" onclick="p4selectPw(this,'Avoid')">
+        <div class="pw-icon">&#128683;</div>
+        <div class="pw-name">Avoid</div>
+        <div class="pw-desc">Eliminate the activity, feature, or system generating the risk entirely. Appropriate when the risk cannot be sufficiently mitigated and the business case is weak.</div>
+      </div>
+    </div>
+    <div id="p4-guidance" style="display:none" class="callout tip"><div class="ci">&#10004;</div><div><div class="ct" id="p4-g-title">Mitigate selected</div><div class="cd" id="p4-g-text">Good choice for a Critical finding. The next step is to assign an owner responsible for implementing the control and set a firm deadline. For the data handling finding, the control is: obtain a signed DPA/BAA from all data processors, implement data minimization review, and confirm the sub-processor chain is documented.</div></div></div>
+    <div class="div"></div>
+    <div style="border:1px solid var(--gray-line);border-radius:10px;overflow:hidden;margin-bottom:16px">
+      <div style="background:var(--charcoal);padding:9px 14px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,249,245,.4)">When to use each pathway</div>
+      <div style="font-size:11.5px">
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px"><div style="font-weight:600;color:var(--charcoal);width:80px;flex-shrink:0">Mitigate</div><div style="color:var(--gray-mid)">Default for Critical and High findings. Use when a control exists or can be implemented within the deadline. Most common pathway.</div></div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px"><div style="font-weight:600;color:var(--charcoal);width:80px;flex-shrink:0">Accept</div><div style="color:var(--gray-mid)">Use for Low or Medium residual risks after mitigation, or for risks within your documented risk appetite. Requires formal sign-off and rationale. Never use for Critical findings without board approval.</div></div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--gray-line);display:flex;gap:12px"><div style="font-weight:600;color:var(--charcoal);width:80px;flex-shrink:0">Transfer</div><div style="color:var(--gray-mid)">Use when the risk can be shifted contractually or via insurance. Common for vendor-generated risks where contractual amendments are feasible.</div></div>
+        <div style="padding:8px 14px;display:flex;gap:12px"><div style="font-weight:600;color:var(--charcoal);width:80px;flex-shrink:0">Avoid</div><div style="color:var(--gray-mid)">Use when the risk cannot be sufficiently reduced by any other means and the business justification is insufficient. Effectively means shutting down the AI system or feature.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P5 ASSIGN -->
+<div class="panel" id="panel-5">
+  <div class="hero">
+    <div class="eye">Step 5</div>
+    <h1 class="ph-title">Assign owner &amp; deadline</h1>
+    <p class="ph-sub">Every finding needs a named owner and a firm deadline. These create the accountability that regulators and auditors will check.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; assign an owner and confirm the deadline</div><div class="ctxt">In the detail panel below, select <strong>Chief Privacy Officer</strong> as the owner (data handling is a privacy risk), confirm the deadline is within 30 days, and type a brief note about the planned control in the notes field.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Risk Management &mdash; CTRL-010 detail</div></div>
+      <div style="background:var(--cream);min-height:400px">
+        <div style="border:none;min-height:400px;overflow-y:auto">
+          <div class="det-hdr">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-family:'DM Mono',monospace;font-size:9px;background:rgba(20,20,19,.06);padding:1px 5px;border-radius:3px">CTRL-010</span><span class="sev-crit-badge">Critical</span><span style="font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.2);color:#4A4A46">Open</span></div>
+            <div class="det-title">Sensitive data processing without documented controls</div>
+            <div class="det-sub">Source: Risk Assessment &middot; SYS-007 Customer Churn Predictor &middot; Generated today</div>
+          </div>
+          <div class="det-section">
+            <div class="det-sec-label">Finding detail</div>
+            <div class="det-field"><div class="det-field-lbl">Description</div><div class="det-field-val">Data sensitivity dimension scored 8/10 &mdash; above the Critical threshold of 7. The system processes PII and financial transaction data without formal data handling controls or documented sub-processor agreements in place.</div></div>
+            <div class="det-field"><div class="det-field-lbl">Pathway</div><div style="display:inline-block;padding:3px 10px;border-radius:5px;background:rgba(120,140,93,.1);border:1px solid rgba(120,140,93,.3);font-size:10px;font-weight:600;color:#27500A">Mitigate</div></div>
+          </div>
+          <div class="det-section">
+            <div class="det-sec-label">Assignment</div>
+            <div class="det-field">
+              <div class="det-field-lbl">Risk owner <span style="color:var(--orange);font-size:9px">&larr; assign here</span></div>
+              <select class="det-select" id="p5-owner" onchange="p5check()">
+                <option>&mdash; Unassigned &mdash;</option>
+                <option>Chief Risk Officer</option>
+                <option>Chief Privacy Officer</option>
+                <option>CISO</option>
+                <option>Chief Compliance Officer</option>
+                <option>General Counsel</option>
+                <option>Privacy Officer</option>
+              </select>
+            </div>
+            <div class="det-field">
+              <div class="det-field-lbl">Target remediation date</div>
+              <input type="date" class="det-input" id="p5-deadline" value="" onchange="p5check()">
+              <div style="font-size:9.5px;color:var(--gray-soft);margin-top:3px">Default: 30 days from today for Critical findings</div>
+            </div>
+          </div>
+          <div class="det-section">
+            <div class="det-sec-label">Notes</div>
+            <div class="det-field">
+              <div class="det-field-lbl">Remediation plan notes</div>
+              <textarea class="det-textarea" id="p5-notes" placeholder="Describe the planned control: obtain signed DPA/BAA from all data processors, implement data minimization review, confirm sub-processor chain documentation..." onkeyup="p5check()"></textarea>
+            </div>
+          </div>
+          <div class="det-actions">
+            <button class="da-btn da-secondary">Edit</button>
+            <button class="da-btn da-primary" id="p5-save-btn" onclick="p5save()" disabled style="opacity:.5">Save assignment</button>
+          </div>
+          <div id="p5-saved-msg" style="display:none;margin:10px 14px;padding:8px 10px;background:rgba(120,140,93,.08);border:1px solid rgba(120,140,93,.2);border-radius:6px;font-size:10.5px;color:#27500A">&#10003; Assignment saved &mdash; owner notified &middot; Next step: mark In progress when remediation work begins</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><div class="ci">&#9888;&#65039;</div><div><div class="ct">Owner must be a named individual, not a team</div><div class="cd">Assigning &ldquo;Legal Team&rdquo; or &ldquo;Privacy Department&rdquo; is not sufficient. Regulators will ask who specifically is accountable for each finding. The named owner receives the accountability trail and is the person expected to provide status updates at governance committee meetings.</div></div></div>
+  </div>
+</div>
+
+<!-- P6 NOTES AND EVIDENCE -->
+<div class="panel" id="panel-6">
+  <div class="hero">
+    <div class="eye">Step 6</div>
+    <h1 class="ph-title">Add notes &amp; attach evidence</h1>
+    <p class="ph-sub">Document your remediation plan in notes and attach evidence as controls are implemented. Evidence is your audit trail.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; add a note and upload evidence</div><div class="ctxt">Type a remediation update in the notes area and click the evidence zone to simulate uploading a control evidence file. Both are stored in the finding record and appear in the audit trail. You can add multiple notes &mdash; they are timestamped and cumulative, not replaced.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Risk Management &mdash; CTRL-010 &mdash; Evidence</div></div>
+      <div style="background:var(--cream);min-height:380px;padding:12px">
+        <div style="background:var(--white);border:1px solid var(--gray-line);border-radius:9px;overflow:hidden">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--gray-line);background:var(--cream)"><div style="font-size:11px;font-weight:600;color:var(--charcoal)">CTRL-010 &mdash; Notes &amp; Evidence</div><div style="font-size:9px;color:var(--gray-soft)">Sensitive data processing without documented controls &middot; Chief Privacy Officer &middot; Due in 28 days</div></div>
+          <div style="padding:12px">
+            <div style="font-size:9.5px;font-weight:600;color:var(--gray-soft);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Remediation notes</div>
+            <div id="p6-notes-list" style="margin-bottom:10px">
+              <div style="padding:8px 10px;background:var(--cream);border-radius:6px;font-size:10.5px;border:1px solid var(--gray-line);margin-bottom:5px"><div style="font-size:8.5px;color:var(--gray-soft);margin-bottom:3px">Chief Privacy Officer &middot; Today</div>Identified three sub-processors in the Churn Predictor data flow: Snowflake, AWS SageMaker, and SendGrid. DPA request sent to all three. Awaiting responses.</div>
+            </div>
+            <textarea class="det-textarea" id="p6-note-input" placeholder="Add a remediation update note..." style="margin-bottom:7px"></textarea>
+            <button style="height:26px;padding:0 12px;background:var(--orange);color:white;border:none;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;margin-bottom:14px" onclick="p6addNote()">Add note</button>
+            <div style="font-size:9.5px;font-weight:600;color:var(--gray-soft);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Evidence files</div>
+            <div id="p6-files" style="margin-bottom:8px">
+              <div style="font-size:10px;color:var(--gray-soft);font-style:italic">No evidence uploaded yet &mdash; attach control documentation below</div>
+            </div>
+            <div class="det-ev-zone" onclick="p6uploadEv()">&#128206; Drop evidence file here &mdash; DPA, policy doc, test results, meeting minutes, screenshots</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip"><div class="ci">&#128161;</div><div><div class="ct">What counts as evidence for each pathway</div><div class="cd">For <strong>Mitigate</strong>: upload the implemented control documentation &mdash; signed DPA/BAA, updated policy document, penetration test results, configuration screenshot. For <strong>Accept</strong>: upload the formal acceptance memo signed by the appropriate risk owner. For <strong>Transfer</strong>: upload the contract amendment or insurance certificate. Evidence attached to findings is version-controlled and appears in the audit trail export.</div></div></div>
+  </div>
+</div>
+
+<!-- P7 ADVANCE STATUS -->
+<div class="panel" id="panel-7">
+  <div class="hero">
+    <div class="eye">Step 7</div>
+    <h1 class="ph-title">Advance status &mdash; Open &rarr; In progress &rarr; Resolved</h1>
+    <p class="ph-sub">Click the action button to move a finding through the status lifecycle. The button label changes automatically based on the current status.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; advance the finding status twice</div><div class="ctxt">Click <strong>Mark in progress</strong> to indicate remediation work has started. Notice the button label changes to <strong>Mark resolved</strong>. Click it again once the control has been implemented. Watch the status badge update from Open &rarr; In progress &rarr; Resolved and the row change color in the list.</div></div></div>
+    <div class="status-flow" style="margin-bottom:6px">
+      <div class="sf-node sf-open" id="sf-open" style="font-weight:600">Open</div>
+      <div class="sf-arrow">&#8594;</div>
+      <div class="sf-node sf-inp" id="sf-inp">In progress</div>
+      <div class="sf-arrow">&#8594;</div>
+      <div class="sf-node sf-res" id="sf-res">Resolved</div>
+    </div>
+    <div style="font-size:10.5px;color:var(--gray-mid);margin-bottom:16px">Status changes are logged with timestamp and user in the audit trail.</div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Risk Management</div></div>
+      <div style="position:relative;min-height:380px">
+        <div class="app" style="min-height:380px">
+          <div class="asb">
+            <div class="alogo"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+            <div class="ani active" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management</div>
+          </div>
+          <div class="am">
+            <div class="atb">Risk Management</div>
+            <div class="treat-shell" style="flex:1">
+              <div class="treat-left" style="width:240px">
+                <div>
+                  <div class="group-hdr"><div class="treat-sev-bar tb-crit"></div><div class="group-sys-name">Customer Churn Predictor</div><div class="group-count">3</div></div>
+                  <div class="treat-row selected" id="p7-crit-row"><div class="treat-sev-bar tb-crit"></div><div class="treat-id">CTRL-010</div><div class="treat-name">Sensitive data processing without documented controls</div><div class="sev-crit-badge">Critical</div><div class="treat-status-badge st-open" id="p7-badge">Open</div></div>
+                  <div class="treat-row"><div class="treat-sev-bar tb-high"></div><div class="treat-id">CTRL-011</div><div class="treat-name">Automated decisioning without human checkpoint</div><div class="sev-high-badge">High</div><div class="treat-status-badge st-open">Open</div></div>
+                </div>
+              </div>
+              <div class="treat-right">
+                <div class="det-hdr">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-family:'DM Mono',monospace;font-size:9px;background:rgba(20,20,19,.06);padding:1px 5px;border-radius:3px">CTRL-010</span><span class="sev-crit-badge">Critical</span><span class="treat-status-badge" id="p7-det-badge" style="padding:2px 7px;border-radius:4px;background:rgba(176,174,165,.2);color:#4A4A46">Open</span></div>
+                  <div class="det-title">Sensitive data processing without documented controls</div>
+                  <div class="det-sub">Chief Privacy Officer &middot; Due in 28 days &middot; Mitigate pathway</div>
+                </div>
+                <div class="det-section">
+                  <div class="det-field-lbl" style="font-size:10px;margin-bottom:6px">Current status: <strong id="p7-status-text">Open &mdash; remediation not yet started</strong></div>
+                  <div style="font-size:10px;color:var(--gray-mid)" id="p7-status-guidance">Click &ldquo;Mark in progress&rdquo; once you have started implementing the control to create an audit trail entry.</div>
+                </div>
+                <div class="det-actions">
+                  <button class="da-btn da-secondary">Edit</button>
+                  <button class="da-btn da-primary" id="p7-advance-btn" onclick="p7advance()">Mark in progress</button>
+                </div>
+                <div id="p7-log" style="padding:10px 14px;border-top:1px solid var(--gray-line)">
+                  <div style="font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:8px">Audit trail</div>
+                  <div class="p7-log-item" style="font-size:10px;color:var(--gray-mid);padding:5px 0;border-bottom:1px solid var(--gray-line)">Finding created &mdash; Risk Assessment saved &middot; Today 09:14</div>
+                  <div class="p7-log-item" style="font-size:10px;color:var(--gray-mid);padding:5px 0;border-bottom:1px solid var(--gray-line)">Owner assigned: Chief Privacy Officer &middot; Today 10:32</div>
+                  <div class="p7-log-item" style="font-size:10px;color:var(--gray-mid);padding:5px 0;border-bottom:1px solid var(--gray-line)">Pathway set: Mitigate &middot; Today 10:33</div>
+                  <div class="p7-log-item" style="font-size:10px;color:var(--gray-mid);padding:5px 0">Note added by Chief Privacy Officer &middot; Today 11:00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="p7-resolved-msg" style="display:none">
+      <div class="callout tip"><div class="ci">&#10003;</div><div><div class="ct">Finding resolved</div><div class="cd">CTRL-010 is now Resolved. The row turns green in the list, the Dashboard maturity score improves, and the finding appears as Resolved in the next board pack export. The audit trail shows the full lifecycle from creation to resolution with all timestamps.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- P8 FORMAL ACCEPT -->
+<div class="panel" id="panel-8">
+  <div class="hero">
+    <div class="eye">Step 8</div>
+    <h1 class="ph-title">Formal risk acceptance</h1>
+    <p class="ph-sub">When a finding has the Accept pathway and is in Open status, a &ldquo;Formally accept risk&rdquo; button appears. This requires documented rationale and creates a permanent record.</p>
+  </div>
+  <div class="pbody">
+    <div class="coach"><div class="coach-icon">&#128070;</div><div><div class="cstep">Try it &mdash; formally accept a Medium finding</div><div class="ctxt">The finding below has been assigned the Accept pathway. Click <strong>Formally accept risk</strong> to open the acceptance modal. Fill in the rationale, review period, and approver. This acceptance is permanent &mdash; it creates a documented record that the risk was knowingly accepted at a specific point in time.</div></div></div>
+    <div class="sim">
+      <div class="sim-bar"><div class="sd sd-r"></div><div class="sd sd-y"></div><div class="sd sd-g"></div><div class="surl">governai.html &mdash; Risk Management &mdash; CTRL-013 &mdash; Accept pathway</div></div>
+      <div style="position:relative;min-height:380px">
+        <div class="app" style="min-height:380px">
+          <div class="asb">
+            <div class="alogo"><div class="alr"><div class="ali"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="aln">Govern<span>AI</span></span></div></div>
+            <div class="ani active" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management</div>
+          </div>
+          <div class="am">
+            <div class="atb">Risk Management</div>
+            <div class="treat-shell" style="flex:1">
+              <div class="treat-left" style="width:240px">
+                <div>
+                  <div class="group-hdr"><div class="treat-sev-bar tb-med"></div><div class="group-sys-name">AI Code Assistant (SYS-003)</div><div class="group-count">2</div></div>
+                  <div class="treat-row selected"><div class="treat-sev-bar tb-med"></div><div class="treat-id">CTRL-013</div><div class="treat-name">Model outputs not explainable to affected parties</div><div class="sev-med-badge">Medium</div><div class="treat-status-badge st-open">Open</div></div>
+                </div>
+              </div>
+              <div class="treat-right">
+                <div class="det-hdr">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-family:'DM Mono',monospace;font-size:9px;background:rgba(20,20,19,.06);padding:1px 5px;border-radius:3px">CTRL-013</span><span class="sev-med-badge">Medium</span><span style="font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.2);color:#4A4A46">Open</span></div>
+                  <div class="det-title">Model outputs not explainable to affected parties</div>
+                  <div class="det-sub">VP Engineering &middot; Pathway: Accept &middot; Source: Risk Assessment</div>
+                </div>
+                <div class="det-section">
+                  <div class="det-field-val" style="font-size:11px;color:var(--gray-mid)">Model transparency scored 7/10 &mdash; the AI Code Assistant cannot provide instance-level explainability. Decision: Accept this risk as the system assists developers with code suggestions only and does not make consequential decisions about individuals. Risk acceptance is within documented risk appetite for internal productivity tools.</div>
+                </div>
+                <div class="det-actions">
+                  <button class="da-btn da-secondary">Edit</button>
+                  <button class="da-btn da-accept" onclick="p8openAccept()">Formally accept risk</button>
+                </div>
+              </div>
+            </div>
+            <!-- Accept modal -->
+            <div class="modal-ov" id="p8-modal">
+              <div class="modal-box">
+                <div class="modal-hdr"><div class="modal-title">Formal Risk Acceptance</div><button class="modal-close" onclick="p8closeAccept()">&#10005;</button></div>
+                <div class="modal-body">
+                  <div style="padding:8px 10px;background:#FAEEDA;border:1px solid rgba(217,119,87,.3);border-radius:6px;font-size:10.5px;color:#633806;margin-bottom:12px">&#9888; This creates a permanent acceptance record. The finding will be marked Accepted and cannot be re-opened without creating a new finding.</div>
+                  <div class="det-field"><div class="det-field-lbl" style="font-size:10px;font-weight:600;margin-bottom:4px">Acceptance rationale <span style="color:var(--orange)">Required</span></div><textarea class="det-textarea" id="p8-rationale" placeholder="The AI Code Assistant assists developers with code suggestions and does not make consequential decisions about individuals. Explainability is not required under our current risk appetite for internal productivity tools. This risk will be re-evaluated if the system's scope changes to affect external parties.">The AI Code Assistant assists developers with code suggestions and does not make consequential decisions about individuals. Explainability is not required under our current risk appetite for internal productivity tools. This risk will be re-evaluated if the system's scope changes to affect external parties.</textarea></div>
+                  <div class="det-field"><div class="det-field-lbl" style="font-size:10px;font-weight:600;margin-bottom:4px">Review period</div><select class="det-select"><option selected>12 months &mdash; revisit at next annual review</option><option>6 months</option><option>18 months</option></select></div>
+                  <div class="det-field"><div class="det-field-lbl" style="font-size:10px;font-weight:600;margin-bottom:4px">Approved by</div><select class="det-select" id="p8-approver"><option>&mdash; Select approver &mdash;</option><option>Chief Risk Officer</option><option selected>VP Engineering</option><option>Chief Compliance Officer</option></select></div>
+                </div>
+                <div class="modal-foot"><button class="mbtn-c" onclick="p8closeAccept()">Cancel</button><button class="mbtn-s" onclick="p8confirm()">Confirm formal acceptance</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="p8-accepted-msg" style="display:none">
+      <div class="callout tip"><div class="ci">&#10003;</div><div><div class="ct">Risk formally accepted</div><div class="cd">CTRL-013 is now marked Accepted with a permanent audit record. The acceptance rationale, approver, and review date are stored. This finding will appear in the Accepted section of the Risk Management register and in the next board pack as a documented risk acceptance decision.</div></div></div>
+    </div>
+    <div class="div"></div>
+    <div class="done-card">
+      <div class="done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="done-title">Finding Remediation guide complete!</div>
+      <div class="done-sub">You can now navigate the Risk Management register, triage findings, assign pathways and owners, advance status, add evidence, and formally accept residual risks. Return to GovernAI and start with the Critical findings for the Customer Churn Predictor.</div>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>
+</div>
+
+<script>
+var cur=0;
+var panels=document.querySelectorAll('.panel');
+var navLinks=document.querySelectorAll('.nl');
+var LABELS=['Introduction','Navigate to Risk Management','Finding sources','Triage a Critical finding','Choose a pathway','Assign owner and deadline','Add notes and evidence','Advance status','Formal risk acceptance'];
+function goPanel(n){
+  panels[cur].classList.remove('active');navLinks[cur].classList.remove('active');
+  if(cur<n)navLinks[cur].classList.add('done');
+  cur=n;panels[cur].classList.add('active');navLinks[cur].classList.add('active');
+  document.getElementById('tbl').innerHTML='<strong>Step '+(cur+1)+' of '+panels.length+'</strong> &mdash; '+LABELS[cur];
+  document.getElementById('btnprev').disabled=cur===0;
+  var nb=document.getElementById('btnnext');
+  nb.innerHTML=cur===panels.length-1?'Finish':'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:11px;height:11px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  document.getElementById('plbl').textContent=(cur+1)+' / '+panels.length;
+  document.getElementById('pfill').style.width=((cur+1)/panels.length*100)+'%';
+  window.scrollTo(0,0);
+}
+function nxt(){if(cur<panels.length-1){goPanel(cur+1);}else{window.location.href='governai_training_center.html';}}
+function prv(){if(cur>0)goPanel(cur-1);}
+
+// P1
+function p1nav(el,mod){
+  document.querySelectorAll('.ani').forEach(function(i){i.classList.remove('active');});
+  el.classList.add('active');el.style.animation='none';
+  var titles={inventory:'AI Inventory',risk:'Risk Assessment',vdd:'Vendor Due Diligence',treat:'Risk Management'};
+  document.getElementById('p1-topbar').textContent=titles[mod]||mod;
+  var v=document.getElementById('p1-treat-view');
+  var m=document.getElementById('p1-msg');
+  if(mod==='treat'){v.style.display='flex';m.style.display='none';}
+  else{v.style.display='none';m.style.display='flex';m.textContent='\u2190 Click Risk Management in the sidebar';}
+}
+function p1toggleGroup(el){
+  var body=el.nextElementSibling;
+  if(body&&body.classList.contains('group-body')){body.style.display=body.style.display==='none'?'block':'none';}
+}
+function p1selRow(el,id,title,sev,source){
+  document.querySelectorAll('#panel-1 .treat-row').forEach(function(r){r.classList.remove('selected');});
+  el.classList.add('selected');
+  var sevBg=sev==='Critical'?'#FCEBEB':sev==='High'?'#FAEEDA':'rgba(106,155,204,.08)';
+  var sevCol=sev==='Critical'?'#A32D2D':sev==='High'?'#633806':'#0C447C';
+  document.getElementById('p1-right').innerHTML='<div class="det-hdr"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:'+sevBg+';color:'+sevCol+'">'+sev+'</span><span style="font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.2);color:#4A4A46">Open</span></div><div class="det-title">'+title+'</div><div class="det-sub">Source: '+source+' \u00b7 SYS-007 Customer Churn Predictor \u00b7 No owner assigned</div></div>'
+    +'<div class="det-section"><div class="det-sec-label">Finding detail</div><div class="det-field-val" style="font-size:11px;color:var(--gray-mid)">This finding was generated automatically from the Risk Assessment. An owner must be assigned and a treatment pathway selected before remediation can begin.</div></div>'
+    +'<div class="det-actions"><button class="da-btn da-secondary">Edit</button><button class="da-btn da-primary" onclick="alert(\'In the real app this opens the edit modal for this finding.\')">Mark in progress</button></div>';
+}
+
+// P3
+function p3select(el){
+  document.querySelectorAll('#panel-3 .treat-row').forEach(function(r){r.classList.remove('selected');});
+  el.classList.add('selected');
+  document.getElementById('p3-right').innerHTML='<div class="det-hdr"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-family:\'DM Mono\',monospace;font-size:9px;background:rgba(20,20,19,.06);padding:1px 5px;border-radius:3px">CTRL-010</span><span class="sev-crit-badge">Critical</span><span style="font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(176,174,165,.2);color:#4A4A46">Open</span></div>'
+    +'<div class="det-title">Sensitive data processing without documented controls</div>'
+    +'<div class="det-sub">Source: Risk Assessment \u00b7 SYS-007 Customer Churn Predictor \u00b7 Generated today \u00b7 Due in 30 days</div></div>'
+    +'<div class="det-section"><div class="det-sec-label">Finding detail</div>'
+    +'<div class="det-field"><div class="det-field-lbl">Description</div><div class="det-field-val">Data sensitivity dimension scored 8/10 \u2014 above the Critical threshold of 7. The system processes PII and financial transaction data without formal data handling controls or documented sub-processor agreements in place.</div></div>'
+    +'<div class="det-field"><div class="det-field-lbl">Recommended control</div><div class="det-field-val">Obtain signed DPA/BAA from all data processors. Implement data minimization review. Confirm and document sub-processor chain. Align with GDPR Article 28 obligations.</div></div></div>'
+    +'<div class="det-section"><div class="det-sec-label">Assignment</div><div class="det-field-val" style="font-size:11px;color:var(--orange-dk)">No owner assigned yet \u2014 assign in next step</div></div>'
+    +'<div class="det-actions"><button class="da-btn da-secondary">Edit</button><button class="da-btn da-primary">Mark in progress</button></div>';
+}
+function p3selectOther(el,title,sev){
+  document.querySelectorAll('#panel-3 .treat-row').forEach(function(r){r.classList.remove('selected');});
+  el.classList.add('selected');
+  var sevBg=sev==='High'?'#FAEEDA':'rgba(106,155,204,.08)';
+  var sevCol=sev==='High'?'#633806':'#0C447C';
+  document.getElementById('p3-right').innerHTML='<div class="det-hdr"><div style="font-size:11px;font-weight:600;margin-bottom:3px">'+title+'</div><div class="det-sub">Source: Risk Assessment \u00b7 SYS-007 \u00b7 Open</div></div><div class="det-section"><div class="det-field-val" style="font-size:11px;color:var(--gray-mid)">This is a '+sev+'-severity finding. Click the Critical finding (CTRL-010) to see the full triage workflow.</div></div>';
+}
+
+// P4
+var pwGuidance={
+  Mitigate:{title:'Mitigate selected',text:'Good choice for a Critical finding. The next step is to assign a named owner and set a firm 30-day deadline. The recommended control: obtain signed DPA/BAA from all data processors, implement data minimization review, and confirm sub-processor chain documentation.'},
+  Accept:{title:'Accept \u2014 use with caution',text:'Accepting a Critical finding without board approval is not appropriate under most governance frameworks. This pathway is appropriate for Low or Medium residual risks that fall within documented risk appetite. For Critical findings, Mitigate is strongly preferred.'},
+  Transfer:{title:'Transfer selected',text:'Appropriate if the data handling risk can be shifted contractually. For example, requiring the sub-processor to carry cyber liability insurance covering data incidents. Note: the underlying risk remains in your systems \u2014 you are transferring the financial consequence only.'},
+  Avoid:{title:'Avoid selected',text:'This would mean shutting down the Customer Churn Predictor entirely. Appropriate only if the risk cannot be mitigated to within risk appetite and the business case does not justify continued operation. This is a significant decision requiring governance committee approval.'}
+};
+function p4selectPw(el,pw){
+  document.querySelectorAll('.pw-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  var g=pwGuidance[pw];
+  var div=document.getElementById('p4-guidance');
+  div.style.display='flex';
+  div.className='callout '+(pw==='Accept'||pw==='Avoid'?'warn':'tip');
+  document.getElementById('p4-g-title').textContent=g.title;
+  document.getElementById('p4-g-text').textContent=g.text;
+}
+
+// P5
+function p5check(){
+  var owner=document.getElementById('p5-owner').value;
+  var deadline=document.getElementById('p5-deadline').value;
+  var notes=document.getElementById('p5-notes').value.trim();
+  var btn=document.getElementById('p5-save-btn');
+  var ok=owner!=='\u2014 Unassigned \u2014'&&deadline&&notes.length>10;
+  btn.disabled=!ok;btn.style.opacity=ok?'1':'0.5';
+}
+function p5save(){
+  document.getElementById('p5-saved-msg').style.display='block';
+  document.getElementById('p5-save-btn').disabled=true;
+  document.getElementById('p5-save-btn').style.background='var(--green)';
+  document.getElementById('p5-save-btn').textContent='\u2713 Saved';
+}
+// Set deadline default to 30 days from now
+(function(){
+  var d=new Date();d.setDate(d.getDate()+30);
+  var inp=document.getElementById('p5-deadline');
+  if(inp)inp.value=d.toISOString().split('T')[0];
+})();
+
+// P6
+function p6addNote(){
+  var txt=document.getElementById('p6-note-input').value.trim();
+  if(!txt)return;
+  var list=document.getElementById('p6-notes-list');
+  var div=document.createElement('div');
+  div.style.cssText='padding:8px 10px;background:rgba(217,119,87,.06);border:1px solid rgba(217,119,87,.15);border-radius:6px;font-size:10.5px;margin-bottom:5px;animation:mu .2s ease both';
+  div.innerHTML='<div style="font-size:8.5px;color:var(--gray-soft);margin-bottom:3px">Chief Privacy Officer \u00b7 Just now</div>'+txt;
+  list.appendChild(div);
+  document.getElementById('p6-note-input').value='';
+}
+function p6uploadEv(){
+  var files=document.getElementById('p6-files');
+  files.innerHTML='<div style="padding:6px 8px;background:rgba(120,140,93,.08);border:1px solid rgba(120,140,93,.2);border-radius:6px;font-size:10px;color:#27500A">\u2714 DPA_Sub-processor_Agreement_Snowflake_2025.pdf \u2014 uploaded just now</div>';
+}
+
+// P7
+var p7state='open';
+function p7advance(){
+  var btn=document.getElementById('p7-advance-btn');
+  var badge=document.getElementById('p7-badge');
+  var detBadge=document.getElementById('p7-det-badge');
+  var statusText=document.getElementById('p7-status-text');
+  var statusGuidance=document.getElementById('p7-status-guidance');
+  var log=document.getElementById('p7-log');
+  var row=document.getElementById('p7-crit-row');
+  if(p7state==='open'){
+    p7state='inprogress';
+    badge.textContent='In progress';badge.className='treat-status-badge st-inp';
+    detBadge.textContent='In progress';detBadge.style.background='#FAEEDA';detBadge.style.color='#633806';
+    btn.textContent='Mark resolved';
+    statusText.textContent='In progress \u2014 remediation work has started';
+    statusGuidance.textContent='Click \u201cMark resolved\u201d once all controls have been implemented and evidence has been attached.';
+    document.getElementById('sf-inp').classList.add('sf-active');
+    var entry=document.createElement('div');entry.className='p7-log-item';entry.style.cssText='font-size:10px;color:var(--green);padding:5px 0;border-bottom:1px solid var(--gray-line)';entry.textContent='Status changed: Open \u2192 In progress \u00b7 Just now';
+    log.appendChild(entry);
+  } else if(p7state==='inprogress'){
+    p7state='resolved';
+    badge.textContent='Resolved';badge.className='treat-status-badge st-res';
+    row.style.background='rgba(120,140,93,.06)';row.style.borderLeft='2px solid var(--green)';
+    detBadge.textContent='Resolved';detBadge.style.background='#EAF3DE';detBadge.style.color='#27500A';
+    btn.style.display='none';
+    statusText.textContent='Resolved \u2014 control implemented and evidenced';
+    document.getElementById('sf-res').classList.add('sf-active');
+    var entry2=document.createElement('div');entry2.className='p7-log-item';entry2.style.cssText='font-size:10px;color:var(--green);padding:5px 0;font-weight:500';entry2.textContent='\u2713 Status changed: In progress \u2192 Resolved \u00b7 Just now';
+    log.appendChild(entry2);
+    document.getElementById('p7-resolved-msg').style.display='block';
+  }
+}
+
+// P8
+function p8openAccept(){document.getElementById('p8-modal').classList.add('open');}
+function p8closeAccept(){document.getElementById('p8-modal').classList.remove('open');}
+function p8confirm(){
+  p8closeAccept();
+  document.getElementById('p8-accepted-msg').style.display='block';
+}
+
+function p7toggleGroup_p1(el){
+  var b=el.nextElementSibling;if(b)b.style.display=b.style.display==='none'?'block':'none';
+}
+
+goPanel(0);
+</script>
+</body>
+</html>

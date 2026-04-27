@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovernAI — AI System Registration Interactive Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:#D97757; --orange-dk:#C15F3C; --orange-lt:#FDF1EC;
+  --charcoal:#141413; --cream:#FAF9F5; --white:#FFFFFF;
+  --gray-soft:#B0AEA5; --gray-line:#E8E6DC; --gray-mid:#7A7870;
+  --blue:#6A9BCC; --green:#788C5D;
+  --sidebar-w: 220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+
+/* ── OUTER SHELL ── */
+.guide-shell{display:flex;min-height:100vh;}
+
+/* ── LEFT SIDEBAR NAV ── */
+.guide-nav{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--charcoal);
+  position:fixed;top:0;left:0;bottom:0;
+  display:flex;flex-direction:column;
+  overflow-y:auto;z-index:10;
+}
+.guide-nav::-webkit-scrollbar{width:3px;}
+.guide-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);}
+.gnav-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06);}
+.gnav-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+.gnav-logo-icon{width:28px;height:28px;background:var(--orange);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.gnav-logo-icon svg{width:15px;height:15px;}
+.gnav-logo-name{font-family:'DM Serif Display',serif;font-size:16px;color:var(--cream);}
+.gnav-logo-name span{color:var(--orange);}
+.gnav-logo-sub{font-size:9px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;padding-left:36px;}
+.gnav-section{padding:14px 0 4px;}
+.gnav-section-label{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:6px 20px 4px;}
+.gnav-link{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 20px;font-size:12px;color:rgba(250,249,245,.45);
+  text-decoration:none;cursor:pointer;
+  border-left:2px solid transparent;transition:all .12s;
+}
+.gnav-link:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.gnav-link.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.gnav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0;}
+.gnav-link.done .gnav-dot{background:var(--green);opacity:1;}
+.gnav-progress{padding:18px 20px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);}
+.gnav-prog-label{font-size:10px;color:var(--gray-soft);margin-bottom:7px;display:flex;justify-content:space-between;}
+.gnav-prog-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.gnav-prog-fill{height:100%;background:var(--orange);border-radius:2px;transition:width .4s ease;}
+
+/* ── MAIN CONTENT ── */
+.guide-main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.guide-topbar{
+  height:52px;background:var(--white);
+  border-bottom:1px solid var(--gray-line);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;position:sticky;top:0;z-index:9;
+}
+.gtb-step{font-size:11px;color:var(--gray-soft);font-weight:500;}
+.gtb-step strong{color:var(--charcoal);}
+.gtb-actions{display:flex;gap:8px;}
+.gtb-btn{
+  height:32px;padding:0 14px;border-radius:7px;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .12s;border:1px solid var(--gray-line);
+  display:flex;align-items:center;gap:6px;
+}
+.gtb-btn-prev{background:var(--white);color:var(--gray-mid);}
+.gtb-btn-prev:hover{background:var(--cream);border-color:var(--gray-soft);}
+.gtb-btn-next{background:var(--orange);color:white;border-color:var(--orange);}
+.gtb-btn-next:hover{background:var(--orange-dk);border-color:var(--orange-dk);}
+.gtb-btn-next:disabled{background:var(--gray-line);border-color:var(--gray-line);color:var(--gray-soft);cursor:not-allowed;}
+.gtb-btn svg{width:12px;height:12px;}
+
+/* ── CONTENT PANELS ── */
+.guide-content{flex:1;overflow-y:auto;}
+.guide-panel{display:none;padding:0;}
+.guide-panel.active{display:flex;flex-direction:column;}
+
+/* ── PANEL HERO ── */
+.panel-hero{
+  background:var(--charcoal);padding:40px 48px;
+  position:relative;overflow:hidden;
+}
+.panel-hero::before{
+  content:'';position:absolute;top:-60px;right:-40px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(217,119,87,.15) 0%,transparent 65%);
+  pointer-events:none;
+}
+.ph-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.ph-eyebrow::before{content:'';width:16px;height:2px;background:var(--orange);}
+.ph-title{font-family:'DM Serif Display',serif;font-size:30px;color:var(--cream);line-height:1.2;margin-bottom:8px;position:relative;z-index:1;}
+.ph-sub{font-size:13px;color:rgba(250,249,245,.55);line-height:1.65;max-width:500px;position:relative;z-index:1;}
+.ph-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:16px;padding:5px 12px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;font-size:11px;color:rgba(250,249,245,.5);
+}
+.ph-badge svg{width:12px;height:12px;color:var(--orange);}
+
+/* ── PANEL BODY ── */
+.panel-body{padding:36px 48px;flex:1;}
+
+/* ── CONCEPT CARD ── */
+.concept{
+  background:var(--white);border:1px solid var(--gray-line);
+  border-radius:12px;padding:24px 26px;margin-bottom:24px;
+}
+.concept-title{font-size:14px;font-weight:600;color:var(--charcoal);margin-bottom:8px;}
+.concept-text{font-size:13px;color:var(--gray-mid);line-height:1.7;}
+
+/* ── CALLOUT ── */
+.callout{border-radius:9px;padding:14px 16px;margin:18px 0;display:flex;gap:10px;}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.callout-title{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;}
+.callout-text{font-size:12.5px;line-height:1.65;}
+.callout.tip{background:rgba(120,140,93,.07);border:1px solid rgba(120,140,93,.2);}
+.callout.tip .callout-title{color:#3B6D11;}
+.callout.warn{background:rgba(217,119,87,.07);border:1px solid rgba(217,119,87,.2);}
+.callout.warn .callout-title{color:var(--orange-dk);}
+.callout.info{background:rgba(106,155,204,.07);border:1px solid rgba(106,155,204,.2);}
+.callout.info .callout-title{color:#0C447C;}
+.callout.key{background:var(--charcoal);border:none;}
+.callout.key .callout-title{color:var(--orange);}
+.callout.key .callout-text{color:rgba(250,249,245,.7);}
+
+/* ── INTERACTIVE SIMULATOR ── */
+.sim-shell{
+  border:1px solid var(--gray-line);border-radius:14px;
+  overflow:hidden;background:var(--white);
+  box-shadow:0 4px 24px rgba(0,0,0,.06);
+  margin:20px 0;
+}
+.sim-topbar{
+  height:38px;background:#F0F0EE;border-bottom:1px solid var(--gray-line);
+  display:flex;align-items:center;padding:0 14px;gap:8px;
+}
+.sim-dot{width:10px;height:10px;border-radius:50%;}
+.sim-dot-r{background:#FF5F57;} .sim-dot-y{background:#FEBC2E;} .sim-dot-g{background:#28C840;}
+.sim-url{flex:1;height:22px;background:var(--white);border:1px solid var(--gray-line);border-radius:4px;margin:0 12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--gray-mid);display:flex;align-items:center;padding:0 8px;}
+.sim-body{position:relative;min-height:400px;}
+
+/* App layout inside simulator */
+.sim-app{display:flex;height:100%;min-height:400px;}
+.sim-sidebar{width:190px;flex-shrink:0;background:var(--charcoal);display:flex;flex-direction:column;padding:16px 0;}
+.sim-sidebar-logo{padding:0 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:10px;}
+.sim-logo-row{display:flex;align-items:center;gap:7px;margin-bottom:2px;}
+.sim-logo-icon{width:22px;height:22px;background:var(--orange);border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.sim-logo-icon svg{width:12px;height:12px;}
+.sim-logo-name{font-family:'DM Serif Display',serif;font-size:13px;color:var(--cream);}
+.sim-logo-name span{color:var(--orange);}
+.sim-logo-sub{font-size:8px;color:var(--gray-soft);letter-spacing:.08em;text-transform:uppercase;padding-left:29px;}
+.sim-nav-section{padding:6px 0 2px;}
+.sim-nav-label{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:4px 16px;}
+.sim-nav-item{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 16px;font-size:11px;color:rgba(250,249,245,.45);
+  cursor:pointer;border-left:2px solid transparent;transition:all .1s;
+}
+.sim-nav-item:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.sim-nav-item.active{color:var(--orange);border-left-color:var(--orange);background:rgba(217,119,87,.07);}
+.sim-nav-item svg{width:11px;height:11px;flex-shrink:0;}
+.sim-nav-badge{margin-left:auto;font-size:9px;font-weight:600;background:rgba(217,119,87,.2);color:var(--orange);padding:1px 5px;border-radius:8px;}
+
+.sim-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.sim-main-topbar{height:38px;background:var(--white);border-bottom:1px solid var(--gray-line);display:flex;align-items:center;padding:0 18px;font-size:12px;font-weight:500;color:var(--charcoal);}
+
+/* Inventory list view */
+.sim-inv-view{flex:1;display:flex;flex-direction:column;background:var(--cream);}
+.sim-inv-controls{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--white);border-bottom:1px solid var(--gray-line);}
+.sim-search{flex:1;height:28px;background:var(--cream);border:1px solid var(--gray-line);border-radius:7px;font-size:11px;padding:0 10px;color:var(--charcoal);font-family:'DM Sans',sans-serif;}
+.sim-pill{height:24px;padding:0 10px;border-radius:12px;font-size:10px;font-weight:500;border:1px solid var(--gray-line);background:var(--white);cursor:pointer;color:var(--gray-mid);}
+.sim-pill.active{background:var(--charcoal);color:var(--cream);border-color:var(--charcoal);}
+.sim-add-btn{
+  height:28px;padding:0 12px;
+  background:var(--orange);color:white;
+  border:none;border-radius:7px;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;white-space:nowrap;
+  display:flex;align-items:center;gap:5px;
+  transition:all .13s;
+}
+.sim-add-btn:hover{background:var(--orange-dk);transform:translateY(-1px);}
+.sim-add-btn.highlight{animation:btnPulse 1.2s ease-in-out infinite;}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,119,87,.5)}50%{box-shadow:0 0 0 6px rgba(217,119,87,0)}}
+
+/* Inventory list rows */
+.sim-inv-list{flex:1;overflow-y:auto;padding:8px;}
+.sim-inv-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--white);border:1px solid var(--gray-line);
+  border-radius:8px;padding:9px 12px;margin-bottom:5px;
+  font-size:11px;transition:all .12s;cursor:pointer;
+}
+.sim-inv-row:hover{border-color:var(--orange);box-shadow:0 2px 8px rgba(217,119,87,.1);}
+.sim-inv-row.new-row{animation:rowSlideIn .4s ease both;border-color:var(--green);}
+@keyframes rowSlideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.sim-row-bar{width:3px;height:28px;border-radius:2px;flex-shrink:0;}
+.rb-high{background:#C0634A;} .rb-medium{background:var(--orange);} .rb-low{background:var(--green);}
+.sim-row-id{font-family:'DM Mono',monospace;font-size:9px;background:rgba(20,20,19,.06);color:var(--charcoal);padding:2px 6px;border-radius:4px;flex-shrink:0;}
+.sim-row-name{font-weight:500;color:var(--charcoal);flex:1;}
+.sim-row-vendor{color:var(--gray-soft);font-size:10px;width:90px;flex-shrink:0;}
+.sim-row-dept{color:var(--gray-soft);font-size:10px;width:80px;flex-shrink:0;}
+.sim-row-status{font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;flex-shrink:0;}
+.st-pending{background:rgba(176,174,165,.2);color:#4A4A46;}
+.st-approved{background:#EAF3DE;color:#27500A;}
+
+/* Modal */
+.sim-modal-overlay{
+  display:none;position:absolute;inset:0;
+  background:rgba(20,20,19,.45);
+  align-items:center;justify-content:center;
+  z-index:50;backdrop-filter:blur(2px);
+}
+.sim-modal-overlay.open{display:flex;}
+.sim-modal{
+  background:var(--white);border-radius:12px;
+  width:480px;max-height:85%;overflow-y:auto;
+  box-shadow:0 16px 48px rgba(0,0,0,.25);
+  animation:modalUp .22s ease both;
+}
+@keyframes modalUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sim-modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--gray-line);display:flex;align-items:center;justify-content:space-between;}
+.sim-modal-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--charcoal);}
+.sim-modal-close{width:26px;height:26px;border:1px solid var(--gray-line);border-radius:6px;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-soft);}
+.sim-modal-close:hover{background:var(--cream);}
+.sim-modal-body{padding:18px 20px;}
+.sim-modal-footer{padding:14px 20px;border-top:1px solid var(--gray-line);display:flex;justify-content:flex-end;gap:8px;}
+.sim-cancel-btn{height:32px;padding:0 14px;background:none;border:1px solid var(--gray-line);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;color:var(--gray-mid);}
+.sim-save-btn{height:32px;padding:0 16px;background:var(--orange);border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:white;cursor:pointer;transition:background .12s;}
+.sim-save-btn:hover{background:var(--orange-dk);}
+
+/* Form fields */
+.sim-field{margin-bottom:13px;}
+.sim-label{font-size:10.5px;font-weight:600;color:var(--charcoal);display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.sim-req{font-size:9px;color:var(--orange);font-weight:600;}
+.sim-input,.sim-select,.sim-textarea{
+  width:100%;border:1px solid var(--gray-line);border-radius:7px;
+  font-family:'DM Sans',sans-serif;font-size:12px;color:var(--charcoal);
+  background:var(--cream);padding:6px 10px;
+  transition:border-color .12s,box-shadow .12s;outline:none;
+}
+.sim-input:focus,.sim-select:focus,.sim-textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(217,119,87,.12);}
+.sim-textarea{height:56px;resize:none;}
+.sim-field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sim-checkbox-group{display:flex;flex-direction:column;gap:4px;max-height:120px;overflow-y:auto;}
+.sim-checkbox-item{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:5px;cursor:pointer;transition:background .1s;}
+.sim-checkbox-item:hover{background:rgba(217,119,87,.06);}
+.sim-checkbox-item input{width:13px;height:13px;accent-color:var(--orange);cursor:pointer;}
+.sim-checkbox-item label{font-size:11.5px;color:var(--charcoal);cursor:pointer;}
+.sim-section-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);padding:6px 0 8px;border-bottom:1px solid var(--gray-line);margin:4px 0 10px;}
+.sim-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;}
+.sim-toggle-label{font-size:12px;color:var(--charcoal);}
+.sim-toggle{position:relative;width:34px;height:18px;cursor:pointer;}
+.sim-toggle input{display:none;}
+.sim-toggle-track{width:34px;height:18px;background:var(--gray-line);border-radius:9px;transition:background .2s;}
+.sim-toggle input:checked + .sim-toggle-track{background:var(--orange);}
+.sim-toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s;}
+.sim-toggle input:checked ~ .sim-toggle-thumb{left:18px;}
+
+/* Field highlight overlay */
+.field-highlight{
+  position:relative;
+}
+.field-highlight::after{
+  content:'';position:absolute;inset:-3px;border-radius:9px;
+  border:2px solid var(--orange);
+  box-shadow:0 0 0 3px rgba(217,119,87,.15);
+  pointer-events:none;animation:hlPulse 1.5s ease-in-out infinite;
+  display:none;
+}
+.field-highlight.active::after{display:block;}
+@keyframes hlPulse{0%,100%{box-shadow:0 0 0 3px rgba(217,119,87,.15)}50%{box-shadow:0 0 0 6px rgba(217,119,87,0)}}
+
+/* ── TOOLTIP / COACH ── */
+.coach{
+  background:var(--charcoal);
+  border-radius:10px;
+  padding:14px 16px;
+  margin:16px 0;
+  border:1px solid rgba(255,255,255,.08);
+  display:flex;gap:10px;
+}
+.coach-icon{
+  width:28px;height:28px;flex-shrink:0;
+  background:rgba(217,119,87,.2);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.coach-body{}
+.coach-step{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:3px;}
+.coach-text{font-size:12.5px;color:rgba(250,249,245,.75);line-height:1.6;}
+.coach-action{margin-top:8px;}
+.coach-btn{
+  height:28px;padding:0 14px;
+  background:var(--orange);border:none;border-radius:6px;
+  font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;
+  color:white;cursor:pointer;transition:background .12s;
+}
+.coach-btn:hover{background:var(--orange-dk);}
+
+/* ── FIELD EXPLAINER ── */
+.field-explainer{
+  background:var(--white);border:1px solid var(--gray-line);
+  border-radius:10px;overflow:hidden;margin:16px 0;
+}
+.fe-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-bottom:1px solid var(--gray-line);
+  background:var(--cream);
+}
+.fe-num{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--orange);color:white;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.fe-name{font-size:13px;font-weight:600;color:var(--charcoal);}
+.fe-tag{font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.fe-req{background:rgba(217,119,87,.1);color:var(--orange-dk);}
+.fe-opt{background:rgba(232,230,220,.5);color:var(--gray-mid);}
+.fe-body{padding:13px 16px;}
+.fe-desc{font-size:12.5px;color:var(--gray-mid);line-height:1.65;margin-bottom:8px;}
+.fe-example{
+  font-family:'DM Mono',monospace;font-size:11px;
+  background:var(--cream);border:1px solid var(--gray-line);
+  border-radius:5px;padding:5px 10px;color:var(--charcoal);margin-bottom:8px;
+}
+.fe-example span{color:var(--gray-soft);}
+.fe-why{
+  font-size:11.5px;color:var(--orange-dk);
+  display:flex;align-items:flex-start;gap:5px;line-height:1.55;
+}
+.fe-why::before{content:'→';flex-shrink:0;}
+
+/* ── RESULT CARD ── */
+.result-card{
+  border:1px solid var(--gray-line);border-radius:12px;overflow:hidden;
+  margin:16px 0;background:var(--white);
+}
+.result-header{
+  padding:14px 18px;background:var(--charcoal);
+  display:flex;align-items:center;gap:10px;
+}
+.result-title{font-family:'DM Serif Display',serif;font-size:16px;color:var(--cream);}
+.result-body{padding:16px 18px;}
+.result-row{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:8px 0;border-bottom:1px solid var(--gray-line);font-size:12.5px;gap:12px;
+}
+.result-row:last-child{border-bottom:none;}
+.result-key{font-weight:600;color:var(--charcoal);flex-shrink:0;}
+.result-val{color:var(--gray-mid);text-align:right;}
+.result-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.rb-green{background:#EAF3DE;color:#27500A;}
+.rb-orange{background:#FAEEDA;color:#633806;}
+
+/* ── DOWNSTREAM CARDS ── */
+.downstream-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+.ds-card{
+  border:1px solid var(--gray-line);border-radius:10px;
+  padding:14px 16px;background:var(--white);
+  position:relative;overflow:hidden;
+}
+.ds-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.ds-card.ds-ra::before{background:var(--blue);}
+.ds-card.ds-vdd::before{background:var(--orange);}
+.ds-card.ds-dash::before{background:var(--green);}
+.ds-card.ds-inv::before{background:var(--charcoal);}
+.ds-module{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-soft);margin-bottom:5px;}
+.ds-title{font-size:12px;font-weight:600;color:var(--charcoal);margin-bottom:4px;}
+.ds-desc{font-size:11.5px;color:var(--gray-mid);line-height:1.55;}
+.ds-icon{font-size:18px;margin-bottom:6px;}
+
+/* ── STEP COMPLETION ── */
+.step-done{
+  text-align:center;padding:32px 24px;
+}
+.step-done-icon{
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(120,140,93,.12);margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;
+}
+.step-done-icon svg{width:24px;height:24px;color:var(--green);}
+.step-done-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--charcoal);margin-bottom:6px;}
+.step-done-sub{font-size:13px;color:var(--gray-mid);line-height:1.65;max-width:400px;margin:0 auto;}
+
+/* Animated new record */
+.new-record-flash{
+  animation:newFlash .6s ease both;
+}
+@keyframes newFlash{0%{background:rgba(120,140,93,.2)}100%{background:var(--white)}}
+
+/* ── SECTION DIVIDER ── */
+.sdivider{height:1px;background:var(--gray-line);margin:30px 0;}
+
+</style>
+</head>
+<body>
+<div class="guide-shell">
+
+<!-- LEFT NAV -->
+<nav class="guide-nav">
+  <div class="gnav-logo" onclick="window.location.href='governai.html'" style="cursor:pointer;" title="Go to GRC Dashboard">
+    <div class="gnav-logo-row">
+      <div class="gnav-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/><path d="M9 12l2 2 4-4" stroke="#D97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="gnav-logo-name">Govern<span>AI</span></span>
+    </div>
+    <div class="gnav-logo-sub">Registration Guide</div>
+  </div>
+
+  <div class="gnav-section">
+    <div class="gnav-section-label">Steps</div>
+    <div class="gnav-link active" data-panel="0" onclick="goPanel(0)"><span class="gnav-dot"></span>Introduction</div>
+    <div class="gnav-link" data-panel="1" onclick="goPanel(1)"><span class="gnav-dot"></span>Open the form</div>
+    <div class="gnav-link" data-panel="2" onclick="goPanel(2)"><span class="gnav-dot"></span>System identity</div>
+    <div class="gnav-link" data-panel="3" onclick="goPanel(3)"><span class="gnav-dot"></span>Org context</div>
+    <div class="gnav-link" data-panel="4" onclick="goPanel(4)"><span class="gnav-dot"></span>Regulatory flags</div>
+    <div class="gnav-link" data-panel="5" onclick="goPanel(5)"><span class="gnav-dot"></span>Data types &amp; oversight</div>
+    <div class="gnav-link" data-panel="6" onclick="goPanel(6)"><span class="gnav-dot"></span>Save the record</div>
+    <div class="gnav-link" data-panel="7" onclick="goPanel(7)"><span class="gnav-dot"></span>What happens next</div>
+  </div>
+
+  <div class="gnav-progress">
+    <div class="gnav-prog-label"><span>Progress</span><span id="prog-label">1 / 8</span></div>
+    <div class="gnav-prog-bar"><div class="gnav-prog-fill" id="prog-fill" style="width:12.5%"></div></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="guide-main">
+  <!-- TOPBAR -->
+  <div class="guide-topbar">
+    <div class="gtb-step" id="gtb-step-label"><strong>Step 1 of 8</strong> — Introduction</div>
+    <div class="gtb-actions">
+      <button class="gtb-btn gtb-btn-prev" id="btn-prev" onclick="prevPanel()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back
+      </button>
+      <button class="gtb-btn gtb-btn-next" id="btn-next" onclick="nextPanel()">
+        Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="guide-content">
+
+<!-- ═══ PANEL 0: INTRO ═══ -->
+<div class="guide-panel active" id="panel-0">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Interactive Guide</div>
+    <h1 class="ph-title">AI System Registration</h1>
+    <p class="ph-sub">Click through every step of the registration workflow. See each field highlighted in the live simulator, understand what it does, and practice filling it in before you use the real application.</p>
+    <div class="ph-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5–8 minutes to complete</div>
+  </div>
+  <div class="panel-body">
+    <div class="concept">
+      <div class="concept-title">What you will learn</div>
+      <div class="concept-text">This guide walks you through all 12 form fields using a live interactive simulator that mirrors the real GovernAI application. You will see exactly where each field appears in the form, understand why it matters for governance, and practice entering values for a real-world example system.</div>
+    </div>
+    <div class="callout key">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">The governance rule</div>
+        <div class="callout-text">If an AI system is not registered in the Inventory, it does not exist from a governance standpoint. Every other module — Risk Assessment, Vendor Due Diligence, Risk Management, and the Dashboard — draws its data from systems registered here.</div>
+      </div>
+    </div>
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Example system used in this guide</div>
+        <div class="callout-text">We will register a <strong>Customer Churn Predictor</strong> — an internally built AI model that scores existing customers on their likelihood to cancel their account, triggering automatic outreach when the score exceeds a threshold. This is a realistic governance scenario that touches most of the form's important fields.</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--gray-mid);margin-top:16px">Click <strong>Next</strong> to begin, or use the left sidebar to jump to any section.</p>
+  </div>
+</div>
+
+<!-- ═══ PANEL 1: OPEN THE FORM ═══ -->
+<div class="guide-panel" id="panel-1">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 1</div>
+    <h1 class="ph-title">Opening the registration form</h1>
+    <p class="ph-sub">Navigate to AI Inventory and click the Register system button. Try it in the simulator below.</p>
+  </div>
+  <div class="panel-body">
+
+    <div class="coach">
+      <div class="coach-icon">👆</div>
+      <div class="coach-body">
+        <div class="coach-step">Try it</div>
+        <div class="coach-text">In the simulator below: first click <strong>AI Inventory</strong> in the sidebar, then click the glowing <strong>+ Register system</strong> button that appears in the controls bar. Watch the registration form open.</div>
+      </div>
+    </div>
+
+    <!-- SIMULATOR -->
+    <div class="sim-shell">
+      <div class="sim-topbar">
+        <div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div>
+        <div class="sim-url">file:///governai.html</div>
+      </div>
+      <div class="sim-body">
+        <div class="sim-app">
+          <!-- Sidebar -->
+          <div class="sim-sidebar">
+            <div class="sim-sidebar-logo">
+              <div class="sim-logo-row"><div class="sim-logo-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="sim-logo-name">Govern<span>AI</span></span></div>
+              <div class="sim-logo-sub">AI Governance Platform</div>
+            </div>
+            <div class="sim-nav-section">
+              <div class="sim-nav-label">Overview</div>
+              <div class="sim-nav-item" onclick="simNavClick(this,'dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>GRC Dashboard</div>
+            </div>
+            <div class="sim-nav-section">
+              <div class="sim-nav-label">Modules</div>
+              <div class="sim-nav-item" id="sim-nav-playbook" onclick="simNavClick(this,'playbook')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Governance Playbook</div>
+              <div class="sim-nav-item" id="sim-nav-inv" onclick="simNavClick(this,'inventory')" style="color:rgba(250,249,245,.45)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>AI Inventory <span class="sim-nav-badge" id="sim-inv-badge">6</span></div>
+              <div class="sim-nav-item" onclick="simNavClick(this,'risk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="sim-nav-badge">6</span></div>
+              <div class="sim-nav-item" onclick="simNavClick(this,'vdd')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Vendor Due Diligence <span class="sim-nav-badge">4</span></div>
+              <div class="sim-nav-item" onclick="simNavClick(this,'treat')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Risk Management <span class="sim-nav-badge">12</span></div>
+            </div>
+          </div>
+          <!-- Main -->
+          <div class="sim-main">
+            <div class="sim-main-topbar" id="sim-topbar-title">GRC Dashboard</div>
+            <div class="sim-inv-view" id="sim-inv-view" style="display:none">
+              <div class="sim-inv-controls">
+                <input class="sim-search" placeholder="Search systems, vendors, departments…" readonly>
+                <button class="sim-pill active">All</button>
+                <button class="sim-pill">High</button>
+                <button class="sim-pill">Pending</button>
+                <button class="sim-add-btn highlight" id="sim-add-btn" onclick="simOpenModal()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:11px;height:11px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Register system
+                </button>
+              </div>
+              <div class="sim-inv-list" id="sim-inv-list">
+                <div class="sim-inv-row"><div class="sim-row-bar rb-high"></div><div class="sim-row-id">SYS-001</div><div class="sim-row-name">Credit Underwriting AI</div><div class="sim-row-vendor">Zest AI</div><div class="sim-row-dept">Credit Risk</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-high"></div><div class="sim-row-id">SYS-002</div><div class="sim-row-name">Clinical Decision Support</div><div class="sim-row-vendor">Nuance DAX</div><div class="sim-row-dept">Clinical Ops</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-medium"></div><div class="sim-row-id">SYS-003</div><div class="sim-row-name">AI Code Assistant</div><div class="sim-row-vendor">GitHub</div><div class="sim-row-dept">Engineering</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-high"></div><div class="sim-row-id">SYS-004</div><div class="sim-row-name">Fraud Detection AI</div><div class="sim-row-vendor">Featurespace</div><div class="sim-row-dept">Fraud Ops</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-medium"></div><div class="sim-row-id">SYS-005</div><div class="sim-row-name">HR Recruitment AI</div><div class="sim-row-vendor">HireVue</div><div class="sim-row-dept">HR</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-low"></div><div class="sim-row-id">SYS-006</div><div class="sim-row-name">Document Intelligence</div><div class="sim-row-vendor">Azure AI</div><div class="sim-row-dept">Compliance</div><div class="sim-row-status st-approved">Approved</div></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-soft);font-size:12px" id="sim-dashboard-msg">← Click AI Inventory in the sidebar</div>
+
+            <!-- Modal -->
+            <div class="sim-modal-overlay" id="sim-modal">
+              <div class="sim-modal">
+                <div class="sim-modal-header">
+                  <div class="sim-modal-title">Register AI System</div>
+                  <button class="sim-modal-close" onclick="simCloseModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                </div>
+                <div class="sim-modal-body">
+                  <div class="sim-section-label">System identity</div>
+                  <div class="sim-field field-highlight" id="fh-name">
+                    <div class="sim-label">System name <span class="sim-req">Required</span></div>
+                    <input class="sim-input" id="sim-f-name" placeholder="e.g. Customer Churn Predictor" value="">
+                  </div>
+                  <div class="sim-field-row">
+                    <div class="sim-field field-highlight" id="fh-vendor">
+                      <div class="sim-label">Vendor</div>
+                      <input class="sim-input" id="sim-f-vendor" placeholder="e.g. Internal" value="">
+                    </div>
+                    <div class="sim-field">
+                      <div class="sim-label">Version</div>
+                      <input class="sim-input" id="sim-f-version" placeholder="e.g. v1.0" value="">
+                    </div>
+                  </div>
+                  <div class="sim-section-label">Organizational context</div>
+                  <div class="sim-field-row">
+                    <div class="sim-field field-highlight" id="fh-dept">
+                      <div class="sim-label">Business unit</div>
+                      <select class="sim-select" id="sim-f-dept">
+                        <option>Analytics</option><option>Credit Risk</option><option>Clinical Operations</option><option>Engineering</option><option>Fraud Operations</option><option>Human Resources</option><option>Compliance</option><option>Finance</option><option>Legal</option>
+                      </select>
+                    </div>
+                    <div class="sim-field field-highlight" id="fh-owner">
+                      <div class="sim-label">Risk owner</div>
+                      <select class="sim-select" id="sim-f-owner">
+                        <option>— Unassigned —</option><option>Chief Risk Officer</option><option>CISO</option><option>Chief Privacy Officer</option><option>Chief Compliance Officer</option><option>Head of Credit Risk</option><option>VP Engineering</option><option>Chief HR Officer</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="sim-field-row">
+                    <div class="sim-field field-highlight" id="fh-renewal">
+                      <div class="sim-label">Contract renewal</div>
+                      <input class="sim-input" id="sim-f-renewal" type="date">
+                    </div>
+                    <div class="sim-field">
+                      <div class="sim-label">Review cycle</div>
+                      <select class="sim-select" id="sim-f-cycle">
+                        <option>Annual</option><option>18 months</option><option>24 months</option><option>Quarterly</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="sim-field field-highlight" id="fh-usecase">
+                    <div class="sim-label">Use case</div>
+                    <textarea class="sim-textarea" id="sim-f-usecase" placeholder="Describe exactly how this AI system is used in your organization…"></textarea>
+                  </div>
+                  <div class="sim-section-label">Risk profile</div>
+                  <div class="sim-field field-highlight" id="fh-regflags">
+                    <div class="sim-label">Regulatory flags</div>
+                    <div class="sim-checkbox-group">
+                      <div class="sim-checkbox-item"><input type="checkbox" id="rf-ecoa"><label for="rf-ecoa">ECOA / Fair lending</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="rf-sr117"><label for="rf-sr117">SR 11-7</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="rf-hipaa"><label for="rf-hipaa">HIPAA</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="rf-gdpr" checked><label for="rf-gdpr">GDPR / CPRA</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="rf-euhr"><label for="rf-euhr">EU AI Act — high risk</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="rf-nyc"><label for="rf-nyc">NYC Local Law 144</label></div>
+                    </div>
+                  </div>
+                  <div class="sim-field field-highlight" id="fh-dtypes">
+                    <div class="sim-label">Data types</div>
+                    <div class="sim-checkbox-group">
+                      <div class="sim-checkbox-item"><input type="checkbox" id="dt-pii" checked><label for="dt-pii">PII</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="dt-fin" checked><label for="dt-fin">Financial</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="dt-phi"><label for="dt-phi">PHI</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="dt-bio"><label for="dt-bio">Biometric</label></div>
+                      <div class="sim-checkbox-item"><input type="checkbox" id="dt-code"><label for="dt-code">Source code</label></div>
+                    </div>
+                  </div>
+                  <div class="sim-field field-highlight" id="fh-oversight">
+                    <div class="sim-toggle-row">
+                      <div class="sim-toggle-label">Human oversight required</div>
+                      <label class="sim-toggle">
+                        <input type="checkbox" id="sim-f-oversight" checked>
+                        <div class="sim-toggle-track"></div>
+                        <div class="sim-toggle-thumb"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="sim-modal-footer">
+                  <button class="sim-cancel-btn" onclick="simCloseModal()">Cancel</button>
+                  <button class="sim-save-btn" id="sim-save-btn" onclick="simSave()">Save system</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Two ways to open the form</div>
+        <div class="callout-text">The <strong>+ Register system</strong> button is always in the controls bar. If your Inventory is completely empty (no systems registered yet), you'll also see a <strong>Register first system</strong> prompt in the center of the empty list — both open the same form.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 2: SYSTEM IDENTITY ═══ -->
+<div class="guide-panel" id="panel-2">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 2</div>
+    <h1 class="ph-title">System identity fields</h1>
+    <p class="ph-sub">The first three fields identify what the AI system is and who made it. These appear at the top of the form.</p>
+  </div>
+  <div class="panel-body">
+    <div class="coach">
+      <div class="coach-icon">👆</div>
+      <div class="coach-body">
+        <div class="coach-step">Try it — fill in the identity fields</div>
+        <div class="coach-text">In the form below, click on each highlighted field and type the value shown in the example. Start with <strong>System name</strong>.</div>
+      </div>
+    </div>
+
+    <!-- Mini form showing just identity fields -->
+    <div class="sim-shell">
+      <div class="sim-topbar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">Register AI System — System identity</div></div>
+      <div style="padding:20px;background:var(--white);">
+        <div class="sim-section-label">System identity</div>
+        <div class="sim-field field-highlight active" id="p2-fh-name">
+          <div class="sim-label">System name <span class="sim-req">Required</span></div>
+          <input class="sim-input" id="p2-name" placeholder="e.g. Customer Churn Predictor" oninput="checkP2()">
+        </div>
+        <div class="sim-field-row">
+          <div class="sim-field field-highlight" id="p2-fh-vendor" style="position:relative">
+            <div class="sim-label">Vendor</div>
+            <input class="sim-input" id="p2-vendor" placeholder="e.g. Internal" oninput="checkP2()">
+          </div>
+          <div class="sim-field">
+            <div class="sim-label">Version</div>
+            <input class="sim-input" id="p2-version" placeholder="e.g. v1.0">
+          </div>
+        </div>
+        <div id="p2-feedback" style="margin-top:10px;font-size:12px;color:var(--green);display:none">✓ Great! System name and vendor are filled in. Click Next to continue.</div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div class="fe-header" style="border:1px solid var(--gray-line);border-radius:10px 10px 0 0;background:var(--cream);">
+      <div class="fe-num">01</div>
+      <div class="fe-name" style="flex:1">System name</div>
+      <span class="fe-tag fe-req">Required</span>
+    </div>
+    <div class="fe-body" style="border:1px solid var(--gray-line);border-top:none;border-radius:0 0 10px 10px;background:var(--white);padding:13px 16px;margin-bottom:16px">
+      <div class="fe-desc">Use the official name as it appears in your vendor contract or internal project documentation — not a nickname or abbreviation. This name appears across all six modules and in every report.</div>
+      <div class="fe-example"><span>Example: </span>Customer Churn Predictor</div>
+      <div class="fe-why">Inconsistent naming creates confusion during audits. A system called "churn model" in one report and "retention AI" in another creates questions about whether they are the same system.</div>
+    </div>
+
+    <div class="fe-header" style="border:1px solid var(--gray-line);border-radius:10px 10px 0 0;background:var(--cream);">
+      <div class="fe-num">02</div>
+      <div class="fe-name" style="flex:1">Vendor</div>
+      <span class="fe-tag fe-opt">Recommended</span>
+    </div>
+    <div class="fe-body" style="border:1px solid var(--gray-line);border-top:none;border-radius:0 0 10px 10px;background:var(--white);padding:13px 16px;margin-bottom:16px">
+      <div class="fe-desc">The name of the company that built or operates the AI system. For internally built systems, enter your organization name or simply "Internal."</div>
+      <div class="fe-example"><span>Vendor-built: </span>Zest AI &nbsp;|&nbsp; <span>Internal: </span>Internal &nbsp;|&nbsp; <span>Open source: </span>Internal (Hugging Face)</div>
+      <div class="fe-why">GovernAI uses this to automatically create a Vendor Due Diligence record. Every unique vendor name across the Inventory gets a corresponding vendor record in the VDD module — even "Internal."</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Use exact vendor names</div>
+        <div class="callout-text">If you register one system as "GitHub" and another as "Github (Microsoft)", GovernAI will create two separate VDD vendor records. Use consistent, exact vendor names to keep your vendor register clean.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 3: ORG CONTEXT ═══ -->
+<div class="guide-panel" id="panel-3">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 3</div>
+    <h1 class="ph-title">Organizational context</h1>
+    <p class="ph-sub">These five fields establish who owns the system, when contracts expire, and exactly what the system does.</p>
+  </div>
+  <div class="panel-body">
+    <div class="coach">
+      <div class="coach-icon">👆</div>
+      <div class="coach-body">
+        <div class="coach-step">Try it — fill in the org context fields</div>
+        <div class="coach-text">Select <strong>Analytics</strong> as the business unit, <strong>Chief Risk Officer</strong> as the risk owner, set a contract renewal date about 18 months from now, and type a specific use case description in the last field.</div>
+      </div>
+    </div>
+
+    <div class="sim-shell">
+      <div class="sim-topbar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">Register AI System — Organizational context</div></div>
+      <div style="padding:20px;background:var(--white);">
+        <div class="sim-section-label">Organizational context</div>
+        <div class="sim-field-row">
+          <div class="sim-field field-highlight active">
+            <div class="sim-label">Business unit</div>
+            <select class="sim-select" id="p3-dept" onchange="checkP3()">
+              <option>— Select —</option><option>Analytics</option><option>Credit Risk</option><option>Clinical Operations</option><option>Engineering</option><option>Fraud Operations</option><option>Human Resources</option><option>Compliance</option>
+            </select>
+          </div>
+          <div class="sim-field field-highlight active">
+            <div class="sim-label">Risk owner</div>
+            <select class="sim-select" id="p3-owner" onchange="checkP3()">
+              <option>— Unassigned —</option><option>Chief Risk Officer</option><option>CISO</option><option>Chief Privacy Officer</option><option>Head of Credit Risk</option><option>VP Engineering</option>
+            </select>
+          </div>
+        </div>
+        <div class="sim-field-row">
+          <div class="sim-field field-highlight active">
+            <div class="sim-label">Contract renewal</div>
+            <input class="sim-input" id="p3-renewal" type="date" onchange="checkP3()">
+          </div>
+          <div class="sim-field">
+            <div class="sim-label">Review cycle</div>
+            <select class="sim-select"><option>Annual</option><option>18 months</option><option>24 months</option></select>
+          </div>
+        </div>
+        <div class="sim-field field-highlight active">
+          <div class="sim-label">Use case</div>
+          <textarea class="sim-textarea" id="p3-usecase" placeholder="Describe exactly what this AI system does and how it is used…" oninput="checkP3()"></textarea>
+        </div>
+        <div id="p3-feedback" style="margin-top:10px;font-size:12px;color:var(--green);display:none">✓ Org context complete. Click Next to continue.</div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div class="fe-header" style="border:1px solid var(--gray-line);border-radius:10px 10px 0 0;background:var(--cream);">
+      <div class="fe-num">05</div>
+      <div class="fe-name" style="flex:1">Risk owner</div>
+      <span class="fe-tag fe-opt">Recommended</span>
+    </div>
+    <div class="fe-body" style="border:1px solid var(--gray-line);border-top:none;border-radius:0 0 10px 10px;background:var(--white);padding:13px 16px;margin-bottom:16px">
+      <div class="fe-desc">The named individual accountable for managing the risk of this AI system. Must be a specific person or role — not a team or committee.</div>
+      <div class="fe-why">Findings generated from this system are auto-assigned to this owner in Risk Management. Without a named owner, remediation accountability is unclear and regulators will ask who is responsible.</div>
+    </div>
+
+    <div class="fe-header" style="border:1px solid var(--gray-line);border-radius:10px 10px 0 0;background:var(--cream);">
+      <div class="fe-num">08</div>
+      <div class="fe-name" style="flex:1">Use case</div>
+      <span class="fe-tag fe-opt">Recommended</span>
+    </div>
+    <div class="fe-body" style="border:1px solid var(--gray-line);border-top:none;border-radius:0 0 10px 10px;background:var(--white);padding:13px 16px;margin-bottom:16px">
+      <div class="fe-desc">A one-to-two sentence description of exactly what this AI does in your environment — not what it could do in general, but the specific way your organization uses it.</div>
+      <div class="fe-example"><span>Bad: </span>"Uses AI to help with customer decisions."<br><span>Good: </span>"Scores existing customers 0–100 on churn likelihood; scores below 30 trigger automatic retention outreach with no human review."</div>
+      <div class="fe-why">Vague use cases produce inaccurate risk assessments. Be specific about the decision type, the affected population, and the automation level.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 4: REG FLAGS ═══ -->
+<div class="guide-panel" id="panel-4">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 4</div>
+    <h1 class="ph-title">Regulatory flags</h1>
+    <p class="ph-sub">The most consequential part of the form. Each flag activates specific compliance controls and affects how Risk Assessment weights are calculated.</p>
+  </div>
+  <div class="panel-body">
+    <div class="coach">
+      <div class="coach-icon">👆</div>
+      <div class="coach-body">
+        <div class="coach-step">Try it — select the correct flags</div>
+        <div class="coach-text">For our Customer Churn Predictor, check <strong>GDPR / CPRA</strong> (processes personal data of customers) and decide whether <strong>ECOA / Fair lending</strong> applies — it does if the retention offers differ by customer score. Check the guidance below each flag.</div>
+      </div>
+    </div>
+
+    <div class="sim-shell">
+      <div class="sim-topbar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">Register AI System — Regulatory flags</div></div>
+      <div style="padding:20px;background:var(--white);">
+        <div class="sim-section-label">Regulatory flags — check all that apply</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:10px 12px;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="p4-ecoa" style="margin-top:2px">
+            <div><label for="p4-ecoa" style="font-weight:600;font-size:12px;display:block;margin-bottom:2px;cursor:pointer">ECOA / Fair lending</label><div style="font-size:11px;color:var(--gray-mid);line-height:1.5">Credit decisions affecting applicants. Check if offers vary by AI score.</div></div>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:10px 12px;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="p4-sr117" style="margin-top:2px">
+            <div><label for="p4-sr117" style="font-weight:600;font-size:12px;display:block;margin-bottom:2px;cursor:pointer">SR 11-7</label><div style="font-size:11px;color:var(--gray-mid);line-height:1.5">All AI models at regulated financial institutions influencing business decisions.</div></div>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:10px 12px;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="p4-hipaa" style="margin-top:2px">
+            <div><label for="p4-hipaa" style="font-weight:600;font-size:12px;display:block;margin-bottom:2px;cursor:pointer">HIPAA</label><div style="font-size:11px;color:var(--gray-mid);line-height:1.5">AI that processes Protected Health Information (PHI).</div></div>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid rgba(120,140,93,.4);border-radius:7px;padding:10px 12px;align-items:flex-start;gap:10px;background:rgba(120,140,93,.04)">
+            <input type="checkbox" id="p4-gdpr" style="margin-top:2px" checked>
+            <div><label for="p4-gdpr" style="font-weight:600;font-size:12px;display:block;margin-bottom:2px;cursor:pointer">GDPR / CPRA ✓</label><div style="font-size:11px;color:var(--gray-mid);line-height:1.5">Any AI processing personal data of EU or California customers. This applies here.</div></div>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:10px 12px;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="p4-euai" style="margin-top:2px">
+            <div><label for="p4-euai" style="font-weight:600;font-size:12px;display:block;margin-bottom:2px;cursor:pointer">EU AI Act — high risk</label><div style="font-size:11px;color:var(--gray-mid);line-height:1.5">AI in Annex III categories serving EU individuals — credit, employment, critical infrastructure.</div></div>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:10px 12px;align-items:flex-start;gap:10px">
+            <input type="checkbox" id="p4-nyc" style="margin-top:2px">
+            <div><label for="p4-nyc" style="font-weight:600;font-size:12px;display:block;margin-bottom:2px;cursor:pointer">NYC Local Law 144</label><div style="font-size:11px;color:var(--gray-mid);line-height:1.5">Automated employment decisions affecting NYC residents.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">When in doubt, flag it</div>
+        <div class="callout-text">Incorrectly flagging a system (over-flagging) creates extra governance work. Not flagging a system that should be flagged (under-flagging) creates a compliance gap that regulators will find. Always err on the side of flagging and resolve the uncertainty with your compliance team.</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">ECOA and churn scoring — the key question</div>
+        <div class="callout-text">ECOA applies to credit-related decisions. If your retention team offers different financial incentives (fee waivers, interest rate discounts, credit limit increases) based on the churn score, that constitutes differential credit treatment and ECOA likely applies. If all customers receive identical outreach regardless of their score, ECOA is less likely to apply. Flag it and confirm with your compliance team.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 5: DATA TYPES ═══ -->
+<div class="guide-panel" id="panel-5">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 5</div>
+    <h1 class="ph-title">Data types &amp; human oversight</h1>
+    <p class="ph-sub">These selections directly drive the Data sensitivity and Human oversight risk dimension scores in the Risk Assessment.</p>
+  </div>
+  <div class="panel-body">
+    <div class="coach">
+      <div class="coach-icon">👆</div>
+      <div class="coach-body">
+        <div class="coach-step">Try it — select data types and set oversight</div>
+        <div class="coach-text">For the Customer Churn Predictor: check <strong>PII</strong> and <strong>Financial</strong> (it processes personal customer data and account balance/transaction history). Toggle <strong>Human oversight</strong> OFF — the churn score triggers automatic outreach with no human review step.</div>
+      </div>
+    </div>
+
+    <div class="sim-shell">
+      <div class="sim-topbar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">Register AI System — Data types &amp; oversight</div></div>
+      <div style="padding:20px;background:var(--white);">
+        <div class="sim-section-label">Data types — check all that apply</div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
+          <div class="sim-checkbox-item" style="border:1px solid rgba(120,140,93,.4);border-radius:7px;padding:8px 12px;background:rgba(120,140,93,.04)">
+            <input type="checkbox" id="p5-pii" checked><label for="p5-pii" style="flex:1;cursor:pointer"><strong style="font-size:12px">PII</strong> — <span style="font-size:11px;color:var(--gray-mid)">Name, address, customer ID, account numbers, behavioral data</span></label><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:#FAEEDA;color:#633806;flex-shrink:0">High</span>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid rgba(120,140,93,.4);border-radius:7px;padding:8px 12px;background:rgba(120,140,93,.04)">
+            <input type="checkbox" id="p5-fin" checked><label for="p5-fin" style="flex:1;cursor:pointer"><strong style="font-size:12px">Financial</strong> — <span style="font-size:11px;color:var(--gray-mid)">Account balances, transaction history, product usage, credit data</span></label><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:#FCEBEB;color:#A32D2D;flex-shrink:0">Critical</span>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:8px 12px">
+            <input type="checkbox" id="p5-phi"><label for="p5-phi" style="flex:1;cursor:pointer"><strong style="font-size:12px">PHI</strong> — <span style="font-size:11px;color:var(--gray-mid)">Protected Health Information — diagnoses, treatment records, insurance</span></label><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:#FCEBEB;color:#A32D2D;flex-shrink:0">Critical</span>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:8px 12px">
+            <input type="checkbox" id="p5-bio"><label for="p5-bio" style="flex:1;cursor:pointer"><strong style="font-size:12px">Biometric</strong> — <span style="font-size:11px;color:var(--gray-mid)">Facial recognition, fingerprints, voice prints, unique physical identifiers</span></label><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:#FCEBEB;color:#A32D2D;flex-shrink:0">Critical</span>
+          </div>
+          <div class="sim-checkbox-item" style="border:1px solid var(--gray-line);border-radius:7px;padding:8px 12px">
+            <input type="checkbox" id="p5-code"><label for="p5-code" style="flex:1;cursor:pointer"><strong style="font-size:12px">Source code / IP</strong> — <span style="font-size:11px;color:var(--gray-mid)">Proprietary code, algorithms, trade secrets processed by the AI</span></label><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:#FAEEDA;color:#633806;flex-shrink:0">Medium</span>
+          </div>
+        </div>
+        <div class="sim-section-label">Human oversight</div>
+        <div style="border:1px solid var(--gray-line);border-radius:8px;padding:12px 14px;background:var(--cream)">
+          <div class="sim-toggle-row">
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--charcoal);margin-bottom:3px">Human oversight required</div>
+              <div style="font-size:11px;color:var(--gray-mid)">A human reviews all AI outputs before any action is taken</div>
+            </div>
+            <label class="sim-toggle" style="flex-shrink:0">
+              <input type="checkbox" id="p5-oversight">
+              <div class="sim-toggle-track"></div>
+              <div class="sim-toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11.5px;color:var(--gray-mid)">
+          For the Churn Predictor: toggle <strong>OFF</strong> — scores below 30 trigger outreach automatically with no human review step.
+        </div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div class="callout key">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <div class="callout-title">How these fields affect risk scoring</div>
+        <div class="callout-text">Financial data (Critical sensitivity) + Human oversight OFF (no human checkpoint) = two of the six risk dimensions will score toward the high end. This Customer Churn Predictor is likely to come out as a <strong>Medium or High risk</strong> system after formal assessment — even though it might feel low-stakes from a business perspective. That's the governance point: the risk profile reflects the actual exposure, not the perceived importance.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 6: SAVE ═══ -->
+<div class="guide-panel" id="panel-6">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 6</div>
+    <h1 class="ph-title">Save the record</h1>
+    <p class="ph-sub">Click Save system and watch the new record appear in the Inventory list.</p>
+  </div>
+  <div class="panel-body">
+
+    <div class="coach">
+      <div class="coach-icon">👆</div>
+      <div class="coach-body">
+        <div class="coach-step">Try it — complete and save the registration</div>
+        <div class="coach-text">The form below is pre-filled with the Customer Churn Predictor details. Click <strong>Save system</strong> and watch the new record slide into the Inventory list.</div>
+      </div>
+    </div>
+
+    <!-- Full form pre-filled -->
+    <div class="sim-shell">
+      <div class="sim-topbar"><div class="sim-dot sim-dot-r"></div><div class="sim-dot sim-dot-y"></div><div class="sim-dot sim-dot-g"></div><div class="sim-url">governai.html — AI Inventory</div></div>
+      <div class="sim-body" style="min-height:500px">
+        <div class="sim-app" style="min-height:500px">
+          <div class="sim-sidebar">
+            <div class="sim-sidebar-logo"><div class="sim-logo-row"><div class="sim-logo-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" fill="white" opacity=".9"/></svg></div><span class="sim-logo-name">Govern<span>AI</span></span></div><div class="sim-logo-sub">AI Governance Platform</div></div>
+            <div class="sim-nav-section">
+              <div class="sim-nav-label">Overview</div>
+              <div class="sim-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>GRC Dashboard</div>
+              <div class="sim-nav-label" style="margin-top:6px">Modules</div>
+              <div class="sim-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>AI Inventory <span class="sim-nav-badge" id="p6-badge">6</span></div>
+              <div class="sim-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>Risk Assessment <span class="sim-nav-badge" id="p6-ra-badge">6</span></div>
+            </div>
+          </div>
+          <div class="sim-main">
+            <div class="sim-main-topbar">AI Inventory</div>
+            <div class="sim-inv-view" style="display:flex">
+              <div class="sim-inv-controls">
+                <input class="sim-search" placeholder="Search systems…" readonly>
+                <button class="sim-pill active">All</button>
+                <button class="sim-add-btn" onclick="p6OpenModal()">+ Register system</button>
+              </div>
+              <div class="sim-inv-list" id="p6-list">
+                <div class="sim-inv-row"><div class="sim-row-bar rb-high"></div><div class="sim-row-id">SYS-001</div><div class="sim-row-name">Credit Underwriting AI</div><div class="sim-row-vendor">Zest AI</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-high"></div><div class="sim-row-id">SYS-002</div><div class="sim-row-name">Clinical Decision Support</div><div class="sim-row-vendor">Nuance DAX</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-medium"></div><div class="sim-row-id">SYS-003</div><div class="sim-row-name">AI Code Assistant</div><div class="sim-row-vendor">GitHub</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-high"></div><div class="sim-row-id">SYS-004</div><div class="sim-row-name">Fraud Detection AI</div><div class="sim-row-vendor">Featurespace</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-medium"></div><div class="sim-row-id">SYS-005</div><div class="sim-row-name">HR Recruitment AI</div><div class="sim-row-vendor">HireVue</div><div class="sim-row-status st-approved">Approved</div></div>
+                <div class="sim-inv-row"><div class="sim-row-bar rb-low"></div><div class="sim-row-id">SYS-006</div><div class="sim-row-name">Document Intelligence</div><div class="sim-row-vendor">Azure AI</div><div class="sim-row-status st-approved">Approved</div></div>
+              </div>
+            </div>
+            <!-- Pre-filled modal -->
+            <div class="sim-modal-overlay" id="p6-modal">
+              <div class="sim-modal">
+                <div class="sim-modal-header"><div class="sim-modal-title">Register AI System</div><button class="sim-modal-close" onclick="p6CloseModal()">✕</button></div>
+                <div class="sim-modal-body">
+                  <div class="sim-section-label">System identity</div>
+                  <div class="sim-field"><div class="sim-label">System name <span class="sim-req">Required</span></div><input class="sim-input" value="Customer Churn Predictor" readonly></div>
+                  <div class="sim-field-row">
+                    <div class="sim-field"><div class="sim-label">Vendor</div><input class="sim-input" value="Internal" readonly></div>
+                    <div class="sim-field"><div class="sim-label">Version</div><input class="sim-input" value="v1.0" readonly></div>
+                  </div>
+                  <div class="sim-section-label">Organizational context</div>
+                  <div class="sim-field-row">
+                    <div class="sim-field"><div class="sim-label">Business unit</div><input class="sim-input" value="Analytics" readonly></div>
+                    <div class="sim-field"><div class="sim-label">Risk owner</div><input class="sim-input" value="Chief Risk Officer" readonly></div>
+                  </div>
+                  <div class="sim-field"><div class="sim-label">Use case</div><textarea class="sim-textarea" readonly>Scores customers 0–100 on churn likelihood. Scores below 30 trigger automatic retention outreach. No human review step.</textarea></div>
+                  <div class="sim-section-label">Risk profile</div>
+                  <div style="font-size:11.5px;color:var(--charcoal);margin-bottom:8px"><strong>Regulatory flags:</strong> GDPR / CPRA</div>
+                  <div style="font-size:11.5px;color:var(--charcoal);margin-bottom:8px"><strong>Data types:</strong> PII, Financial</div>
+                  <div style="font-size:11.5px;color:var(--charcoal)"><strong>Human oversight:</strong> OFF — fully automated</div>
+                </div>
+                <div class="sim-modal-footer">
+                  <button class="sim-cancel-btn" onclick="p6CloseModal()">Cancel</button>
+                  <button class="sim-save-btn" onclick="p6Save()" id="p6-save-btn">Save system</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="p6-success" style="display:none">
+      <div class="callout tip">
+        <div class="callout-icon">✅</div>
+        <div class="callout-body">
+          <div class="callout-title">Registration complete!</div>
+          <div class="callout-text">SYS-007 Customer Churn Predictor is now in the Inventory. The system has been assigned a sequential ID, the Inventory badge count went from 6 to 7, and three downstream actions happened automatically — see the next step to understand them.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 7: DOWNSTREAM ═══ -->
+<div class="guide-panel" id="panel-7">
+  <div class="panel-hero">
+    <div class="ph-eyebrow">Step 7</div>
+    <h1 class="ph-title">What happens automatically</h1>
+    <p class="ph-sub">Saving a registration triggers automatic updates across three other modules. You don't need to do anything — the platform does this for you.</p>
+  </div>
+  <div class="panel-body">
+
+    <div class="downstream-grid">
+      <div class="ds-card ds-ra">
+        <div class="ds-icon">⚖️</div>
+        <div class="ds-module">Risk Assessment</div>
+        <div class="ds-title">Provisional record created</div>
+        <div class="ds-desc">A Provisional assessment record for SYS-007 appears immediately in the Risk Assessment module — a placeholder showing the system exists but has not been formally scored. The score ring shows blank.</div>
+      </div>
+      <div class="ds-card ds-vdd">
+        <div class="ds-icon">🤝</div>
+        <div class="ds-module">Vendor Due Diligence</div>
+        <div class="ds-title">Vendor record auto-created</div>
+        <div class="ds-desc">"Internal" is a new vendor name. A vendor record with Pending status is created automatically. If "Internal" already existed from another system, the new system would link to the existing record.</div>
+      </div>
+      <div class="ds-card ds-dash">
+        <div class="ds-icon">📊</div>
+        <div class="ds-module">GRC Dashboard</div>
+        <div class="ds-title">Metrics update live</div>
+        <div class="ds-desc">The AI Systems card goes from 6 to 7. The Assessments ratio updates to 6/7 (85%). The Analytics department appears in the heatmap. The Vendor Coverage percentage recalculates.</div>
+      </div>
+      <div class="ds-card ds-inv">
+        <div class="ds-icon">🗄️</div>
+        <div class="ds-module">AI Inventory</div>
+        <div class="ds-title">Sequential ID assigned</div>
+        <div class="ds-desc">The system receives SYS-007 — the next sequential ID. This ID appears on all findings, reports, and cross-module references, giving you a stable identifier for the system's entire governance lifecycle.</div>
+      </div>
+    </div>
+
+    <div class="callout key">
+      <div class="callout-icon">→</div>
+      <div class="callout-body">
+        <div class="callout-title">Your next step after registration</div>
+        <div class="callout-text">Navigate to <strong>Risk Assessment</strong> and find the new SYS-007 provisional record. Run the four-step formal assessment wizard. This replaces the provisional placeholder with a real scored assessment, populates findings, sets the risk tier, and counts toward your Program Maturity score. This is the highest-value action after registration.</div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div class="step-done">
+      <div class="step-done-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="step-done-title">Guide complete!</div>
+      <div class="step-done-sub">You now know how to register an AI system, what every field does, and what happens automatically after saving. Return to GovernAI and try registering a real system from your organization.</div>
+    </div>
+
+  </div>
+</div>
+
+  </div><!-- /guide-content -->
+</div><!-- /guide-main -->
+</div><!-- /guide-shell -->
+
+<script>
+var panels = document.querySelectorAll('.guide-panel');
+var navLinks = document.querySelectorAll('.gnav-link[data-panel]');
+var cur = 0;
+var stepLabels = [
+  'Introduction',
+  'Open the form',
+  'System identity',
+  'Org context',
+  'Regulatory flags',
+  'Data types & oversight',
+  'Save the record',
+  'What happens next'
+];
+
+function goPanel(n) {
+  panels[cur].classList.remove('active');
+  navLinks[cur].classList.remove('active');
+  cur = n;
+  panels[cur].classList.add('active');
+  navLinks[cur].classList.add('active');
+  document.getElementById('gtb-step-label').innerHTML = '<strong>Step ' + (cur+1) + ' of ' + panels.length + '</strong> — ' + stepLabels[cur];
+  document.getElementById('btn-prev').disabled = cur === 0;
+  document.getElementById('btn-next').textContent = cur === panels.length-1 ? 'Finish' : 'Next →';
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('prog-label').textContent = (cur+1) + ' / ' + panels.length;
+  document.getElementById('prog-fill').style.width = ((cur+1)/panels.length*100) + '%';
+  window.scrollTo(0,0);
+  // Mark previous panels as done in nav
+  navLinks.forEach(function(link, i) {
+    var dot = link.querySelector('.gnav-dot');
+    if (i < cur) { link.classList.add('done'); if(dot)dot.style.background='var(--green)'; }
+    else { link.classList.remove('done'); if(dot)dot.style.background=''; }
+  });
+}
+function nextPanel() { if (cur < panels.length-1) { goPanel(cur+1); } else { window.location.href='governai_training_center.html'; } }
+function prevPanel() { if (cur > 0) goPanel(cur-1); }
+
+// ── Panel 1: Nav click simulation ──
+function simNavClick(el, module) {
+  document.querySelectorAll('.sim-nav-item').forEach(function(n){ n.classList.remove('active'); });
+  el.classList.add('active');
+  var inv = document.getElementById('sim-inv-view');
+  var msg = document.getElementById('sim-dashboard-msg');
+  var topbar = document.getElementById('sim-topbar-title');
+  var labels = {dashboard:'GRC Dashboard',inventory:'AI Inventory',playbook:'Governance Playbook',risk:'Risk Assessment',vdd:'Vendor Due Diligence',treat:'Risk Management'};
+  topbar.textContent = labels[module] || module;
+  if (module === 'inventory') {
+    inv.style.display = 'flex'; msg.style.display = 'none';
+  } else {
+    inv.style.display = 'none';
+    msg.style.display = 'flex';
+    msg.textContent = '← Click AI Inventory to see the register';
+  }
+}
+function simOpenModal() {
+  document.getElementById('sim-modal').classList.add('open');
+  document.getElementById('sim-add-btn').classList.remove('highlight');
+}
+function simCloseModal() {
+  document.getElementById('sim-modal').classList.remove('open');
+}
+function simSave() {
+  var name = document.getElementById('sim-f-name').value.trim();
+  if (!name) { document.getElementById('sim-f-name').focus(); document.getElementById('sim-f-name').style.borderColor='#C0634A'; return; }
+  simCloseModal();
+  var list = document.getElementById('sim-inv-list');
+  var vendor = document.getElementById('sim-f-vendor').value || 'Unknown';
+  var dept = document.getElementById('sim-f-dept').value || '—';
+  var newRow = document.createElement('div');
+  newRow.className = 'sim-inv-row new-row';
+  newRow.innerHTML = '<div class="sim-row-bar rb-medium"></div><div class="sim-row-id">SYS-007</div><div class="sim-row-name">' + name + '</div><div class="sim-row-vendor">' + vendor + '</div><div class="sim-row-dept">' + dept + '</div><div class="sim-row-status st-pending">Pending</div>';
+  list.insertBefore(newRow, list.firstChild);
+  var badge = document.getElementById('sim-inv-badge');
+  if (badge) badge.textContent = '7';
+}
+
+// ── Panel 2: field validation ──
+function checkP2() {
+  var n = document.getElementById('p2-name').value.trim();
+  var v = document.getElementById('p2-vendor').value.trim();
+  var fb = document.getElementById('p2-feedback');
+  var fhv = document.getElementById('p2-fh-vendor');
+  if (n) { document.getElementById('p2-fh-name').classList.remove('active'); fhv.classList.add('active'); }
+  if (n && v) { fhv.classList.remove('active'); fb.style.display='block'; }
+  else { fb.style.display='none'; }
+}
+
+// ── Panel 3: validation ──
+function checkP3() {
+  var dept = document.getElementById('p3-dept').value;
+  var owner = document.getElementById('p3-owner').value;
+  var renewal = document.getElementById('p3-renewal').value;
+  var usecase = document.getElementById('p3-usecase').value.trim();
+  var fb = document.getElementById('p3-feedback');
+  if (dept !== '— Select —' && owner !== '— Unassigned —' && renewal && usecase.length > 20) {
+    fb.style.display = 'block';
+  } else {
+    fb.style.display = 'none';
+  }
+}
+
+// ── Panel 6: save ──
+function p6OpenModal() { document.getElementById('p6-modal').classList.add('open'); }
+function p6CloseModal() { document.getElementById('p6-modal').classList.remove('open'); }
+function p6Save() {
+  var btn = document.getElementById('p6-save-btn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+  setTimeout(function() {
+    p6CloseModal();
+    var list = document.getElementById('p6-list');
+    var newRow = document.createElement('div');
+    newRow.className = 'sim-inv-row new-row new-record-flash';
+    newRow.innerHTML = '<div class="sim-row-bar rb-medium"></div><div class="sim-row-id" style="background:rgba(120,140,93,.12);color:var(--green)">SYS-007</div><div class="sim-row-name" style="font-weight:600">Customer Churn Predictor</div><div class="sim-row-vendor">Internal</div><div class="sim-row-status st-pending">Pending</div>';
+    list.insertBefore(newRow, list.firstChild);
+    document.getElementById('p6-badge').textContent = '7';
+    document.getElementById('p6-ra-badge').textContent = '7';
+    document.getElementById('p6-success').style.display = 'block';
+    btn.textContent = 'Save system';
+    btn.disabled = false;
+  }, 800);
+}
+
+// Init
+goPanel(0);
+</script>
+</body>
+</html>
